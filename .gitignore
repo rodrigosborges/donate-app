@@ -1,0 +1,9 @@
+/node_modules/*
+!/node_modules/react-native-modal-filter-picker
+composer.phar
+composer.lock
+.env.*.php
+.env.php
+.DS_Store
+Thumbs.db
+/android/app/build
