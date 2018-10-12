@@ -36,7 +36,7 @@ export default class Menu extends Component {
         this.props.navigation.setParams({ 
             headerRight: (
                 <TouchableOpacity onPress={() => { this.confirmaDeslogar() }}>
-                    <Icon style={{marginRight: 15}} name="sign-in-alt" size={25} color="white" />
+                    <Icon style={{marginRight: 15}} name="sign-in-alt" size={25} color="424242" />
                 </TouchableOpacity>
             )
         })
@@ -234,53 +234,53 @@ export default class Menu extends Component {
                 {this._renderModalContent()}
                 </Modal>
                 <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
-                {/* <ImageBackground resizeMode="stretch" style={styles.fundo} blurRadius={1} > */}
-                    <View style={{backgroundColor: "rgba(255, 255, 255, 0.5)", height: "100%", width: "100%"}}>
+                 <ImageBackground blurRadius={1} style={styles.fundo}> 
+                    <View style={{height: "100%", width: "100%"}}>
                         <View style={styles.iconesSection}>
                             <View style={styles.containerIcones}>
-                                <TouchableOpacity onPress={() => {this.cadastradas()}} style={styles.icones}>
-                                    <Icon size={width*0.2} color={"rgba(44, 62, 80, 1)"} name="paw"/>
+                                <TouchableOpacity onPress={() => {this.cadastradas()}} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
+                                    <Icon size={width*0.2} color={"#72b5a4"} name="paw"/>
                                     <Text style={styles.texto}>Animal</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.perfil()} style={styles.icones}>
-                                    <Icon size={width*0.2} color={"rgba(44, 62, 80, 1)"} name="home"/>
+                                <TouchableOpacity onPress={() => this.perfil()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
+                                    <Icon size={width*0.2} color={"#72b5a4"} name="home"/>
                                     <Text style={styles.texto}>Doméstico</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.containerIcones}>
-                                <TouchableOpacity onPress={() => this.perfil()} style={styles.icones}>
-                                    <Icon size={width*0.2} color={"rgba(44, 62, 80, 1)"} name="graduation-cap"/>
+                                <TouchableOpacity onPress={() => this.perfil()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
+                                    <Icon size={width*0.2} color={"#72b5a4"} name="graduation-cap"/>
                                     <Text style={styles.texto}>Educação</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => {dispatch(NavigationActions.navigate({routeName: 'Consulta', key: '123',params:{fundo: this.props.navigation.state.params.fundo, logo: this.props.navigation.state.params.logo,spinner: this.spinner.bind(this)}}))}} style={styles.icones}>
-                                    <Icon size={width*0.2} color={"rgba(44, 62, 80, 1)"} name="mobile-alt"/>
+                                <TouchableOpacity onPress={() => {dispatch(NavigationActions.navigate({routeName: 'Consulta', key: '123',params:{fundo: this.props.navigation.state.params.fundo, logo: this.props.navigation.state.params.logo,spinner: this.spinner.bind(this)}}))}} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
+                                    <Icon size={width*0.2} color={"#72b5a4"} name="mobile-alt"/>
                                     <Text style={styles.texto}>Eletrônico</Text>
                                 </TouchableOpacity>
 
                             </View>
                             <View style={styles.containerIcones}>
-                                <TouchableOpacity onPress={() => this.cadastroManifestacao()} style={styles.icones}>
-                                    <Icon size={width*0.2} color={"rgba(44, 62, 80, 1)"} name="bicycle"/>
+                                <TouchableOpacity onPress={() => this.cadastroManifestacao()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
+                                    <Icon size={width*0.2} color={"#72b5a4"} name="bicycle"/>
                                     <Text style={styles.texto}>Esporte e Lazer</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.cadastroManifestacao()} style={styles.icones}>
-                                    <Icon size={width*0.2} color={"rgba(44, 62, 80, 1)"} name="child"/>
+                                <TouchableOpacity onPress={() => this.cadastroManifestacao()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
+                                    <Icon size={width*0.2} color={"#72b5a4"} name="child"/>
                                     <Text style={styles.texto}>Infantil</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.containerIcones}>
-                                <TouchableOpacity onPress={() => this.perfil()} style={styles.icones}>
-                                    <Icon size={width*0.2} color={"rgba(44, 62, 80, 1)"} name="music"/>
+                                <TouchableOpacity onPress={() => this.perfil()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
+                                    <Icon size={width*0.2} color={"#72b5a4"} name="music"/>
                                     <Text style={styles.texto}>Música</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.cadastroManifestacao()} style={styles.icones}>
-                                    <Icon size={width*0.2} color={"rgba(44, 62, 80, 1)"} name="tshirt"/>
+                                <TouchableOpacity onPress={() => this.cadastroManifestacao()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
+                                    <Icon size={width*0.2} color={"#72b5a4"} name="tshirt"/>
                                     <Text style={styles.texto}>Vestuário</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
                     </View>
-                {/* </ImageBackground> */}
+                 </ImageBackground> 
             </View>
         );
     }
@@ -329,18 +329,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     icones: {
-        width: "50%",
+        width: "46%",
         justifyContent: "center",
         alignItems: "center",
+        margin: "2%",
+        borderRadius: 15,
+        elevation: 10,
     },
     container: {
         flex:1,
-        backgroundColor: '#2C3E50',
+        backgroundColor: 'white',
         overflow: 'hidden',
     },
     texto:{
         fontSize: 18,
-        color: '#2C3E50',
+        color: '#72b5a4',
         fontWeight: 'bold'
     },    
     textoHeader:{
@@ -403,6 +406,7 @@ const styles = StyleSheet.create({
     icone: {
         position: 'absolute',
         left: "5%",
+        backgroundColor: "white"
     },
     header:{
         height: height*0.08,

@@ -17,7 +17,7 @@ import EditarPerfil from './src/components/EditarPerfil'
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#233140',
+    backgroundColor: '#72b5a4',
   },
   back: {
     color: 'white',
@@ -33,7 +33,7 @@ const SimpleApp = StackNavigator({
     screen: Menu,
     navigationOptions:{
       headerStyle: styles.header,
-      title: 'Menu',
+      title: 'Categorias',
       headerTitleStyle: styles.back,
       headerTintColor: 'white',
     }
