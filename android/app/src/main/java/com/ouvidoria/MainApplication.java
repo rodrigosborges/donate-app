@@ -1,4 +1,4 @@
-package com.ouvidoria;
+package com.donate;
 
 import android.app.Application;
 

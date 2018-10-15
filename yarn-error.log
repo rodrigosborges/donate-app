@@ -15,7 +15,7 @@ Platform:
 
 npm manifest: 
   {
-    "name": "ouvidoria",
+    "name": "donate",
     "version": "0.0.1",
     "private": true,
     "scripts": {
@@ -5833,4 +5833,4 @@ Lockfile:
       window-size "0.1.0"
 
 Trace: 
-  Error: ENOENT: no such file or directory, copyfile 'C:\Users\21609\AppData\Local\Yarn\cache\v1\npm-glob-7.0.6-211bafaf49e525b8cd93260d14ab136152b3f57a\changelog.md' -> 'C:\Users\21609\Desktop\ouvidoria-app\node_modules\rn-fetch-blob\node_modules\glob\changelog.md'
+  Error: ENOENT: no such file or directory, copyfile 'C:\Users\21609\AppData\Local\Yarn\cache\v1\npm-glob-7.0.6-211bafaf49e525b8cd93260d14ab136152b3f57a\changelog.md' -> 'C:\Users\21609\Desktop\donate-app\node_modules\rn-fetch-blob\node_modules\glob\changelog.md'

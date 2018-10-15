@@ -97,7 +97,7 @@ android {
     compileSdkVersion 25
 
     defaultConfig {
-        applicationId "com.ouvidoria"
+        applicationId "com.donate"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1

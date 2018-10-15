@@ -9,7 +9,7 @@ import Login from './src/components/Login'
 import Cadastro from './src/components/Cadastro'
 import Menu from './src/components/Menu'
 import Icon from 'react-native-vector-icons/Feather'
-import Cadastradas from './src/components/Cadastradas'
+import Anuncios from './src/components/Anuncios'
 import CadastroManifestacao from './src/components/CadastroManifestacao'
 import EsqueceuSenha from './src/components/EsqueceuSenha'
 import Perfil from './src/components/Perfil'
@@ -29,20 +29,20 @@ const styles = StyleSheet.create({
 })
 
 const SimpleApp = StackNavigator({
-  Cadastradas: {
-    screen: Cadastradas,
-    navigationOptions:{
-      headerStyle: styles.header,
-      title: 'Minhas manifestações',
-      headerTitleStyle: styles.back,
-      headerTintColor: '#E0E0E0',
-    }
-  },
   Menu: {
     screen: Menu,
     navigationOptions:{
       headerStyle: styles.header,
-      title: 'Categorias',
+      title: 'Menu',
+      headerTitleStyle: styles.back,
+      headerTintColor: '#E0E0E0',
+    }
+  },
+  Anuncios: {
+    screen: Anuncios,
+    navigationOptions:{
+      headerStyle: styles.header,
+      title: 'Anúncios',
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',
     }

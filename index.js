@@ -5,5 +5,5 @@ import { YellowBox } from 'react-native';
 YellowBox.ignoreWarnings(['Warning']);
 console.disableYellowBox = true;
 
-AppRegistry.registerComponent('ouvidoria', () => App);
+AppRegistry.registerComponent('donate', () => App);
 global.___DEV___ = false
