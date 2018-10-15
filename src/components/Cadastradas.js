@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
-import { Alert, Dimensions, AppRegistry, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight } from 'react-native'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import { Alert, Dimensions, AppRegistry, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image } from 'react-native'
+import Icon from 'react-native-vector-icons/FontAwesome5'
 import Spinner from 'react-native-loading-spinner-overlay';
 import { NavigationActions } from 'react-navigation';
 
@@ -14,12 +14,12 @@ export default class Cadastro extends PureComponent {
     }
 
     componentDidMount(){
-        this.setState({manifestacoes: this.props.navigation.state.params.manifestacoes})
+        // this.setState({manifestacoes: this.props.navigation.state.params.manifestacoes})
     }
 
     componentWillMount(){
-        this.props.navigation.state.params.spinner(false)
-        setTimeout(() => this.props.navigation.state.params.spinner(false),3000)
+        // this.props.navigation.state.params.spinner(false)
+        // setTimeout(() => this.props.navigation.state.params.spinner(false),3000)
     }
 
     formatarData(data){
@@ -72,37 +72,44 @@ export default class Cadastro extends PureComponent {
         if(this.state.manifestacoes.length > 0){
             this.state.manifestacoes.map((manifestacao) => {(
                 manifestacoes.push(
-                    <View key={i++} style={{ alignItems: 'center', marginBottom: "10%"}}>
-                        <View style={[styles.manifestContainer, {borderLeftColor: manifestacao.status_id > 4 ? "green" : "red"}]}>
-                            <View style={{flex:1, flexDirection: 'column',justifyContent: "space-between",marginBottom:"6%"}}>
-                                <View style={styles.containerTitulo}>
-                                    <Text style={styles.titulo}>{manifestacao.codigo}</Text>
+                    <TouchableHighlight onPress={() => {this.verManifestacao(manifestacao.codigo)}} style={styles.buttonContainer}>
+                        <View key={i++} style={{ alignItems: 'center', marginBottom: "10%"}}>
+                            <View style={[styles.manifestContainer, {borderLeftColor: manifestacao.status_id > 4 ? "green" : "red"}]}>
+                                <View style={{flex:1, flexDirection: 'column',justifyContent: "space-between",marginBottom:"6%"}}>
+                                    <View style={styles.containerTitulo}>
+                                        <Text style={styles.titulo}>{manifestacao.codigo}</Text>
+                                    </View>
+                                    <Text style={[styles.containerInformacoes]}>
+                                        <Text style={styles.texto}>Assunto: </Text>
+                                        <Text style={styles.informacoes}>{manifestacao.assunto_nome}</Text>
+                                    </Text>
+                                    <Text style={[styles.containerInformacoes]}>
+                                        <Text style={styles.texto}>Status: </Text>
+                                        <Text style={styles.informacoes}>{manifestacao.status_nome}</Text>
+                                    </Text>
+                                    <Text style={[styles.containerInformacoes]}>
+                                        <Text style={styles.texto}>Data: </Text>
+                                        <Text style={styles.informacoes}>{this.formatarData(manifestacao.created_at)}</Text>
+                                    </Text>
                                 </View>
-                                <Text style={[styles.containerInformacoes]}>
-                                    <Text style={styles.texto}>Assunto: </Text>
-                                    <Text style={styles.informacoes}>{manifestacao.assunto_nome}</Text>
-                                </Text>
-                                <Text style={[styles.containerInformacoes]}>
-                                    <Text style={styles.texto}>Status: </Text>
-                                    <Text style={styles.informacoes}>{manifestacao.status_nome}</Text>
-                                </Text>
-                                <Text style={[styles.containerInformacoes]}>
-                                    <Text style={styles.texto}>Data: </Text>
-                                    <Text style={styles.informacoes}>{this.formatarData(manifestacao.created_at)}</Text>
-                                </Text>
                             </View>
                         </View>
-                        <TouchableHighlight onPress={() => {this.verManifestacao(manifestacao.codigo)}} style={styles.buttonContainer}>
-                            <View style={styles.button}><Text style={{color: "white", fontSize: 17, fontWeight: 'bold'}}>Ver <Icon name="arrow-right" size={15}/></Text></View>
-                        </TouchableHighlight>
-                    </View>
+                    </TouchableHighlight>
                 )
             )})
         }else{
             manifestacoes.push(
-                    <Text style={[styles.containerInformacoes]}>
-                        <Text style={styles.texto}>Não há manifestações cadastradas </Text>
-                    </Text>
+
+                <TouchableHighlight  key={i++} onPress={() => {this.verManifestacao(manifestacao.codigo)}} style={[styles.manifestContainer]}>
+                    <View style={{flex:1, flexDirection: 'row'}}>
+                        <Image source={require("./../backgrounds/animal.jpg")} style={styles.imagem}/>
+                        <View style={[styles.containerInformacoes]}>
+                            <View><Text style={styles.texto}>Titulo das coisas aqui </Text></View>
+                            <View><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> bairro </Text></View>
+                            <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> 14/10/2018 23:44 </Text></View>
+                        </View>
+                    </View>
+                </TouchableHighlight>
             )
         }
 
@@ -148,15 +155,14 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     containerInformacoes:{
-        marginLeft: "2%"
+        width: "56%",
+        marginLeft: "2%",
     },
     containerTitulo:{
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: "#2c3E50",
         elevation: 3,
-        borderTopRightRadius: 10,
-        borderTopLeftRadius: 10,
         width: "100%",
         height: "22%",
     },
@@ -171,23 +177,31 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     texto:{
-        fontSize: 18,
+        fontSize: 15,
         color: 'black',
         fontWeight: 'bold'
+    },
+    textoSecundario:{
+        fontSize: 14,
+        color: 'black',
     },
     informacoes:{
         fontSize: 18,
         color: 'black',
     },
     manifestContainer: {
-        height: height*0.30,
-        width: width*0.85,
+        height: height*0.25,
+        width: width*0.95,
         backgroundColor: "white",
         elevation:8,
-        borderRadius: 10,
     },
     manifestacoes: {
         marginTop: height*0.05,
         alignItems: 'center',
+        backgroundColor: 'white',
     },
+    imagem: {
+        width: "40%",
+        height: "100%",
+    }
 })

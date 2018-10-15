@@ -36,13 +36,12 @@ export default class Menu extends Component {
         this.props.navigation.setParams({ 
             headerRight: (
                 <TouchableOpacity onPress={() => { this.confirmaDeslogar() }}>
-                    <Icon style={{marginRight: 15}} name="sign-in-alt" size={25} color="424242" />
+                    <Icon style={{marginRight: 15}} name="sign-in-alt" size={25} color="#E0E0E0" />
                 </TouchableOpacity>
             )
         })
     }
 
-        
     static navigationOptions = ({ navigation, screenProps }) => ({
         headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>,
     });
@@ -233,54 +232,88 @@ export default class Menu extends Component {
                 >
                 {this._renderModalContent()}
                 </Modal>
+                <StatusBar
+                    backgroundColor="#660000"
+                    barStyle="light-content"
+                />
                 <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
-                 <ImageBackground blurRadius={1} style={styles.fundo}> 
-                    <View style={{height: "100%", width: "100%"}}>
-                        <View style={styles.iconesSection}>
-                            <View style={styles.containerIcones}>
-                                <TouchableOpacity onPress={() => {this.cadastradas()}} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
-                                    <Icon size={width*0.2} color={"#72b5a4"} name="paw"/>
-                                    <Text style={styles.texto}>Animal</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.perfil()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
-                                    <Icon size={width*0.2} color={"#72b5a4"} name="home"/>
-                                    <Text style={styles.texto}>Doméstico</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.containerIcones}>
-                                <TouchableOpacity onPress={() => this.perfil()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
-                                    <Icon size={width*0.2} color={"#72b5a4"} name="graduation-cap"/>
-                                    <Text style={styles.texto}>Educação</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => {dispatch(NavigationActions.navigate({routeName: 'Consulta', key: '123',params:{fundo: this.props.navigation.state.params.fundo, logo: this.props.navigation.state.params.logo,spinner: this.spinner.bind(this)}}))}} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
-                                    <Icon size={width*0.2} color={"#72b5a4"} name="mobile-alt"/>
-                                    <Text style={styles.texto}>Eletrônico</Text>
-                                </TouchableOpacity>
+                <View style={{height: "100%", width: "100%"}}>
+                    <View style={styles.iconesSection}>
+                        <View style={styles.containerIcones}>
+                            <TouchableOpacity onPress={() => this.anuncios(1)} style={[styles.icones]}>
+                                <ImageBackground blurRadius={6} style={styles.fundo} source={require('./../backgrounds/animal.jpg')}>
+                                    <View style={styles.dark}>
+                                        <Icon size={width*0.2} color={"#E0E0E0"} name="paw"/>
+                                        <Text style={styles.texto}>Animal</Text>
+                                        </View>
+                                    </ImageBackground>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.anuncios(2) } style={[styles.icones]}>
+                                <ImageBackground blurRadius={6} style={styles.fundo} source={require('./../backgrounds/domestico.jpg')}>
+                                    <View style={styles.dark}>
+                                        <Icon size={width*0.2} color={"#E0E0E0"} name="home"/>
+                                        <Text style={styles.texto}>Doméstico</Text>
+                                    </View>
+                                </ImageBackground>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.containerIcones}>
+                            <TouchableOpacity onPress={() => this.anuncios(3) } style={[styles.icones]}>
+                                <ImageBackground blurRadius={6} style={styles.fundo} source={require('./../backgrounds/educacao.jpg')}>
+                                    <View style={styles.dark}>
+                                        <Icon size={width*0.2} color={"#E0E0E0"} name="graduation-cap"/>
+                                        <Text style={styles.texto}>Educação</Text>
+                                    </View>
+                                </ImageBackground>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.anuncios(4) } style={[styles.icones]}>
+                                <ImageBackground blurRadius={6} style={styles.fundo} source={require('./../backgrounds/eletronico.jpg')}>
+                                    <View style={styles.dark}>
+                                        <Icon size={width*0.2} color={"#E0E0E0"} name="mobile-alt"/>
+                                        <Text style={styles.texto}>Eletrônico</Text>
+                                    </View>
+                                </ImageBackground>
+                            </TouchableOpacity>
 
-                            </View>
-                            <View style={styles.containerIcones}>
-                                <TouchableOpacity onPress={() => this.cadastroManifestacao()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
-                                    <Icon size={width*0.2} color={"#72b5a4"} name="bicycle"/>
-                                    <Text style={styles.texto}>Esporte e Lazer</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.cadastroManifestacao()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
-                                    <Icon size={width*0.2} color={"#72b5a4"} name="child"/>
-                                    <Text style={styles.texto}>Infantil</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.containerIcones}>
-                                <TouchableOpacity onPress={() => this.perfil()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
-                                    <Icon size={width*0.2} color={"#72b5a4"} name="music"/>
-                                    <Text style={styles.texto}>Música</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.cadastroManifestacao()} style={[styles.icones,{backgroundColor:"#eceff1"}]}>
-                                    <Icon size={width*0.2} color={"#72b5a4"} name="tshirt"/>
-                                    <Text style={styles.texto}>Vestuário</Text>
-                                </TouchableOpacity>
-                            </View>
+                        </View>
+                        <View style={styles.containerIcones}>
+                            <TouchableOpacity onPress={() => this.anuncios(5) } style={[styles.icones]}>
+                                <ImageBackground blurRadius={6} style={styles.fundo} source={require('./../backgrounds/esporte.jpg')}>
+                                    <View style={styles.dark}>
+                                        <Icon size={width*0.2} color={"#E0E0E0"} name="bicycle"/>
+                                        <Text style={styles.texto}>Esporte e Lazer</Text>
+                                    </View>
+                                </ImageBackground>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.anuncios(6) } style={[styles.icones]}>
+                                <ImageBackground blurRadius={6} style={styles.fundo} source={require('./../backgrounds/infantil.jpg')}>
+                                    <View style={styles.dark}>
+                                        <Icon size={width*0.2} color={"#E0E0E0"} name="child"/>
+                                        <Text style={styles.texto}>Infantil</Text>
+                                    </View>
+                                </ImageBackground>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.containerIcones}>
+                            <TouchableOpacity onPress={() => this.anuncios(7) } style={[styles.icones]}>
+                                <ImageBackground blurRadius={6} style={styles.fundo} source={require('./../backgrounds/musica.jpg')}>
+                                    <View style={styles.dark}>
+                                        <Icon size={width*0.2} color={"#E0E0E0"} name="music"/>
+                                        <Text style={styles.texto}>Música</Text>
+                                    </View>
+                                </ImageBackground>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.anuncios(8) } style={[styles.icones]}>
+                                <ImageBackground blurRadius={6} style={styles.fundo} source={require('./../backgrounds/vestuario.jpg')}>
+                                    <View style={styles.dark}>
+                                        <Icon size={width*0.2} color={"#E0E0E0"} name="tshirt"/>
+                                        <Text style={styles.texto}>Vestuário</Text>
+                                    </View>
+                                </ImageBackground>
+                            </TouchableOpacity>
                         </View>
                     </View>
-                 </ImageBackground> 
+                </View>
             </View>
         );
     }
@@ -329,12 +362,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     icones: {
-        width: "46%",
-        justifyContent: "center",
-        alignItems: "center",
-        margin: "2%",
-        borderRadius: 15,
-        elevation: 10,
+        width: "50%",
     },
     container: {
         flex:1,
@@ -343,7 +371,7 @@ const styles = StyleSheet.create({
     },
     texto:{
         fontSize: 18,
-        color: '#72b5a4',
+        color: '#E0E0E0',
         fontWeight: 'bold'
     },    
     textoHeader:{
@@ -351,6 +379,13 @@ const styles = StyleSheet.create({
         color: '#E0E0E0',
         fontWeight: 'bold'
     },    
+    dark:{
+        backgroundColor: 'rgba(0,0,0,.2)',
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+        height: "100%",
+    },
     fundo: {
         width: null,
         height: null,

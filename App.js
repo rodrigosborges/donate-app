@@ -17,10 +17,10 @@ import EditarPerfil from './src/components/EditarPerfil'
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#72b5a4',
+    backgroundColor: '#800000',
   },
   back: {
-    color: 'white',
+    color: '#E0E0E0',
     alignSelf: 'center',
     textAlign: 'center',
     paddingRight: 0,
@@ -29,13 +29,22 @@ const styles = StyleSheet.create({
 })
 
 const SimpleApp = StackNavigator({
+  Cadastradas: {
+    screen: Cadastradas,
+    navigationOptions:{
+      headerStyle: styles.header,
+      title: 'Minhas manifestações',
+      headerTitleStyle: styles.back,
+      headerTintColor: '#E0E0E0',
+    }
+  },
   Menu: {
     screen: Menu,
     navigationOptions:{
       headerStyle: styles.header,
       title: 'Categorias',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   SplashScreen: {
@@ -44,7 +53,7 @@ const SimpleApp = StackNavigator({
       header: null,
       title: 'SplashScreen',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   CadastroManifestacao: {
@@ -53,7 +62,7 @@ const SimpleApp = StackNavigator({
       headerStyle: styles.header,
       title: 'Cadastro',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   Home: {
@@ -62,7 +71,7 @@ const SimpleApp = StackNavigator({
       header: null,
       title: 'Home',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   Cadastro: {
@@ -71,7 +80,7 @@ const SimpleApp = StackNavigator({
       headerStyle: styles.header,
       title: 'Cadastro',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   EsqueceuSenha: {
@@ -80,7 +89,7 @@ const SimpleApp = StackNavigator({
       headerStyle: styles.header,
       title: 'Recuperar senha',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   Consulta: {
@@ -89,7 +98,7 @@ const SimpleApp = StackNavigator({
       headerStyle: styles.header,
       title: 'Consulta',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   Login: {
@@ -98,16 +107,7 @@ const SimpleApp = StackNavigator({
       header: null,
       title: 'Login',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
-    }
-  },
-  Cadastradas: {
-      screen: Cadastradas,
-    navigationOptions:{
-      headerStyle: styles.header,
-      title: 'Minhas manifestações',
-      headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   Manifestacao: {
@@ -116,7 +116,7 @@ const SimpleApp = StackNavigator({
       headerStyle: styles.header,
       title: 'Manifestação',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   Perfil: {
@@ -125,7 +125,7 @@ const SimpleApp = StackNavigator({
       headerStyle: styles.header,
       title: 'Perfil',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
   EditarPerfil: {
@@ -134,7 +134,7 @@ const SimpleApp = StackNavigator({
       headerStyle: styles.header,
       title: 'Editar Perfil',
       headerTitleStyle: styles.back,
-      headerTintColor: 'white',
+      headerTintColor: '#E0E0E0',
     }
   },
 });
