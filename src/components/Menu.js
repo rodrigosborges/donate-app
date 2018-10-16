@@ -35,6 +35,9 @@ export default class Menu extends Component {
         this.props.navigation.dispatch(NavigationActions.navigate({
             routeName: 'Anuncios', 
             key: '123',
+            params:{
+                "categoria_id": id
+            }
         }))       
     }
 

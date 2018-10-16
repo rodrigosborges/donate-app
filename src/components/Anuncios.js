@@ -11,7 +11,7 @@ export default class Anuncios extends Component {
     super(props);
         this.state = {
             anuncios: [],
-            categoria: null,
+            categoria_id: null,
             cidade: null,
             cidadeNome: null,
             spinner: false,
@@ -30,7 +30,26 @@ export default class Anuncios extends Component {
     }
 
     componentWillMount(){
+        this.spinner(true)
         this.carregarHeader()
+        this.setState({categoria_id: this.props.navigation.state.params.categoria_id}, () => this.carregarAnuncios())
+    }
+    
+    carregarAnuncios(cidade_id = ""){
+        fetch('http://10.10.209.11/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+cidade_id, {
+        method: 'GET',
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            if(responseJson != ""){
+                this.setState({anuncios:this.state.anuncios.concat(responseJson.data)})
+            }
+            this.spinner(false)
+        })
+        .catch((error) => {
+          Alert.alert("Algo deu errado")
+          this.spinner(false)
+        });
+        this.setState({pagina: this.state.pagina+1})
     }
 
     atualizaAnuncios(categoria, cidade){
@@ -94,80 +113,28 @@ export default class Anuncios extends Component {
         const anuncios = [];
         let i = 1;
         if(this.state.anuncios.length > 0){
-            this.state.anuncios.map((manifestacao) => {(
-                anuncios.push(
-                    <TouchableHighlight key={i++} onPress={() => {}} style={[styles.manifestContainer]}>
-                        <View style={{flex:1, flexDirection: 'row'}}>
-                            <Image source={require("./../backgrounds/animal.jpg")} style={styles.imagem}/>
-                            <View style={[styles.containerInformacoes]}>
-                                <View><Text style={styles.texto}>Titulo das coisas aqui </Text></View>
-                                <View><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> bairro </Text></View>
-                                <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> 14/10/2018 23:44 </Text></View>
+            this.state.anuncios.map((anuncio) => {(
+            anuncios.push(
+                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {}} style={[styles.manifestContainer]}>
+                    <View style={{flex:1, flexDirection: 'row'}}>
+                        <Image source={{uri: "http://10.10.209.11/donate/storage/app/anuncio_"+anuncio.id+"/DonateImage_0.jpg?time=" + new Date()}} style={styles.imagem}/>
+                        <View style={[styles.containerInformacoes]}>
+                            <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
+                            <View style={{position: "absolute", bottom:8}}>
+                                <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> {anuncio.bairro_nome+", "+anuncio.cidade_nome }</Text></View>
+                                <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {anuncio.data} </Text></View>
                             </View>
                         </View>
-                    </TouchableHighlight>
-                )
+                    </View>
+                </TouchableHighlight>
+            )
             )})
         }else{
             anuncios.push(
-                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {}} style={[styles.manifestContainer]}>
-                    <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={require("./../backgrounds/animal.jpg")} style={styles.imagem}/>
-                        <View style={[styles.containerInformacoes]}>
-                            <View><Text style={styles.texto}>Titulo das coisas aqui de ate 50 caracteres para n </Text></View>
-                            <View style={{position: "absolute", bottom:8}}>
-                                <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> bairro </Text></View>
-                                <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> 14/10/2018 23:44 </Text></View>
-                            </View>
-                        </View>
-                    </View>
-                </TouchableHighlight>
-            )
-            anuncios.push(
-                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {}} style={[styles.manifestContainer]}>
-                    <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={require("./../backgrounds/domestico.jpg")} style={styles.imagem}/>
-                        <View style={[styles.containerInformacoes]}>
-                            <View><Text style={styles.texto}>Titulo das coisas aqui de ate 50 caracteres para n </Text></View>
-                            <View style={{position: "absolute", bottom:8}}>
-                                <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> bairro </Text></View>
-                                <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> 14/10/2018 23:44 </Text></View>
-                            </View>
-                        </View>
-                    </View>
-                </TouchableHighlight>
-            )
-            anuncios.push(
-                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {}} style={[styles.manifestContainer]}>
-                    <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={require("./../backgrounds/educacao.jpg")} style={styles.imagem}/>
-                        <View style={[styles.containerInformacoes]}>
-                            <View><Text style={styles.texto}>Titulo das coisas aqui de ate 50 caracteres para n </Text></View>
-                            <View style={{position: "absolute", bottom:8}}>
-                                <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> bairro </Text></View>
-                                <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> 14/10/2018 23:44 </Text></View>
-                            </View>
-                        </View>
-                    </View>
-                </TouchableHighlight>
-            )
-            anuncios.push(
-                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {}} style={[styles.manifestContainer]}>
-                    <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={require("./../backgrounds/eletronico.jpg")} style={styles.imagem}/>
-                        <View style={[styles.containerInformacoes]}>
-                            <View><Text style={styles.texto}>Titulo das coisas aqui de ate 50 caracteres para n </Text></View>
-                            <View style={{position: "absolute", bottom:8}}>
-                                <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> bairro </Text></View>
-                                <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> 14/10/2018 23:44 </Text></View>
-                            </View>
-                        </View>
-                    </View>
-                </TouchableHighlight>
+                <Text style={styles.texto}>Não há anúncios cadastrados </Text>
             )
         }
-
-        return anuncios;
+        return this.state.spinner ? (<View/>) : anuncios;
     }
 
     spinner(bol){
@@ -195,7 +162,7 @@ export default class Anuncios extends Component {
                     selectedOption={this.state.cidadeNome}
                     cancelButtonText={"Cancelar"}
                 />
-                <ScrollView onContentSizeChange={this.onContentSizeChange} onScroll={({nativeEvent}) => {if(nativeEvent.contentOffset.y == this.state.scrollMax) { alert("imagine mais carregamentos aqui")}}} ref="_scrollView" contentContainerStyle={styles.scroll}>
+                <ScrollView onContentSizeChange={this.onContentSizeChange} onScroll={({nativeEvent}) => {if(nativeEvent.contentOffset.y == this.state.scrollMax) { alert("imagine mais carregamentos aqui")}}} ref="_scrollView" contentContainerStyle={styles.scroll} style={{backgroundColor: "white"}}>
                     <View style={styles.anuncios}>
                         {this.anuncios()}
                     </View>
