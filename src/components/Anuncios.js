@@ -26,6 +26,7 @@ export default class Anuncios extends Component {
             cidadeVisible: false,
             scrollMax: 0,
             heightLayout: 0,
+            fim: false,
         };  
     }
 
@@ -36,20 +37,20 @@ export default class Anuncios extends Component {
     }
     
     carregarAnuncios(cidade_id = ""){
-        fetch('http://10.10.209.11/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+cidade_id, {
+        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+cidade_id+'&page='+this.state.pagina, {
         method: 'GET',
         }).then((response) => response.json())
         .then((responseJson) => {
             if(responseJson != ""){
-                this.setState({anuncios:this.state.anuncios.concat(responseJson.data)})
+                this.anuncios(responseJson.data)
             }
             this.spinner(false)
+            this.setState({pagina: this.state.pagina+1})
         })
         .catch((error) => {
-          Alert.alert("Algo deu errado")
-          this.spinner(false)
+            Alert.alert("Algo deu errado")
+            this.spinner(false)
         });
-        this.setState({pagina: this.state.pagina+1})
     }
 
     atualizaAnuncios(categoria, cidade){
@@ -109,15 +110,15 @@ export default class Anuncios extends Component {
     
     }
 
-    anuncios(){
+    anuncios(anunciosnovos){
         const anuncios = [];
         let i = 1;
-        if(this.state.anuncios.length > 0){
-            this.state.anuncios.map((anuncio) => {(
+        if(anunciosnovos.length > 0){
+            anunciosnovos.map((anuncio) => {(
             anuncios.push(
                 <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {}} style={[styles.manifestContainer]}>
                     <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={{uri: "http://10.10.209.11/donate/storage/app/anuncio_"+anuncio.id+"/DonateImage_0.jpg?time=" + new Date()}} style={styles.imagem}/>
+                        <Image source={{uri: "http://192.168.11.51/donate/storage/app/anuncio_"+anuncio.id+"/DonateImage_0.png?time=" + new Date()}} style={styles.imagem}/>
                         <View style={[styles.containerInformacoes]}>
                             <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
                             <View style={{position: "absolute", bottom:8}}>
@@ -131,10 +132,13 @@ export default class Anuncios extends Component {
             )})
         }else{
             anuncios.push(
-                <Text style={styles.texto}>Não há anúncios cadastrados </Text>
+                <View style={{marginBottom:"5%"}}>
+                <Text style={styles.texto}>Não há mais anúncios disponíveis </Text>
+                </View>
             )
+            this.setState({fim: true})
         }
-        return this.state.spinner ? (<View/>) : anuncios;
+        this.setState({anuncios : this.state.anuncios.concat(anuncios)})
     }
 
     spinner(bol){
@@ -150,7 +154,6 @@ export default class Anuncios extends Component {
     render() {
         return (
             <View style={styles.container} onLayout={(event) => {this.setState({heightLayout: event.nativeEvent.layout.height})}}>
-                <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
                 <ModalFilterPicker
                     title="Cidade"
                     visible={this.state.cidadeVisible}
@@ -162,10 +165,11 @@ export default class Anuncios extends Component {
                     selectedOption={this.state.cidadeNome}
                     cancelButtonText={"Cancelar"}
                 />
-                <ScrollView onContentSizeChange={this.onContentSizeChange} onScroll={({nativeEvent}) => {if(nativeEvent.contentOffset.y == this.state.scrollMax) { alert("imagine mais carregamentos aqui")}}} ref="_scrollView" contentContainerStyle={styles.scroll} style={{backgroundColor: "white"}}>
+                <ScrollView onContentSizeChange={this.onContentSizeChange} onScroll={({nativeEvent}) => {if(nativeEvent.contentOffset.y == this.state.scrollMax && !this.state.fim && !this.state.spinner) {this.spinner(true),this.carregarAnuncios() }}} ref="_scrollView" contentContainerStyle={styles.scroll} style={{backgroundColor: "white"}}>
                     <View style={styles.anuncios}>
-                        {this.anuncios()}
+                        {this.state.anuncios}
                     </View>
+                    <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
                 </ScrollView>
             </View>
         );
