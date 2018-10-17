@@ -2,7 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { StackNavigator } from 'react-navigation'
 import Consulta from './src/components/Consulta'
-import Manifestacao from './src/components/Manifestacao'
+import Anuncio from './src/components/Anuncio'
 import SplashScreen from './src/components/SplashScreen'
 import Home from './src/components/Home'
 import Login from './src/components/Login'
@@ -42,7 +42,6 @@ const SimpleApp = StackNavigator({
     screen: Anuncios,
     navigationOptions:{
       headerStyle: styles.header,
-      title: 'Anúncios',
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',
     }
@@ -110,11 +109,11 @@ const SimpleApp = StackNavigator({
       headerTintColor: '#E0E0E0',
     }
   },
-  Manifestacao: {
-    screen: Manifestacao,
+  Anuncio: {
+    screen: Anuncio,
     navigationOptions:{
       headerStyle: styles.header,
-      title: 'Manifestação',
+      title: 'Anúncio',
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',
     }

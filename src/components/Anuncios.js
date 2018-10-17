@@ -7,17 +7,18 @@ import ModalFilterPicker from 'react-native-modal-filter-picker'
 
 
 export default class Anuncios extends Component {
+
     constructor(props){
     super(props);
         this.state = {
             anuncios: [],
-            categoria_id: null,
-            cidade: null,
-            cidadeNome: null,
+            categoria_id: "",
+            cidade_id: "",
+            cidadeNome: "",
             spinner: false,
             pagina: 1,
             cidades: [
-                {"key": 0, "label": "Todas as cidades"}, 
+                {"key": "", "label": "Todas as cidades"}, 
                 {"key": 1, "label": "Caraguatatuba"},
                 {"key": 2, "label": "Ilha Bela"},
                 {"key": 3, "label": "São Sebastião"},
@@ -32,20 +33,26 @@ export default class Anuncios extends Component {
 
     componentWillMount(){
         this.spinner(true)
-        this.carregarHeader()
-        this.setState({categoria_id: this.props.navigation.state.params.categoria_id}, () => this.carregarAnuncios())
+        this.setState({categoria_id: this.props.navigation.state.params.categoria_id}, () => {
+            AsyncStorage.multiGet(["cidade_id",'cidadeNome']).then((val) => {
+                if(val[0][1] == null)
+                    val[0][1] = ""
+                if(val[1][1] == null)
+                    val[1][1] = "Todas as cidades"
+                this.setState({cidade_id: val[0][1],cidadeNome: val[1][1]},() => this.carregarAnuncios())
+            })
+        })
     }
     
-    carregarAnuncios(cidade_id = ""){
-        fetch('http://192.168.1.110/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+cidade_id+'&page='+this.state.pagina, {
+    carregarAnuncios(){
+        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
         method: 'GET',
         }).then((response) => response.json())
         .then((responseJson) => {
-            if(responseJson != ""){
+            if(responseJson != "")
                 this.anuncios(responseJson.data)
-            }
-            this.spinner(false)
             this.setState({pagina: this.state.pagina+1})
+            this.spinner(false)
         })
         .catch((error) => {
             Alert.alert("Algo deu errado")
@@ -53,29 +60,28 @@ export default class Anuncios extends Component {
         });
     }
 
-    atualizaAnuncios(categoria, cidade){
-
-    }
-
-    carregarHeader(){
-        this.props.navigation.setParams({ 
-            headerRight: (
-                <TouchableOpacity onPress={() => { this.setState({cidadeVisible: true}) }}>
-                    <Icon style={{marginRight: 15}} name="map-marker-alt" size={25} color="#E0E0E0" />
-                </TouchableOpacity>
-            )
+    atualizarAnuncios(cidade){
+        var cidadeNome = (cidade == "" ? "Todas as cidades" : (cidade == 1 ? "Caraguatauba" : (cidade == 2 ? "Ilha Bela" : (cidade == 3 ? "São Sebastião" : "Ubatuba"))))
+        this.setState({cidadeVisible: false, pagina: 1, fim: false, spinner: true, anuncios: [], cidade_id: cidade, cidadeNome}, () => {
+            this.refs._scrollView.scrollTo(0)
+            AsyncStorage.setItem("cidade_id",cidade != "" ? JSON.stringify(cidade) : "")
+            AsyncStorage.setItem("cidadeNome", cidadeNome)
+            this.carregarAnuncios()
         })
     }
 
+    formatadata(data){
+        return data.substr(0, 10).split('-').reverse().join('/')+data.substr(10,15)
+    }
+
     static navigationOptions = ({ navigation, screenProps }) => ({
-        headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>,
+        title: navigation.state.params.title,
     });
 
-    verManifestacao(codigo) {
-        this.spinner(true)
+    verAnuncio(id) {
         const { navigate } = this.props.navigation
         
-        fetch(`http://192.168.1.110/ouvidoria/app/pesquisaManifestacao?codigo=`+codigo, {
+        fetch(`http://192.168.11.51/donate/app/anuncio/`+id, {
           method: 'GET',
           headers: {
             Accept: 'application/json',
@@ -83,31 +89,21 @@ export default class Anuncios extends Component {
           },
         }).then((response) => response.json())
         .then((responseJson) => {
-            if(responseJson.manifestacao != ""){
-                var manifestacao = responseJson.manifestacao
-                manifestacao.descricao = manifestacao.descricao.replace(new RegExp("<br />", 'g'), "")
-                var encaminhamentos = responseJson.encaminhamentos
-                var respostaFinal = responseJson.respostaFinal
-                if(respostaFinal != "")
-                    respostaFinal.tratamento = respostaFinal.tratamento.replace(new RegExp("<br />", 'g'), "")
-                    this.props.navigation.dispatch(NavigationActions.navigate({
-                        routeName: 'Manifestacao', 
-                        key: 'manifestacao',
-                        params:{
-                            manifestacao, 
-                            encaminhamentos, 
-                            respostaFinal,
-                            spinner    : this.spinner.bind(this)
-                        }
-                    }));
+            if(responseJson.id != ""){
+                this.props.navigation.dispatch(NavigationActions.navigate({
+                    routeName: 'Anuncio', 
+                    key: 'anuncio',
+                    params:{
+                        anuncio: responseJson,
+                    }
+                }));
               }else{
-                Alert.alert('Manifestação não encontrada')
+                Alert.alert('Algo deu errado')
               }
         })
         .catch((error) => {
           Alert.alert("Algo deu errado")
         });
-    
     }
 
     anuncios(anunciosnovos){
@@ -116,21 +112,22 @@ export default class Anuncios extends Component {
         if(anunciosnovos.length > 0){
             anunciosnovos.map((anuncio) => {(
             anuncios.push(
-                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {}} style={[styles.manifestContainer]}>
+                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verAnuncio(anuncio.id)}} style={[styles.manifestContainer]}>
                     <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={{uri: "http://192.168.1.110/donate/storage/app/anuncio_"+anuncio.id+"/DonateImage_0.png?time=" + new Date()}} style={styles.imagem}/>
+                        <Image source={{uri: "http://192.168.11.51/donate/storage/app/anuncio_"+anuncio.id+"/DonateImage_0.png?time=" + new Date()}} style={styles.imagem}/>
                         <View style={[styles.containerInformacoes]}>
                             <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
                             <View style={{position: "absolute", bottom:8}}>
                                 <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> {anuncio.bairro_nome+", "+anuncio.cidade_nome }</Text></View>
-                                <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {anuncio.data} </Text></View>
+                                <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {this.formatadata(anuncio.data)} </Text></View>
                             </View>
                         </View>
                     </View>
                 </TouchableHighlight>
             )
             )})
-        }else{
+        }
+        if(anunciosnovos.length < 10){
             anuncios.push(
                 <View style={{marginBottom:"5%"}}>
                 <Text style={styles.texto}>Não há mais anúncios disponíveis </Text>
@@ -157,19 +154,21 @@ export default class Anuncios extends Component {
                 <ModalFilterPicker
                     title="Cidade"
                     visible={this.state.cidadeVisible}
-                    onSelect={(cidade) => {this.cidades(cidade, 0), this.find("cidade",cidade)}}
+                    onSelect={(cidade) => {this.atualizarAnuncios(cidade)}}
                     onCancel={() => this.setState({cidadeVisible: false})}
                     noResultsText={"Nenhum resultado encontrado"}
                     placeholderText="Filtro..."
                     options={this.state.cidades}
-                    selectedOption={this.state.cidadeNome}
                     cancelButtonText={"Cancelar"}
                 />
-                <ScrollView onContentSizeChange={this.onContentSizeChange} onScroll={({nativeEvent}) => {if(nativeEvent.contentOffset.y+2 > this.state.scrollMax && !this.state.fim && !this.state.spinner) {this.spinner(true),this.carregarAnuncios() }}} ref="_scrollView" contentContainerStyle={styles.scroll} style={{backgroundColor: "white"}}>
+                <TouchableOpacity style={styles.filtros} onPress={() => { this.setState({cidadeVisible: true}) }}>
+                    <Text style={{fontSize: 22}}><Icon style={{marginRight: 15}} name="map-marker-alt" size={25} color="black" /> {this.state.cidadeNome}</Text>
+                </TouchableOpacity>
+                <ScrollView ref='_scrollView' onContentSizeChange={this.onContentSizeChange} onScroll={({nativeEvent}) => {if(nativeEvent.contentOffset.y+2 > this.state.scrollMax && !this.state.fim && !this.state.spinner) {this.spinner(true),this.carregarAnuncios() }}} ref="_scrollView" contentContainerStyle={styles.scroll} style={{backgroundColor: "white"}}>
                     <View style={styles.anuncios}>
                         {this.state.anuncios}
                     </View>
-                    <ActivityIndicator size="small" color="#00ff00" animating={this.state.spinner} />
+                    <ActivityIndicator size="large" color="#a64c4c" animating={this.state.spinner} />
                 </ScrollView>
             </View>
         );
@@ -252,9 +251,10 @@ const styles = StyleSheet.create({
         height:60,
         width: "100%",
         top: 0,
-        elevation: 5,
+        elevation: 3,
         backgroundColor: "white",
-        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     filtrosOptions:{
         flex:1,

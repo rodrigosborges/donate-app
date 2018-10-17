@@ -31,12 +31,13 @@ export default class Menu extends Component {
         this.props.navigation.addListener('didFocus', () => this.atualiza())
     }
 
-    anuncios(id){
+    anuncios(id, nome){
         this.props.navigation.dispatch(NavigationActions.navigate({
             routeName: 'Anuncios', 
             key: '123',
             params:{
-                "categoria_id": id
+                "categoria_id": id,
+                "title": "Anúncios - "+nome
             }
         }))       
     }
@@ -246,15 +247,15 @@ export default class Menu extends Component {
                 <View style={{height: "100%", width: "100%"}}>
                     <View style={styles.iconesSection}>
                         <View style={styles.containerIcones}>
-                            <TouchableOpacity onPress={() => this.anuncios(1)} style={[styles.icones]}>
+                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(1,"Animal")} style={[styles.icones]}>
                                 <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/animal.jpg')}>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="paw"/>
                                         <Text style={styles.texto}>Animal</Text>
-                                        </View>
-                                    </ImageBackground>
+                                    </View>
+                                </ImageBackground>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.anuncios(2) } style={[styles.icones]}>
+                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(2,"Doméstico") } style={[styles.icones]}>
                                 <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/domestico.jpg')}>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="home"/>
@@ -264,7 +265,7 @@ export default class Menu extends Component {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.containerIcones}>
-                            <TouchableOpacity onPress={() => this.anuncios(3) } style={[styles.icones]}>
+                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(3,"Educação") } style={[styles.icones]}>
                                 <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/educacao.jpg')}>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="graduation-cap"/>
@@ -272,7 +273,7 @@ export default class Menu extends Component {
                                     </View>
                                 </ImageBackground>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.anuncios(4) } style={[styles.icones]}>
+                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(4,"Eletrônico") } style={[styles.icones]}>
                                 <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/eletronico.jpg')}>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="mobile-alt"/>
@@ -283,7 +284,7 @@ export default class Menu extends Component {
 
                         </View>
                         <View style={styles.containerIcones}>
-                            <TouchableOpacity onPress={() => this.anuncios(5) } style={[styles.icones]}>
+                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(5,"Esporte e Lazer") } style={[styles.icones]}>
                                 <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/esporte.jpg')}>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="bicycle"/>
@@ -291,7 +292,7 @@ export default class Menu extends Component {
                                     </View>
                                 </ImageBackground>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.anuncios(6) } style={[styles.icones]}>
+                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(6,"Infantil") } style={[styles.icones]}>
                                 <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/infantil.jpg')}>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="child"/>
@@ -301,7 +302,7 @@ export default class Menu extends Component {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.containerIcones}>
-                            <TouchableOpacity onPress={() => this.anuncios(7) } style={[styles.icones]}>
+                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(7,"Música") } style={[styles.icones]}>
                                 <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/musica.jpg')}>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="music"/>
@@ -309,7 +310,7 @@ export default class Menu extends Component {
                                     </View>
                                 </ImageBackground>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.anuncios(8) } style={[styles.icones]}>
+                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(8,"Vestuário") } style={[styles.icones]}>
                                 <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/vestuario.jpg')}>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="tshirt"/>
