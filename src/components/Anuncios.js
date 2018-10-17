@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Alert, Dimensions, AppRegistry, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity } from 'react-native'
+import { Alert, Dimensions, AppRegistry, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import Spinner from 'react-native-loading-spinner-overlay';
 import { NavigationActions } from 'react-navigation';
@@ -37,7 +37,7 @@ export default class Anuncios extends Component {
     }
     
     carregarAnuncios(cidade_id = ""){
-        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+cidade_id+'&page='+this.state.pagina, {
+        fetch('http://192.168.1.110/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+cidade_id+'&page='+this.state.pagina, {
         method: 'GET',
         }).then((response) => response.json())
         .then((responseJson) => {
@@ -75,7 +75,7 @@ export default class Anuncios extends Component {
         this.spinner(true)
         const { navigate } = this.props.navigation
         
-        fetch(`http://192.168.11.51/ouvidoria/app/pesquisaManifestacao?codigo=`+codigo, {
+        fetch(`http://192.168.1.110/ouvidoria/app/pesquisaManifestacao?codigo=`+codigo, {
           method: 'GET',
           headers: {
             Accept: 'application/json',
@@ -118,7 +118,7 @@ export default class Anuncios extends Component {
             anuncios.push(
                 <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {}} style={[styles.manifestContainer]}>
                     <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={{uri: "http://192.168.11.51/donate/storage/app/anuncio_"+anuncio.id+"/DonateImage_0.png?time=" + new Date()}} style={styles.imagem}/>
+                        <Image source={{uri: "http://192.168.1.110/donate/storage/app/anuncio_"+anuncio.id+"/DonateImage_0.png?time=" + new Date()}} style={styles.imagem}/>
                         <View style={[styles.containerInformacoes]}>
                             <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
                             <View style={{position: "absolute", bottom:8}}>
@@ -165,11 +165,11 @@ export default class Anuncios extends Component {
                     selectedOption={this.state.cidadeNome}
                     cancelButtonText={"Cancelar"}
                 />
-                <ScrollView onContentSizeChange={this.onContentSizeChange} onScroll={({nativeEvent}) => {if(nativeEvent.contentOffset.y == this.state.scrollMax && !this.state.fim && !this.state.spinner) {this.spinner(true),this.carregarAnuncios() }}} ref="_scrollView" contentContainerStyle={styles.scroll} style={{backgroundColor: "white"}}>
+                <ScrollView onContentSizeChange={this.onContentSizeChange} onScroll={({nativeEvent}) => {if(nativeEvent.contentOffset.y+2 > this.state.scrollMax && !this.state.fim && !this.state.spinner) {this.spinner(true),this.carregarAnuncios() }}} ref="_scrollView" contentContainerStyle={styles.scroll} style={{backgroundColor: "white"}}>
                     <View style={styles.anuncios}>
                         {this.state.anuncios}
                     </View>
-                    <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
+                    <ActivityIndicator size="small" color="#00ff00" animating={this.state.spinner} />
                 </ScrollView>
             </View>
         );
