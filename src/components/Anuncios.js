@@ -45,7 +45,7 @@ export default class Anuncios extends Component {
     }
     
     carregarAnuncios(){
-        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
+        fetch('http://192.168.1.110/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
         method: 'GET',
         }).then((response) => response.json())
         .then((responseJson) => {
@@ -71,7 +71,7 @@ export default class Anuncios extends Component {
     }
 
     formatadata(data){
-        return data.substr(0, 10).split('-').reverse().join('/')+data.substr(10,15)
+        return data.substr(0, 10).split('-').reverse().join('/')+data.substr(10,6)
     }
 
     static navigationOptions = ({ navigation, screenProps }) => ({
@@ -81,7 +81,7 @@ export default class Anuncios extends Component {
     verAnuncio(id) {
         const { navigate } = this.props.navigation
         
-        fetch(`http://192.168.11.51/donate/app/anuncio/`+id, {
+        fetch(`http://192.168.1.110/donate/app/anuncio/`+id, {
           method: 'GET',
           headers: {
             Accept: 'application/json',
@@ -114,7 +114,7 @@ export default class Anuncios extends Component {
             anuncios.push(
                 <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verAnuncio(anuncio.id)}} style={[styles.manifestContainer]}>
                     <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={{uri: "http://192.168.11.51/donate/storage/app/anuncio_"+anuncio.id+"/DonateImage_0.png?time=" + new Date()}} style={styles.imagem}/>
+                        <Image source={{uri: anuncio.imagem}} style={styles.imagem}/>
                         <View style={[styles.containerInformacoes]}>
                             <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
                             <View style={{position: "absolute", bottom:8}}>

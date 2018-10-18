@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Alert, AppRegistry, StyleSheet, View , Text, TextInput, Button, Image, ScrollView, Keyboard,TouchableOpacity,AsyncStorage, Dimensions } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import RNFetchBlob from 'rn-fetch-blob'
+import ImageSlider from 'react-native-image-slider';
 
 export default class Anuncio extends Component {
   constructor(props){
@@ -28,41 +29,26 @@ export default class Anuncio extends Component {
   }
 
   formatarDataCompleta(data){
-    return (data.substring(8,10) + '/' + data.substring(5,7) + '/' +  data.substring(0,4) + " " + data.substring(11,19)) 
-  }
-
-  download(anexo_id){
-    RNFetchBlob.config({
-      addAndroidDownloads : {
-          useDownloadManager : true, // <-- this is the only thing required
-          // Optional, override notification setting (default to true)
-          notification : true,
-          // Optional, but recommended since android DownloadManager will fail when
-          // the url does not contains a file extension, by default the mime type will be text/plain
-          mime : 'application/zip',
-          description : 'Download do arquivo da manifestação.'
-      }
-    })
-    .fetch('GET', 'http://192.168.11.51/ouvidoria/app/anexo/'+anexo_id+"?token="+this.state.token)
-  }
-
-  
+    return (data.substring(8,10) + '/' + data.substring(5,7) + '/' +  data.substring(0,4) + " " + data.substring(11,16)) 
+  }  
   
   render() {
     const {state} = this.props.navigation;
     const anuncio = state.params.anuncio
     return (
       <ScrollView style={styles.container}>
+        <ImageSlider style={styles.imagem}
+          images={anuncio.imagens}
+        />
         <View style={styles.containerInformacoes}>
-          <Image source={{uri: "http://192.168.11.51/donate/storage/app/anuncio_"+anuncio.id+"/DonateImage_0.png?time=" + new Date()}} style={styles.imagem}/>
-          <Text style={styles.titulo}> {anuncio.titulo}</Text>
-          <Text style={styles.manifestacao}> {this.formatarDataCompleta(anuncio.created_at)}</Text>
+          <Text style={styles.titulo}>{anuncio.titulo}</Text>
+          <Text style={styles.manifestacao}><Icon size={14} name="clock"/> {this.formatarDataCompleta(anuncio.created_at)}</Text>
           <View style={styles.linhaText} />
-          <Text style={styles.manifestacao}> <Icon style={{marginRight: 15}} name="map-marker-alt" size={18} color="black" /> {anuncio.bairroNome+", "+anuncio.cidadeNome}</Text>
+          <Text style={styles.manifestacao}><Icon style={{marginRight: 15}} name="map-marker-alt" size={18} color="black" /> {anuncio.bairroNome+", "+anuncio.cidadeNome}</Text>
           <View style={styles.linhaText} />
-          <Text style={styles.manifestacao}> <Text style={styles.texto}>Categoria:</Text> {anuncio.categoriaNome}</Text>
-          <Text style={styles.manifestacao}> <Text style={styles.texto}>Descrição:</Text> {anuncio.descricao}</Text>
-          <Text style={styles.manifestacao}> <Text style={styles.texto}>Doador:</Text> {anuncio.usuarioNome}</Text>
+          <Text style={styles.manifestacao}><Text style={styles.texto}>Categoria:</Text> {anuncio.categoriaNome}</Text>
+          <View style={styles.linhaText} />
+          <Text style={styles.manifestacao}>{anuncio.descricao}</Text>
         </View>
       </ScrollView>
     );
@@ -74,10 +60,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     flex: 1
   },
+  containerInformacoes:{
+    padding:"2%"
+  },
   manifestacao:{
     marginTop: 5,
     fontSize: 18,
-    color: '#424242',
+    color: 'black',
   },  
   titulo:{
     marginTop: 15,
@@ -95,7 +84,8 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     height:1,
     elevation: 1,
-    marginBottom: "2%",
+    marginTop: "2%",
+    marginBottom: "1%",
   },
   center: {
     alignItems: 'center',
