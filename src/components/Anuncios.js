@@ -12,6 +12,7 @@ export default class Anuncios extends Component {
     super(props);
         this.state = {
             anuncios: [],
+            dadosAnuncios: [],
             categoria_id: "",
             cidade_id: "",
             cidadeNome: "",
@@ -45,7 +46,7 @@ export default class Anuncios extends Component {
     }
     
     carregarAnuncios(){
-        fetch('http://192.168.1.110/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
+        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
         method: 'GET',
         }).then((response) => response.json())
         .then((responseJson) => {
@@ -62,7 +63,7 @@ export default class Anuncios extends Component {
 
     atualizarAnuncios(cidade){
         var cidadeNome = (cidade == "" ? "Todas as cidades" : (cidade == 1 ? "Caraguatauba" : (cidade == 2 ? "Ilha Bela" : (cidade == 3 ? "São Sebastião" : "Ubatuba"))))
-        this.setState({cidadeVisible: false, pagina: 1, fim: false, spinner: true, anuncios: [], cidade_id: cidade, cidadeNome}, () => {
+        this.setState({cidadeVisible: false, pagina: 1, fim: false, spinner: true, anuncios: [], dadosAnuncios: [],cidade_id: cidade, cidadeNome}, () => {
             this.refs._scrollView.scrollTo(0)
             AsyncStorage.setItem("cidade_id",cidade != "" ? JSON.stringify(cidade) : "")
             AsyncStorage.setItem("cidadeNome", cidadeNome)
@@ -80,45 +81,29 @@ export default class Anuncios extends Component {
 
     verAnuncio(id) {
         const { navigate } = this.props.navigation
-        
-        fetch(`http://192.168.1.110/donate/app/anuncio/`+id, {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            if(responseJson.id != ""){
-                this.props.navigation.dispatch(NavigationActions.navigate({
-                    routeName: 'Anuncio', 
-                    key: 'anuncio',
-                    params:{
-                        anuncio: responseJson,
-                    }
-                }));
-              }else{
-                Alert.alert('Algo deu errado')
-              }
-        })
-        .catch((error) => {
-          Alert.alert("Algo deu errado")
-        });
+        this.props.navigation.dispatch(NavigationActions.navigate({
+            routeName: 'Anuncio', 
+            key: 'anuncio',
+            params:{
+                anuncio: this.state.dadosAnuncios[id],
+            }
+        }));
     }
 
     anuncios(anunciosnovos){
         const anuncios = [];
-        let i = 1;
+        var i = 1;
+        const num = this.state.dadosAnuncios.length
         if(anunciosnovos.length > 0){
-            anunciosnovos.map((anuncio) => {(
+            anunciosnovos.map((anuncio,key) => {(
             anuncios.push(
-                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verAnuncio(anuncio.id)}} style={[styles.manifestContainer]}>
+                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verAnuncio(num+key)}} style={[styles.manifestContainer]}>
                     <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={{uri: anuncio.imagem}} style={styles.imagem}/>
+                        <Image source={{uri: anuncio.imagens[0]}} style={styles.imagem}/>
                         <View style={[styles.containerInformacoes]}>
                             <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
                             <View style={{position: "absolute", bottom:8}}>
-                                <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> {anuncio.bairro_nome+", "+anuncio.cidade_nome }</Text></View>
+                                <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> {anuncio.bairroNome+", "+anuncio.cidadeNome }</Text></View>
                                 <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {this.formatadata(anuncio.data)} </Text></View>
                             </View>
                         </View>
@@ -135,7 +120,7 @@ export default class Anuncios extends Component {
             )
             this.setState({fim: true})
         }
-        this.setState({anuncios : this.state.anuncios.concat(anuncios)})
+        this.setState({anuncios : this.state.anuncios.concat(anuncios), dadosAnuncios: this.state.dadosAnuncios.concat(anunciosnovos)})
     }
 
     spinner(bol){
