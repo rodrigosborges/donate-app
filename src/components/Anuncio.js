@@ -34,9 +34,8 @@ export default class Anuncio extends Component {
   }      
   
   static navigationOptions = ({ navigation }) => {
-    const {params = {}} = navigation.state;
 
-    if (params.hideHeader == true) {
+    if (navigation.state.params.hideHeader == true) {
       return {
         header: null,
       }
@@ -50,20 +49,19 @@ export default class Anuncio extends Component {
       <View style={{flex:1}}>
         {this.state.imagemFull && 
           <View style={{flex: 1}}>
-            <ImageSlider resizeMode={"contain"} style={this.state.imagemFull ? styles.imagemFull : styles.imagem}
+            <ImageSlider resizeMode={"contain"} style={styles.imagemFull}
               images={anuncio.imagens}
-              onPress={() => {this.setState({imagemFull: false}), this.props.navigation.setParams({hideHeader: true})}}
             />
-            <TouchableOpacity onPress={() => this.setState({imagemFull: false})} style={styles.buttonClose}>
-              <Text style={{color: "white", fontWeight: "bold"}}>X</Text>
+            <TouchableOpacity onPress={() => {this.setState({imagemFull: false}),this.props.navigation.setParams({hideHeader: false})}} style={styles.buttonClose}>
+              <Icon name="times" size={35} color="white" />
             </TouchableOpacity>   
           </View>   
         }
         {!this.state.imagemFull && 
         <ScrollView style={styles.container}>
-          <ImageSlider style={this.state.imagemFull ? styles.imagemFull : styles.imagem}
+          <ImageSlider style={styles.imagem}
             images={anuncio.imagens}
-            onPress={() => this.setState({imagemFull: true})}
+            onPress={() => {this.setState({imagemFull: true}), this.props.navigation.setParams({hideHeader: true})}}
           />
           {!this.state.imagemFull && 
           <View style={styles.containerInformacoes}>
@@ -137,11 +135,11 @@ const styles = StyleSheet.create({
   },
   buttonClose:{
     position: "absolute",
-    top: 20,
-    right: 20,
-    backgroundColor: "#800000",
+    top: 15,
+    right: 15,
     height: 40,
     width:40,
+    borderRadius:20,
     alignItems: 'center',
     justifyContent: 'center',
   },
