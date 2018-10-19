@@ -46,7 +46,7 @@ export default class Anuncios extends Component {
     }
     
     carregarAnuncios(){
-        fetch('http://192.168.1.110/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
+        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
         method: 'GET',
         }).then((response) => response.json())
         .then((responseJson) => {
@@ -135,7 +135,8 @@ export default class Anuncios extends Component {
 
     render() {
         return (
-            <View style={styles.container} onLayout={(event) => {this.setState({heightLayout: event.nativeEvent.layout.height})}}>
+            <View style={styles.container} 
+            onLayout={(event) => {this.setState({heightLayout: event.nativeEvent.layout.height})}}>
                 <ModalFilterPicker
                     title="Cidade"
                     visible={this.state.cidadeVisible}
@@ -149,7 +150,16 @@ export default class Anuncios extends Component {
                 <TouchableOpacity style={styles.filtros} onPress={() => { this.setState({cidadeVisible: true}) }}>
                     <Text style={{fontSize: 22}}><Icon style={{marginRight: 15}} name="map-marker-alt" size={25} color="black" /> {this.state.cidadeNome}</Text>
                 </TouchableOpacity>
-                <ScrollView ref='_scrollView' onContentSizeChange={this.onContentSizeChange} onScroll={({nativeEvent}) => {if(nativeEvent.contentOffset.y+2 > this.state.scrollMax && !this.state.fim && !this.state.spinner) {this.spinner(true),this.carregarAnuncios() }}} ref="_scrollView" contentContainerStyle={styles.scroll} style={{backgroundColor: "white"}}>
+                <ScrollView ref='_scrollView' 
+                    onContentSizeChange={this.onContentSizeChange} 
+                    onScroll={
+                    ({nativeEvent}) => {
+                        if(nativeEvent.contentOffset.y+2 > this.state.scrollMax && !this.state.fim && !this.state.spinner) {
+                            this.spinner(true),this.carregarAnuncios() 
+                        }
+                    }} 
+                    contentContainerStyle={styles.scroll} 
+                    style={{backgroundColor: "white"}}>
                     <View style={styles.anuncios}>
                         {this.state.anuncios}
                     </View>

@@ -22,13 +22,9 @@ export default class Menu extends Component {
     }
     
 
-    componentDidMount() {
+    componentDidMount(){
         var that = this
         setTimeout(function(){that.carregarHeader()}, 1);
-    }
-
-    componentWillMount(){
-        this.props.navigation.addListener('didFocus', () => this.atualiza())
     }
 
     anuncios(id, nome){
@@ -55,109 +51,6 @@ export default class Menu extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>,
     });
-
-    cadastroManifestacao(){
-        this.spinner(true)
-        setTimeout(() => {
-            this.props.navigation.dispatch(NavigationActions.navigate({
-                routeName: 'CadastroManifestacao', 
-                key: '123',
-                params:{
-                    spinner    : this.spinner.bind(this),
-                    fundo: this.props.navigation.state.params.fundo, 
-                    logo: this.props.navigation.state.params.logo
-                },
-            })
-        )}, 1)
-    }
-        
-    cadastradas(){
-        this.spinner(true)
-        const { navigate } = this.props.navigation
-
-        fetch(`http://192.168.11.51/ouvidoria/app/listaManifestacoes`, {
-            method: 'POST',
-            headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                cpf: this.state.cpf,
-            }),
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            const { dispatch } = this.props.navigation;
-            setTimeout(() => {
-                dispatch(NavigationActions.navigate({
-                    routeName: 'Cadastradas', 
-                    key: '123',
-                    params:{
-                        "manifestacoes": responseJson,
-                        spinner    : this.spinner.bind(this)
-                    }
-                })
-            )}, 1)
-        })
-        .catch((error) => {
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-            this.spinner(false)
-        });
-    }
-
-    atualiza(){
-        AsyncStorage.getItem('nome').then((val) => {
-            this.setState({nome: val})
-        })
-    }
-
-    perfil(){
-        this.spinner(true)
-        fetch('http://192.168.11.51/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            this.props.navigation.dispatch(
-                NavigationActions.navigate({
-                    routeName: 'Perfil', 
-                    key: '123',
-                    params: {
-                        "nome"	   : responseJson.nome,
-                        "email"    : responseJson.email, 
-                        "telefone" : responseJson.telefone, 
-                        "endereco" : responseJson.endereco,
-                        spinner    : this.spinner.bind(this)
-                    }
-                })
-            )
-        })
-        .catch((error) => {
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-            this.spinner(false)
-        });
-    }
-    
-    confirmaDeslogar(){
-        this.setState({cadastrado: false, titulo: "SAIR", mensagem: ["Tem certeza que deseja sair?"], isVisible: true})
-    }
-
-    deslogar(){
-        AsyncStorage.clear()
-        resetAction = NavigationActions.reset({
-            index: 0,
-            actions: [
-                NavigationActions.navigate({
-                     routeName: 'Home', 
-                     params:{fundo:this.props.navigation.state.params.fundo,logo: this.props.navigation.state.params.logo} 
-                })
-            ],
-        }),
-        this.props.navigation.dispatch(resetAction)
-    }
-
 
     mensagens() {
         return this.state.mensagem.map(function(mensagem, i){

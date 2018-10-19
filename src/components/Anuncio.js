@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, BackHandler, AppRegistry, StyleSheet, View , Text, TextInput, Button, Image, ScrollView, Keyboard,TouchableOpacity,AsyncStorage, Dimensions, TouchableHighlight } from 'react-native'
+import { Alert, BackHandler, AppRegistry, StyleSheet, View , Text, StatusBar, TextInput, Button, Image, ScrollView, Keyboard,TouchableOpacity,AsyncStorage, Dimensions, TouchableHighlight } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import RNFetchBlob from 'rn-fetch-blob'
 import ImageSlider from 'react-native-image-slider';
@@ -24,6 +24,7 @@ export default class Anuncio extends Component {
       if(this.state.imagemFull){
         this.setState({imagemFull: false})
         this.props.navigation.setParams({hideHeader: false})
+        StatusBar.setHidden(false)
         return true
       }
     });
@@ -31,7 +32,11 @@ export default class Anuncio extends Component {
 
   formatarDataCompleta(data){
     return (data.substring(8,10) + '/' + data.substring(5,7) + '/' +  data.substring(0,4) + " " + data.substring(11,16)) 
-  }      
+  } 
+  
+  chat(){
+    
+  }
   
   static navigationOptions = ({ navigation }) => {
 
@@ -52,7 +57,7 @@ export default class Anuncio extends Component {
             <ImageSlider resizeMode={"contain"} style={styles.imagemFull}
               images={anuncio.imagens}
             />
-            <TouchableOpacity onPress={() => {this.setState({imagemFull: false}),this.props.navigation.setParams({hideHeader: false})}} style={styles.buttonClose}>
+            <TouchableOpacity onPress={() => {StatusBar.setHidden(false),this.setState({imagemFull: false}),this.props.navigation.setParams({hideHeader: false})}} style={styles.buttonClose}>
               <Icon name="times" size={35} color="white" />
             </TouchableOpacity>   
           </View>   
@@ -61,7 +66,7 @@ export default class Anuncio extends Component {
         <ScrollView style={styles.container}>
           <ImageSlider style={styles.imagem}
             images={anuncio.imagens}
-            onPress={() => {this.setState({imagemFull: true}), this.props.navigation.setParams({hideHeader: true})}}
+            onPress={() => {this.setState({imagemFull: true}),StatusBar.setHidden(true), this.props.navigation.setParams({hideHeader: true})}}
           />
           {!this.state.imagemFull && 
           <View style={styles.containerInformacoes}>
@@ -73,6 +78,9 @@ export default class Anuncio extends Component {
             <Text style={styles.anuncio}><Text style={styles.texto}>Categoria:</Text> {anuncio.categoriaNome}</Text>
             <View style={styles.linhaText} />
             <Text style={styles.anuncio}>{anuncio.descricao}</Text>
+            <TouchableOpacity onPress={() => {this.chat()}} style={styles.chat}>
+              <Text style={{fontSize: 25, color: "white" }}><Icon name="comments" size={25}/> CHAT</Text>
+            </TouchableOpacity>
           </View>
           } 
         </ScrollView>}
@@ -122,7 +130,7 @@ const styles = StyleSheet.create({
   },
   imagem:{
     width: "100%",
-    height: height*0.4,
+    height: height*0.5,
   },
   imagemFull:{
     width: "100%",
@@ -143,5 +151,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
+  chat:{
+    width: "50%",
+    marginLeft: "25%",
+    height: 50,
+    marginTop: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: "#800000",
+    borderRadius: 20
+  },
 })

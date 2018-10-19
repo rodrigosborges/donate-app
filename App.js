@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { StackNavigator } from 'react-navigation'
 import Consulta from './src/components/Consulta'
 import Anuncio from './src/components/Anuncio'
@@ -8,7 +8,7 @@ import Home from './src/components/Home'
 import Login from './src/components/Login'
 import Cadastro from './src/components/Cadastro'
 import Menu from './src/components/Menu'
-import Icon from 'react-native-vector-icons/Feather'
+import Icon from 'react-native-vector-icons/FontAwesome5'
 import Anuncios from './src/components/Anuncios'
 import CadastroManifestacao from './src/components/CadastroManifestacao'
 import EsqueceuSenha from './src/components/EsqueceuSenha'
@@ -31,12 +31,17 @@ const styles = StyleSheet.create({
 const SimpleApp = StackNavigator({
   Menu: {
     screen: Menu,
-    navigationOptions:{
-      headerStyle: styles.header,
+    navigationOptions: ({navigation}) => ({
+      headerStyle: [styles.header,{paddingLeft: 15}],
       title: 'Menu',
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',
-    }
+      headerLeft:(
+        <TouchableOpacity onPress={() => navigation.navigate("DrawerOpen")}>
+          <Icon name="bars" size={30} color={"#E0E0E0"} />
+        </TouchableOpacity>
+      ),
+    })
   },
   Anuncios: {
     screen: Anuncios,
@@ -138,11 +143,5 @@ const SimpleApp = StackNavigator({
   },
 });
 
-
-export default class App extends React.Component {
-  render() {
-    return <SimpleApp />;
-  }
-}
-
+export default SimpleApp;
 
