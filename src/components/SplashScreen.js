@@ -22,22 +22,7 @@ export default class SplashScreen extends Component {
             this.setState({email: values[0][1]})
             this.setState({password: values[1][1]})
         })
-    
-        let that = this;
-        var images = [
-            [require("./../images/tema1.jpg"),require("./../logo1.png")],
-            [require("./../images/tema2.jpg"),require("./../logo2.png")],
-            [require("./../images/tema3.jpg"),require("./../logo1.png")]
-        ]
-        var num = Math.floor(Math.random()*images.length);
-        this.setState({fundo: images[num][0], logo: images[num][1]})
-        setTimeout(function(){that.verificar()}, 1000);
     }
-
-    selecionaImagem(){
-        
-    }
-
 
     verificar=()=>{
         const { navigate } = this.props.navigation

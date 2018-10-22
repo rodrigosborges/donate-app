@@ -29,27 +29,19 @@ export default class Login extends Component {
   logar(){
     const { navigate } = this.props.navigation;
     const { goBack } = this.props.navigation;
-    fetch('http://192.168.11.51/ouvidoria/app/logarUsuario', {
-      method: 'POST',
+    fetch('http://192.168.11.51/donate/app/logarUsuario?email='+this.state.email+'&password='+this.state.password, {
+      method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        email: this.state.email,
-        password: this.state.password,
-      }),
     }).then((response) => response.json())
     .then((responseJson) => {
       if(responseJson.nome){
-        AsyncStorage.multiSet([['email', this.state.email],['password', this.state.password],['nome', responseJson.nome],['cpf', responseJson.cpf],['token',responseJson.token]]
-      )
-        const resetAction = NavigationActions.reset({
-          index: 0,
-          actions: [NavigationActions.navigate({ routeName: 'Menu', key:"login" })],
-          });
-      
-          this.props.navigation.dispatch(resetAction);
+        AsyncStorage.multiSet([['email', this.state.email],['password', this.state.password],['nome', responseJson.nome]])
+        this.props.navigation.state.params.atualiza(this.state.email, this.state.password, responseJson.nome)
+        this.props.navigation.goBack()
+        this.spinner(false)
       }else{
         this.setState({isVisible:true, mensagem: ["E-mail ou senha incorretos"]})
         this.spinner(false)

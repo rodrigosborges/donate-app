@@ -46,7 +46,7 @@ export default class Anuncios extends Component {
     }
     
     carregarAnuncios(){
-        fetch('http://192.168.1.110/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
+        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
         method: 'GET',
         }).then((response) => response.json())
         .then((responseJson) => {
@@ -56,8 +56,8 @@ export default class Anuncios extends Component {
             this.spinner(false)
         })
         .catch((error) => {
-            Alert.alert("Algo deu errado")
-            this.spinner(false)
+            Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
+            this.props.navigation.goBack()
         });
     }
 

@@ -44,8 +44,8 @@ export default class Menu extends Component {
     }
 
     componentWillMount(){
-        this.props.navigation.state.params.spinner(false)
-        setTimeout(() => this.props.navigation.state.params.spinner(false),3000)
+        // this.props.navigation.state.params.spinner(false)
+        // setTimeout(() => this.props.navigation.state.params.spinner(false),3000)
     }
 
     carregarHeader(){

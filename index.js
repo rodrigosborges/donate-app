@@ -19,5 +19,4 @@ const drawernav = DrawerNavigator({
     drawerWidth: Dimensions.get('window').width - 120,  
 });
 
-
 AppRegistry.registerComponent('donate', () => drawernav);

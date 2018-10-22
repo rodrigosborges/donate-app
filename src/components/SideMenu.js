@@ -1,29 +1,78 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {NavigationActions} from 'react-navigation'
-import {ScrollView, Text, View,StyleSheet, TouchableOpacity} from 'react-native'
+import {ScrollView, Text, View,StyleSheet, TouchableOpacity, AsyncStorage, BackHandler, Alert} from 'react-native'
 import { StackNavigator } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 
 class SideMenu extends Component {
-  navigateToScreen = (route) => () => {
-    const navigateAction = NavigationActions.navigate({
-      routeName: route
-    });
-    this.props.navigation.dispatch(navigateAction);
-  }
+    constructor(props){
+        super(props);
+        this.state = {
+            nome: null,
+            email: null,
+            password: null,
+            logado: null,
+        };
+    }
+
+    componentDidMount(){
+        AsyncStorage.multiGet(['email','password','nome']).then((values) => {
+            this.setState({email: values[0][1],password: values[1][1], nome: values[2][1]},() => {
+                this.atualiza(this.state.email, this.state.password)
+            })
+        })
+    }   
+
+    navigateToScreen = (route) => () => {
+        const navigateAction = NavigationActions.navigate({
+            routeName: route
+        });
+        this.props.navigation.dispatch(navigateAction);
+    }
+
+    atualiza(email, password, nome = ""){
+        fetch('http://192.168.11.51/donate/app/checkarAuth?email='+email+'&password='+password, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            if(responseJson == true){
+                this.setState({logado: true})
+                AsyncStorage.setItem("logado",true)
+            }else{
+                this.setState({logado: false})
+                AsyncStorage.setItem("logado",false)
+            }
+        })
+        .catch((error) => {
+            Alert.alert(
+                'Sem conexão',
+                'Verifique sua conexão com a internet',
+                [{text: 'Ok', onPress: () => BackHandler.exitApp()}],
+                { cancelable: false }
+            );
+        });
+    }
 
   render () {
     return (
-      <View style={styles.container}>
-        <ScrollView>
-            <TouchableOpacity onPress={() => this.props.navigation.navigate("Login")} style={styles.login}>
+        <ScrollView style={styles.container}>
+            <TouchableOpacity onPress={() => {
+                if(this.state.logado == true)
+                    this.props.navigation.navigate("Perfil",{atualiza: this.atualiza.bind(this)})
+                else
+                    this.props.navigation.navigate("Login",{atualiza: this.atualiza.bind(this)})
+            }} style={styles.login}>
                 <View style={{width: 50, paddingLeft: 10, paddingRight: 10}}>
                     <Icon name="user" color="white" size={30}/>
                 </View>
                 <View style={{flex:1}}>
                     <Text style={{color: "white", fontSize: 20}}>
-                        Clique aqui e acesse sua conta!
+                        {this.state.logado != false ? this.state.nome :"Clique aqui e acesse sua conta!"}
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -53,7 +102,6 @@ class SideMenu extends Component {
             </TouchableOpacity>
             <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
         </ScrollView>
-      </View>
     );
   }
 }

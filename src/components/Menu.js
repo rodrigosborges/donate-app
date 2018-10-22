@@ -20,11 +20,9 @@ export default class Menu extends Component {
             titulo: "",
         };      
     }
-    
 
-    componentDidMount(){
-        var that = this
-        setTimeout(function(){that.carregarHeader()}, 1);
+    componentWillMount(){
+        setTimeout(() => {this.props.navigation.navigate('DrawerClose')},2000)
     }
 
     anuncios(id, nome){
@@ -36,16 +34,6 @@ export default class Menu extends Component {
                 "title": "Anúncios - "+nome
             }
         }))       
-    }
-
-    carregarHeader(){
-        this.props.navigation.setParams({ 
-            headerRight: (
-                <TouchableOpacity onPress={() => { this.confirmaDeslogar() }}>
-                    <Icon style={{marginRight: 15}} name="sign-in-alt" size={25} color="#E0E0E0" />
-                </TouchableOpacity>
-            )
-        })
     }
 
     static navigationOptions = ({ navigation, screenProps }) => ({
