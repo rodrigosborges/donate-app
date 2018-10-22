@@ -111,7 +111,7 @@ export default class Login extends Component {
                 {this._renderModalContent()}
                 </Modal>
                 <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
-                <ImageBackground style={styles.fundo} source={this.props.navigation.state.params.fundo} >
+                <ImageBackground style={styles.fundo}>
                     <View style={styles.login}>
                         <View style={styles.loginContent}>
                             <Text style={styles.textoLogin}>Informe seu e-mail para que seja enviada as instruções para recuperação da senha:</Text>

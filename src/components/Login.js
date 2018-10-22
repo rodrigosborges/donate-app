@@ -17,11 +17,6 @@ export default class Login extends Component {
       spinner: false,
     };
   }
-  
-  
-  componentDidMount(){
-    StatusBar.setHidden(false)
-  }
 
   validaEmail(){
     if(this.state.email == "" || this.state.email.indexOf('@')==-1 || this.state.email.indexOf('.')==-1){
@@ -51,7 +46,7 @@ export default class Login extends Component {
       )
         const resetAction = NavigationActions.reset({
           index: 0,
-          actions: [NavigationActions.navigate({ routeName: 'Menu', key:"login", params:{fundo:this.props.navigation.state.params.fundo, logo: this.props.navigation.state.params.logo, logou: true,spinner: this.spinner.bind(this)}})],
+          actions: [NavigationActions.navigate({ routeName: 'Menu', key:"login" })],
           });
       
           this.props.navigation.dispatch(resetAction);
@@ -130,12 +125,12 @@ export default class Login extends Component {
               {this._renderModalContent()}
             </Modal>
             <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
-            <ImageBackground style={styles.fundo} source={this.props.navigation.state.params.fundo} >
+            <ImageBackground style={styles.fundo} source={require("./../login.png")}>
               <View style={styles.login}>
                 <View style={styles.loginContent}>
                   <TextField textColor="#E0E0E0" error={this.state.emailErro} tintColor="#E0E0E0" baseColor="#E0E0E0" keyboardType="email-address" style={styles.input} label="E-mail" value={this.state.email} autoCapitalize="none" onChangeText={(email) => this.setState({email})}/>
                   <TextField textColor="#E0E0E0" error={this.state.senhaErro} tintColor="#E0E0E0" autoCapitalize="none" baseColor="#E0E0E0" style={styles.input} label="Senha" value={this.state.password} onChangeText={(password) => this.setState({password})} secureTextEntry={true}/>
-                  <TouchableOpacity style={styles.esqueceuSenha} onPress={() => {dispatch(NavigationActions.navigate({routeName: 'EsqueceuSenha', key: '1234', params:{fundo: this.props.navigation.state.params.fundo}}))}}>
+                  <TouchableOpacity style={styles.esqueceuSenha} onPress={() => {dispatch(NavigationActions.navigate({routeName: 'EsqueceuSenha', key: '1234'}))}}>
                     <Text style={[styles.textoLogin, {fontSize: 14, textAlign: 'right'}]}>Esqueceu sua senha?</Text>
                   </TouchableOpacity>
                   <View style={styles.cadastrar}>
@@ -197,7 +192,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20, 
     paddingRight: 20, 
     width:"80%",
-    backgroundColor: "rgba(44, 62, 80,0.7)",
+    backgroundColor: "rgba(128, 0, 0,0.4)",
   },
   cadastrar: {
     width: '50%',
@@ -217,13 +212,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex:1,
-    backgroundColor: '#2C3E50',
+    backgroundColor: '#800000',
     overflow: 'hidden',
   },
 
   telaPrincipal:{
     flex:1,
-    backgroundColor: '#2C3E50',
+    backgroundColor: '#800000',
   },
   texto:{
     marginTop: 20,

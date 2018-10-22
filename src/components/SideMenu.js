@@ -17,7 +17,7 @@ class SideMenu extends Component {
     return (
       <View style={styles.container}>
         <ScrollView>
-            <TouchableOpacity onPress={() => {}} style={styles.login}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate("Login")} style={styles.login}>
                 <View style={{width: 50, paddingLeft: 10, paddingRight: 10}}>
                     <Icon name="user" color="white" size={30}/>
                 </View>

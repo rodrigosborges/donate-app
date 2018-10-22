@@ -4,7 +4,6 @@ import { StackNavigator } from 'react-navigation'
 import Consulta from './src/components/Consulta'
 import Anuncio from './src/components/Anuncio'
 import SplashScreen from './src/components/SplashScreen'
-import Home from './src/components/Home'
 import Login from './src/components/Login'
 import Cadastro from './src/components/Cadastro'
 import Menu from './src/components/Menu'
@@ -65,15 +64,6 @@ const SimpleApp = StackNavigator({
     navigationOptions:{
       headerStyle: styles.header,
       title: 'Cadastro',
-      headerTitleStyle: styles.back,
-      headerTintColor: '#E0E0E0',
-    }
-  },
-  Home: {
-    screen: Home,
-    navigationOptions:{
-      header: null,
-      title: 'Home',
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',
     }
