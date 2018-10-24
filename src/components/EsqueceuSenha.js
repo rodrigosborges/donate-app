@@ -111,17 +111,15 @@ export default class Login extends Component {
                 {this._renderModalContent()}
                 </Modal>
                 <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
-                <ImageBackground style={styles.fundo}>
-                    <View style={styles.login}>
-                        <View style={styles.loginContent}>
-                            <Text style={styles.textoLogin}>Informe seu e-mail para que seja enviada as instruções para recuperação da senha:</Text>
-                            <TextField textColor="#E0E0E0" error={this.state.emailErro} tintColor="#E0E0E0" baseColor="#E0E0E0" keyboardType="email-address" style={styles.input} label="E-mail" value={this.state.email} autoCapitalize="none" onChangeText={(email) => this.setState({email})}/>
-                            <View style={styles.cadastrar}>
-                                <Button disabled={this.state.spinner} onPress={() => {this.spinner(true),setTimeout(() =>{this.enviar()}, 1)}} textStyle={{color: "black"}} title="Enviar" color="#253443" />
-                            </View>
+                <View style={styles.login}>
+                    <View style={styles.loginContent}>
+                        <Text style={styles.textoLogin}>Informe seu e-mail para que seja enviada as instruções para recuperação da senha:</Text>
+                        <TextField textColor="#E0E0E0" error={this.state.emailErro} tintColor="#E0E0E0" baseColor="#E0E0E0" keyboardType="email-address" style={styles.input} label="E-mail" value={this.state.email} autoCapitalize="none" onChangeText={(email) => this.setState({email})}/>
+                        <View style={styles.cadastrar}>
+                            <Button disabled={this.state.spinner} onPress={() => {this.spinner(true),setTimeout(() =>{this.enviar()}, 1)}} textStyle={{color: "black"}} title="Enviar" color="#4994BC" />
                         </View>
                     </View>
-                </ImageBackground>
+                </View>
             </View>
         );
     }
@@ -168,7 +166,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20, 
     paddingRight: 20, 
     width:"80%",
-    backgroundColor: "rgba(44, 62, 80,0.7)",
+    backgroundColor: "#800000",
   },
   cadastrar: {
     width: '50%',
@@ -188,7 +186,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex:1,
-    backgroundColor: '#99bbff',
+    backgroundColor: '#660000',
     overflow: 'hidden',
   },
 

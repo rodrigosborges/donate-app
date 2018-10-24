@@ -117,27 +117,23 @@ export default class Login extends Component {
               {this._renderModalContent()}
             </Modal>
             <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
-            <ImageBackground style={styles.fundo} source={require("./../login.png")}>
-              <View style={styles.login}>
-                <View style={styles.loginContent}>
-                  <TextField textColor="#E0E0E0" error={this.state.emailErro} tintColor="#E0E0E0" baseColor="#E0E0E0" keyboardType="email-address" style={styles.input} label="E-mail" value={this.state.email} autoCapitalize="none" onChangeText={(email) => this.setState({email})}/>
-                  <TextField textColor="#E0E0E0" error={this.state.senhaErro} tintColor="#E0E0E0" autoCapitalize="none" baseColor="#E0E0E0" style={styles.input} label="Senha" value={this.state.password} onChangeText={(password) => this.setState({password})} secureTextEntry={true}/>
-                  <TouchableOpacity style={styles.esqueceuSenha} onPress={() => {dispatch(NavigationActions.navigate({routeName: 'EsqueceuSenha', key: '1234'}))}}>
-                    <Text style={[styles.textoLogin, {fontSize: 14, textAlign: 'right'}]}>Esqueceu sua senha?</Text>
-                  </TouchableOpacity>
-                  <View style={styles.cadastrar}>
-                    <Button onPress={() => {this.spinner(true),this.logar()}} textStyle={{color: "black"}} title="LOGAR" color="#253443" />
-                  </View>
-
-                  <TouchableOpacity style={styles.containerMensagem} onPress={() => {this.spinner(true),setTimeout(() => dispatch(NavigationActions.navigate({routeName: 'Cadastro', key: '1234',params:{spinner: this.spinner.bind(this)}})),1)}}>
-                    <Text style={styles.textoLogin}>Clique aqui para se cadastrar</Text>
-                  </TouchableOpacity>
+            <View style={styles.login}>
+              <Image resizeMode="stretch" source={require("./../logo.png")} style={styles.logo} />
+              <View style={styles.loginContent}>
+                <TextField textColor="#E0E0E0" error={this.state.emailErro} tintColor="#E0E0E0" baseColor="#E0E0E0" keyboardType="email-address" style={styles.input} label="E-mail" value={this.state.email} autoCapitalize="none" onChangeText={(email) => this.setState({email})}/>
+                <TextField textColor="#E0E0E0" error={this.state.senhaErro} tintColor="#E0E0E0" autoCapitalize="none" baseColor="#E0E0E0" style={styles.input} label="Senha" value={this.state.password} onChangeText={(password) => this.setState({password})} secureTextEntry={true}/>
+                <TouchableOpacity style={styles.esqueceuSenha} onPress={() => {dispatch(NavigationActions.navigate({routeName: 'EsqueceuSenha', key: '1234'}))}}>
+                  <Text style={[styles.textoLogin, {fontSize: 14, textAlign: 'right'}]}>Esqueceu sua senha?</Text>
+                </TouchableOpacity>
+                <View style={styles.cadastrar}>
+                  <Button onPress={() => {this.spinner(true),this.logar()}} textStyle={{color: "black"}} title="LOGAR" color="#4994BC" />
                 </View>
+
+                <TouchableOpacity style={styles.containerMensagem} onPress={() => {this.spinner(true),setTimeout(() => dispatch(NavigationActions.navigate({routeName: 'Cadastro', key: '1234',params:{spinner: this.spinner.bind(this)}})),1)}}>
+                  <Text style={styles.textoLogin}>Clique aqui para se cadastrar</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.botaoVoltar} onPress={() => goBack()}>
-                <Icon name="chevron-circle-left" size={45} color='#edf2ff'/>
-              </TouchableOpacity>
-            </ImageBackground>
+            </View>
         </View>
     );
   }
@@ -184,7 +180,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20, 
     paddingRight: 20, 
     width:"80%",
-    backgroundColor: "rgba(128, 0, 0,0.4)",
+    backgroundColor: "#800000",
   },
   cadastrar: {
     width: '50%',
@@ -195,7 +191,6 @@ const styles = StyleSheet.create({
   login:{
     flex: 1,
     alignItems : 'center',
-    justifyContent : 'center'
   },
   textfieldWithFloatingLabel: {
     height: 60,
@@ -204,7 +199,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex:1,
-    backgroundColor: '#800000',
+    backgroundColor: '#660000',
     overflow: 'hidden',
   },
 
@@ -224,9 +219,8 @@ const styles = StyleSheet.create({
     flex:1 ,
   }, 
   logo:{
-    width: '80%',
-    height: '20%',
-    marginTop: '25%',
+    width: width*0.35,
+    height: height*0.25,
   },
   modalContent: {
     backgroundColor: "white",

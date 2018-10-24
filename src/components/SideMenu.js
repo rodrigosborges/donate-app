@@ -19,7 +19,7 @@ class SideMenu extends Component {
     componentDidMount(){
         AsyncStorage.multiGet(['email','password','nome']).then((values) => {
             this.setState({email: values[0][1],password: values[1][1], nome: values[2][1]},() => {
-                this.atualiza(this.state.email, this.state.password)
+                this.atualiza(this.state.email, this.state.password, this.state.nome)
             })
         })
     }   
@@ -41,7 +41,7 @@ class SideMenu extends Component {
         }).then((response) => response.json())
         .then((responseJson) => {
             if(responseJson == true){
-                this.setState({logado: true})
+                this.setState({logado: true, nome: nome})
                 AsyncStorage.setItem("logado",true)
             }else{
                 this.setState({logado: false})
@@ -58,6 +58,12 @@ class SideMenu extends Component {
         });
     }
 
+    deslogar(){
+        AsyncStorage.clear();
+        this.setState({nome: null, email: null, password: null,logado: false})
+        AsyncStorage.setItem("logado",false)
+    }
+
   render () {
     return (
         <ScrollView style={styles.container}>
@@ -72,35 +78,47 @@ class SideMenu extends Component {
                 </View>
                 <View style={{flex:1}}>
                     <Text style={{color: "white", fontSize: 20}}>
-                        {this.state.logado != false ? this.state.nome :"Clique aqui e acesse sua conta!"}
+                        {this.state.logado ? this.state.nome :"Clique aqui e acesse sua conta!"}
                     </Text>
                 </View>
             </TouchableOpacity>
-            <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-            <TouchableOpacity style={styles.options} onPress={() => {}}>
-                <Text style={styles.sectionHeadingStyle}>
-                    Minhas doações
-                </Text>         
-            </TouchableOpacity>
-            <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-            <TouchableOpacity style={styles.options} onPress={() => {}}>
-                <Text style={styles.sectionHeadingStyle}>
-                    Doar
-                </Text>
-            </TouchableOpacity>
-            <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-            <TouchableOpacity style={styles.options} onPress={() => {}}>
-                <Text style={styles.sectionHeadingStyle}>
-                    Mensagens
-                </Text>
-            </TouchableOpacity>
-            <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-            <TouchableOpacity style={styles.options} onPress={() => {}}>
-                <Text style={styles.sectionHeadingStyle}>
-                    Minha Conta
-                </Text>
-            </TouchableOpacity>
-            <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
+            {this.state.logado && (
+                <View>
+                    <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
+                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Anuncios",{meusanuncios: 1, title: "Meus anúncios"})}}>
+                        <Text style={styles.sectionHeadingStyle}>
+                            Minhas doações
+                        </Text>         
+                    </TouchableOpacity>
+                    <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
+                    <TouchableOpacity style={styles.options} onPress={() => {}}>
+                        <Text style={styles.sectionHeadingStyle}>
+                            Doar
+                        </Text>
+                    </TouchableOpacity>
+                    <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
+                    <TouchableOpacity style={styles.options} onPress={() => {}}>
+                        <Text style={styles.sectionHeadingStyle}>
+                            Mensagens
+                        </Text>
+                    </TouchableOpacity>
+                    <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
+                    <TouchableOpacity style={styles.options} onPress={() => {
+                        Alert.alert(
+                            'Tem certeza que deseja sair?',
+                            "",
+                            [{text: 'Não', onPress: () => {}},
+                            {text: 'Sim', onPress: () => this.deslogar()}],
+                            { cancelable: false }
+                        )
+                    }}>
+                        <Text style={styles.sectionHeadingStyle}>
+                            Sair
+                        </Text>
+                    </TouchableOpacity>
+                    <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
+                </View>
+            )}
         </ScrollView>
     );
   }

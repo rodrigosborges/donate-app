@@ -12,44 +12,17 @@ export default class Cadastro extends PureComponent {
         super(props);
         this.state = {
             nome: "",
-            cpf: "",
-            telefonePrincipal: "",
-            telefoneSecundario: "",
-
             email: "",
             password: "",
             passwordConfirm: "",
-
-            cep: "",
-            logradouro: "",
-            referencia: "",
-            numero: "",
-            estado: 26,
-            cidade: 4826,
-            bairro: "",
-            estadoNome: "São Paulo",
-            cidadeNome: "Caraguatatuba",
-            bairroNome: "Selecione uma opção",
 
             mensagem: [],
             cadastrado: false,
             titulo: "",
 
-            estadosOptions: [],
-            cidadesOptions: [],
-            bairrosOptions: [],
-
             erroForm: true,
 
-            estadoVisible: false,
-            cidadeVisible: false,
-            bairroVisible: false,
-
             modalOpen: false,
-
-            cidadeErro: "",
-            estadoErro: "",
-            bairroErro: "",
 
             spinner: false,
         };
@@ -57,10 +30,6 @@ export default class Cadastro extends PureComponent {
 
 
     componentWillMount(){
-        StatusBar.setHidden(false)
-        this.estados()
-        this.cidades(26, 4826)
-        this.bairros()
         this.props.navigation.state.params.spinner(false)
         setTimeout(() => this.props.navigation.state.params.spinner(false),3000)
     }
@@ -496,71 +465,6 @@ export default class Cadastro extends PureComponent {
                             <TextField label="Nome" error={this.state.nomeErro} value={this.state.nome} onChangeText={(nome) => this.setState({nome})} onEndEditing={(e) => this.valida("nome","nomeErro",1)}/>
                         </View>
                         <View style={styles.inputs}>
-                            <TextField label="CPF" error={this.state.cpfErro} maxLength={14} value={this.state.cpf} onChangeText={(cpf) => (this.mascaraCpf(cpf))} keyboardType={"numeric"} onEndEditing={() => this.valida("cpf","cpfErro",2)}/>
-                        </View>
-                        <View style={styles.inputs}>
-                            <TextField value={this.state.telefonePrincipal} error={this.state.telefonePrincipalErro} maxLength={14} onChangeText={(telefonePrincipal) => this.mascaraTelefonePrimario(telefonePrincipal)} label={"Telefone"} keyboardType={"numeric"} onEndEditing={() => this.valida("telefonePrincipal","telefonePrincipalErro",3)}/>
-                        </View>
-                        <View style={styles.inputs}>
-                            <TextField value={this.state.telefoneSecundario} error={this.state.telefoneSecundarioErro} maxLength={14} onChangeText={(telefoneSecundario) => this.mascaraTelefoneSecundario(telefoneSecundario)} label={"Telefone Secundário"} keyboardType={"numeric"} onEndEditing={() => this.valida("telefoneSecundario","telefoneSecundarioErro",3)}/>
-                        </View>
-                    </View>
-                    <View style={styles.cadastrar}>
-                        <Button onPress={() => this.localizacaoAtual()} title="Preencher meu endereço atual" color="#2C3E50" />
-                    </View>
-                    <View style={styles.formulario} onLayout={(event) => {this.setState({enderecoLocation: {x: event.nativeEvent.layout.x,y: event.nativeEvent.layout.y}})}}>
-                        <View style={styles.tituloContent}>
-                            <Text style={styles.titulo}>Endereço</Text>
-                        </View>
-                        <TextField maxLength={9} error={this.state.cepErro} onChangeText={(cep) => {this.mascaraCep(cep)}} value={this.state.cep} label={"CEP"} keyboardType={"numeric"} onEndEditing={() => this.valida("cep","cepErro",4)}/>
-                        <View style={{paddingBottom: "6%"}} ></View>
-                        <TouchableOpacity style={[styles.picker, { borderBottomWidth: (this.state.estadoErro == "" ? 0.5 : 2),borderBottomColor: ( this.state.estadoErro == "" ? "black" : "#d50000" )} ]} onPress={() => this.onShow("estadoVisible")}>
-                            <Text style={{ fontSize: 12, color: ( this.state.estadoErro == "" ? "#989898" : "#d50000" ) }}>Estado</Text>
-                            <View style={{flexDirection: 'row', flex: 1}}>
-                                <Text style={{fontSize: 18, marginBottom: "1%", marginTop: "1%", width: "90%", color: ( this.state.estadoErro == "" ? "black" : "#d50000" )}}>{this.state.estadoNome}</Text>
-                                <View style={{right:-8, bottom:-3, width: 12, height:"100%"}}><Icon name="sort-down" color={( this.state.estadoErro == "" ? "#989898" : "#d50000" )} size={18}/></View>
-                            </View>
-                        </TouchableOpacity>
-                        <ModalFilterPicker
-                            title="Estado"
-                            visible={this.state.estadoVisible}
-                            onSelect={(estado) => {this.cidades(estado, 0), this.find("estado",estado)}}
-                            onCancel={() => this.onCancel("estadoVisible")}
-                            noResultsText={"Nenhum resultado encontrado"}
-                            placeholderText="Filtro..."
-                            options={this.state.estadosOptions}
-                            selectedOption={this.state.estadoNome}
-                            cancelButtonText={"Cancelar"}
-                        />
-                        <View style={{paddingBottom: "8%"}} ></View>
-                        <TouchableOpacity style={[styles.picker, { borderBottomWidth: (this.state.cidadeErro == "" ? 0.5 : 2),borderBottomColor: ( this.state.cidadeErro == "" ? "black" : "#d50000" )} ]} onPress={() => {this.onShow("cidadeVisible")}}>
-                            <Text style={{fontSize: 12, color: ( this.state.cidadeErro == "" ? "#989898" : "#d50000" )}}>Cidade</Text>
-                            <View style={{flexDirection: 'row', flex: 1}}>
-                                <Text style={{fontSize: 18, marginBottom: "1%", marginTop: "1%", width: "90%", color: ( this.state.cidadeErro == "" ? "black" : "#d50000" )}}>{this.state.cidadeNome}</Text>
-                                <View style={{right:-8, bottom:-3, width: 12, height:"100%"}}><Icon name="sort-down" color={( this.state.cidadeErro == "" ? "#989898" : "#d50000" )} size={18}/></View>
-                            </View>
-                        </TouchableOpacity>
-                        <ModalFilterPicker
-                            title="Cidade"
-                            visible={this.state.cidadeVisible}
-                            onSelect={(cidade) => {this.setState({bairro: "", bairroNome: "Selecione uma opção"}), this.find("cidade",cidade), this.valida("cidade","cidadeErro",1)}}
-                            onCancel={() => this.onCancel("cidadeVisible")}
-                            noResultsText={"Nenhum resultado encontrado"}
-                            placeholderText="Filtro..."
-                            options={this.state.cidadesOptions}
-                            selectedOption={this.state.cidadeNome}
-                            cancelButtonText={"Cancelar"}
-                        />
-                        {bairroSelectInput}
-                        <TextField value={this.state.logradouro} error={this.state.logradouroErro} onChangeText={(logradouro) => this.setState({logradouro})} label={"Logradouro"} onEndEditing={() => this.valida("logradouro","logradouroErro",1)}/>
-                        <TextField  keyboardType={"numeric"} value={this.state.numero} maxLength={5} error={this.state.numeroErro} onChangeText={(numero) => this.setState({numero})} label={"Número"} onEndEditing={() => this.valida("numero","numeroErro",1)}/>
-                        <TextField onChangeText={(referencia) => this.setState({referencia})} label={"Referência"}/>
-                    </View>
-                    <View style={styles.formulario}>
-                        <View style={styles.tituloContent}>
-                            <Text style={styles.titulo}>Login</Text>
-                        </View>
-                        <View style={styles.inputs}>
                             <TextField error={this.state.emailErro} autoCapitalize="none" onChangeText={(email) => this.setState({email})} label={"E-mail"} keyboardType={'email-address'} onEndEditing={() => this.valida("email","emailErro",5)}/>
                         </View>
                         <View style={styles.inputs}>
@@ -571,7 +475,7 @@ export default class Cadastro extends PureComponent {
                         </View>
                     </View>
                     <View style={styles.cadastrar}>
-                        <Button disabled={this.state.spinner} onPress={() => {this.spinner(true), setTimeout(() => this.resetarFormulario(),1)}} title="Cadastrar" color="#2C3E50" />
+                        <Button disabled={this.state.spinner} onPress={() => {this.spinner(true), setTimeout(() => this.resetarFormulario(),1)}} title="Cadastrar" color="#800000" />
                     </View>
                 </ScrollView>
             </View>

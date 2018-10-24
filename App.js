@@ -98,7 +98,7 @@ const SimpleApp = StackNavigator({
   Login: {
     screen: Login,
     navigationOptions:{
-      header: null,
+      headerStyle: styles.header,
       title: 'Login',
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',

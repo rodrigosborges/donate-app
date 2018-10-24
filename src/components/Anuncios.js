@@ -16,6 +16,7 @@ export default class Anuncios extends Component {
             categoria_id: "",
             cidade_id: "",
             cidadeNome: "",
+            usuario_id: "",
             spinner: false,
             pagina: 1,
             cidades: [
@@ -34,15 +35,19 @@ export default class Anuncios extends Component {
 
     componentWillMount(){
         this.spinner(true)
-        this.setState({categoria_id: this.props.navigation.state.params.categoria_id}, () => {
-            AsyncStorage.multiGet(["cidade_id",'cidadeNome']).then((val) => {
-                if(val[0][1] == null)
-                    val[0][1] = ""
-                if(val[1][1] == null)
-                    val[1][1] = "Todas as cidades"
-                this.setState({cidade_id: val[0][1],cidadeNome: val[1][1]},() => this.carregarAnuncios())
+        if(this.props.navigation.state.params.meusanuncios){
+            this.carregarAnuncios()
+        }else{
+            this.setState({categoria_id: this.props.navigation.state.params.categoria_id}, () => {
+                AsyncStorage.multiGet(["cidade_id",'cidadeNome']).then((val) => {
+                    if(val[0][1] == null)
+                        val[0][1] = ""
+                    if(val[1][1] == null)
+                        val[1][1] = "Todas as cidades"
+                    this.setState({cidade_id: val[0][1],cidadeNome: val[1][1]},() => this.carregarAnuncios())
+                })
             })
-        })
+        }
     }
     
     carregarAnuncios(){
@@ -147,9 +152,11 @@ export default class Anuncios extends Component {
                     options={this.state.cidades}
                     cancelButtonText={"Cancelar"}
                 />
+                {this.state.usuario_id == "" && (
                 <TouchableOpacity style={styles.filtros} onPress={() => { this.setState({cidadeVisible: true}) }}>
                     <Text style={{fontSize: 22}}><Icon style={{marginRight: 15}} name="map-marker-alt" size={25} color="black" /> {this.state.cidadeNome}</Text>
                 </TouchableOpacity>
+                )}
                 <ScrollView ref='_scrollView' 
                     onContentSizeChange={this.onContentSizeChange} 
                     onScroll={
