@@ -16,7 +16,7 @@ export default class Anuncios extends Component {
             categoria_id: "",
             cidade_id: "",
             cidadeNome: "",
-            usuario_id: "",
+            email: "",
             spinner: false,
             pagina: 1,
             cidades: [
@@ -35,23 +35,23 @@ export default class Anuncios extends Component {
 
     componentWillMount(){
         this.spinner(true)
-        if(this.props.navigation.state.params.meusanuncios){
-            this.carregarAnuncios()
-        }else{
-            this.setState({categoria_id: this.props.navigation.state.params.categoria_id}, () => {
-                AsyncStorage.multiGet(["cidade_id",'cidadeNome']).then((val) => {
-                    if(val[0][1] == null)
-                        val[0][1] = ""
-                    if(val[1][1] == null)
-                        val[1][1] = "Todas as cidades"
-                    this.setState({cidade_id: val[0][1],cidadeNome: val[1][1]},() => this.carregarAnuncios())
-                })
+        this.setState({categoria_id: this.props.navigation.state.params.categoria_id, email: this.props.navigation.state.params.email}, () => {
+            AsyncStorage.multiGet(["cidade_id",'cidadeNome']).then((val) => {
+                if(val[0][1] == null)
+                    val[0][1] = ""
+                if(val[1][1] == null)
+                    val[1][1] = "Todas as cidades"
+                this.setState({cidade_id: val[0][1],cidadeNome: val[1][1]},() => this.carregarAnuncios())
             })
-        }
+        })
     }
     
     carregarAnuncios(){
-        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='+this.state.categoria_id+'&cidade_id='+this.state.cidade_id+'&page='+this.state.pagina, {
+        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='
+        +(this.state.categoria_id == null ? "" : this.state.categoria_id)+'&cidade_id='
+        +(this.state.cidade_id == null ? "" : this.state.cidade_id)+'&page='
+        +this.state.pagina+'&email='
+        +(this.state.email == null ? "" : this.state.email), {
         method: 'GET',
         }).then((response) => response.json())
         .then((responseJson) => {
@@ -67,7 +67,7 @@ export default class Anuncios extends Component {
     }
 
     atualizarAnuncios(cidade){
-        var cidadeNome = (cidade == "" ? "Todas as cidades" : (cidade == 1 ? "Caraguatauba" : (cidade == 2 ? "Ilha Bela" : (cidade == 3 ? "São Sebastião" : "Ubatuba"))))
+        var cidadeNome = (cidade == "" ? "Todas as cidades" : (cidade == 1 ? "Caraguatatuba" : (cidade == 2 ? "Ilha Bela" : (cidade == 3 ? "São Sebastião" : "Ubatuba"))))
         this.setState({cidadeVisible: false, pagina: 1, fim: false, spinner: true, anuncios: [], dadosAnuncios: [],cidade_id: cidade, cidadeNome}, () => {
             this.refs._scrollView.scrollTo(0)
             AsyncStorage.setItem("cidade_id",cidade != "" ? JSON.stringify(cidade) : "")
@@ -152,7 +152,7 @@ export default class Anuncios extends Component {
                     options={this.state.cidades}
                     cancelButtonText={"Cancelar"}
                 />
-                {this.state.usuario_id == "" && (
+                {this.state.email == "" && (
                 <TouchableOpacity style={styles.filtros} onPress={() => { this.setState({cidadeVisible: true}) }}>
                     <Text style={{fontSize: 22}}><Icon style={{marginRight: 15}} name="map-marker-alt" size={25} color="black" /> {this.state.cidadeNome}</Text>
                 </TouchableOpacity>

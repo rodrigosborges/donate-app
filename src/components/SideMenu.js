@@ -12,6 +12,7 @@ class SideMenu extends Component {
             nome: null,
             email: null,
             password: null,
+            id: "",
             logado: null,
         };
     }
@@ -41,7 +42,7 @@ class SideMenu extends Component {
         }).then((response) => response.json())
         .then((responseJson) => {
             if(responseJson == true){
-                this.setState({logado: true, nome: nome})
+                this.setState({logado: true, nome: nome, email: email})
                 AsyncStorage.setItem("logado",true)
             }else{
                 this.setState({logado: false})
@@ -85,7 +86,7 @@ class SideMenu extends Component {
             {this.state.logado && (
                 <View>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Anuncios",{meusanuncios: 1, title: "Meus anúncios"})}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Anuncios",{meusanuncios: 1, title: "Meus anúncios", email: this.state.email})}}>
                         <Text style={styles.sectionHeadingStyle}>
                             Minhas doações
                         </Text>         
