@@ -9,7 +9,7 @@ import Cadastro from './src/components/Cadastro'
 import Menu from './src/components/Menu'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import Anuncios from './src/components/Anuncios'
-import CadastroManifestacao from './src/components/CadastroManifestacao'
+import CadastroAnuncio from './src/components/CadastroAnuncio'
 import EsqueceuSenha from './src/components/EsqueceuSenha'
 import Perfil from './src/components/Perfil'
 import EditarPerfil from './src/components/EditarPerfil'
@@ -59,8 +59,8 @@ const SimpleApp = StackNavigator({
       headerTintColor: '#E0E0E0',
     }
   },
-  CadastroManifestacao: {
-    screen: CadastroManifestacao,
+  CadastroAnuncio: {
+    screen: CadastroAnuncio,
     navigationOptions:{
       headerStyle: styles.header,
       title: 'Cadastro',

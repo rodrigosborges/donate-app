@@ -33,7 +33,7 @@ class SideMenu extends Component {
     }
 
     atualiza(email, password, nome = ""){
-        fetch('http://192.168.11.51/donate/app/checkarAuth?email='+email+'&password='+password, {
+        fetch('http://10.10.209.11/donate/app/checkarAuth?email='+email+'&password='+password, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -86,15 +86,15 @@ class SideMenu extends Component {
             {this.state.logado && (
                 <View>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Anuncios",{meusanuncios: 1, title: "Meus anúncios", email: this.state.email})}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Anuncios",{title: "Meus anúncios", email: this.state.email})}}>
                         <Text style={styles.sectionHeadingStyle}>
-                            Minhas doações
+                            Meus anúncios
                         </Text>         
                     </TouchableOpacity>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("CadastroAnuncio",{email: this.state.email})}}>
                         <Text style={styles.sectionHeadingStyle}>
-                            Doar
+                            Anunciar
                         </Text>
                     </TouchableOpacity>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
