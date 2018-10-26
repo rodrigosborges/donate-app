@@ -33,7 +33,7 @@ class SideMenu extends Component {
     }
 
     atualiza(email, password, nome = ""){
-        fetch('http://10.10.209.11/donate/app/checkarAuth?email='+email+'&password='+password, {
+        fetch('http://192.168.11.51/donate/app/checkarAuth?email='+email+'&password='+password, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

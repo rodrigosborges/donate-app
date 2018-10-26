@@ -22,6 +22,7 @@ export default class CadastroAnuncio extends Component {
 
             tituloAnuncio: "",
             descricao: "",
+            email: "",
 
             cidade: "",
             bairro: "",
@@ -57,35 +58,35 @@ export default class CadastroAnuncio extends Component {
         };
     }
 
-
-    componentWillMount(){
-        this.bairros()
+    componentDidMount(){
+        AsyncStorage.getItem('email').then((email) => {
+            this.setState({email})
+        })
     }
 
     arquivo(){
-        DocumentPicker.show({
-            filetype: [DocumentPickerUtil.allFiles()],
-        },(error,res) => {
-            if(res != null){
-                var ext = res.fileName.split(".").pop()
-                if(ext == "jpg" || ext == "png" || ext == "jpeg"){
-                    this.setState({arquivo: [ ...this.state.arquivo, {uri: res.uri, type: res.type, name: res.fileName}]})
-                    setTimeout( () => { this.valida("arquivo","arquivoErro",2)}, 1)
-                }
-                else
-                    this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Formato de arquivo inválido", "Favor inserir um dos seguintes tipos:", "jpg, png, jpeg"], isVisible: true})
+        const options = {
+            mediaType: 'photo',
+            storageOptions: {
+              skipBackup: true,
+            },
+            quality: 0.3,
+        };
+        ImagePicker.launchImageLibrary(options, (res) => {
+            if(res.uri){
+                this.setState({arquivo: [ ...this.state.arquivo, {uri: res.uri, type: res.type, name: res.fileName}]})
+                setTimeout( () => { this.valida("arquivo","arquivoErro",2)}, 1)
             }
         });
     }
 
     adicionarFoto(){
         const options = {
-            title: 'Select Avatar',
-            customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
+            mediaType: 'photo',
             storageOptions: {
               skipBackup: true,
-              path: 'images',
             },
+            quality: 0.3,
         };
         
         ImagePicker.launchCamera(options, (res) => {
@@ -111,10 +112,10 @@ export default class CadastroAnuncio extends Component {
         })
 
         body.append('descricao', this.state.descricao)
-        body.append('titulo', this.state.titulo)
-        body.append('cidade_id', this.state.cidade)
-        body.append('bairro', this.state.bairro)
+        body.append('titulo', this.state.tituloAnuncio)
+        body.append('bairro_id', this.state.bairro)
         body.append('categoria_id', this.state.categoria)
+        body.append('email', this.state.email)
         
         config = { 
             method: 'POST', 
@@ -124,21 +125,22 @@ export default class CadastroAnuncio extends Component {
             body: body 
         };
 
-        fetch('http://192.168.11.51/ouvidoria/app/cadastroManifestacao', config)
+        fetch('http://192.168.11.51/donate/app/doacoes/insert', config)
 
         .then((response) => response.json()).then((responseJson) => {
-            var titulo = responseJson[1][0] == "Manifestação cadastrada" ? "SUCESSO" : "ERRO"
+            var titulo = responseJson[1][0] == "Anúncio cadastrado" ? "SUCESSO" : "ERRO"
             this.setState({cadastrado: responseJson[0],titulo: titulo, mensagem: responseJson[1], isVisible: true, concluido: (titulo == "SUCESSO"), codigo: responseJson[2]})
             setTimeout(() => {this.spinner(false)}, 1)
         })
         .catch((error) => {
+            alert(error.message)
             this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
             setTimeout(() => {this.spinner(false)}, 1)
         })
     }
 
-    bairros(){
-        fetch('http://10.10.209.11/donate/app/bairros', {
+    bairros(cidade){
+        fetch('http://192.168.11.51/donate/app/bairros/'+cidade, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -147,22 +149,6 @@ export default class CadastroAnuncio extends Component {
         }).then((response) => response.json())
         .then((responseJson) => {
             this.setState({bairrosOptions: responseJson})
-        })
-        .catch((error) => {
-            this.setState({cadastrado: true, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-        });
-    }
-
-    categorias(){
-        fetch('http://192.168.11.51/ouvidoria/app/categorias', {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({categoriasOptions: responseJson})
         })
         .catch((error) => {
             this.setState({cadastrado: true, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
@@ -250,7 +236,7 @@ export default class CadastroAnuncio extends Component {
                 </View>
             </ScrollView>
             <View>
-                {this._renderButton("Fechar", () => (this.state.concluido) ? (this.pesquisar(this.state.codigo)) : ((this.state.cadastrado) ? (goBack()) : (this.setState({ isVisible: false }))))}
+                {this._renderButton("Fechar", () => {(this.state.concluido) ? (this.setState({ isVisible: false }),this.props.navigation.navigate("Anuncios",{title: "Meus anúncios", email: this.state.email})) : ((this.state.cadastrado) ? (goBack()) : (this.setState({ isVisible: false })))})}
             </View>
         </View>
     );
@@ -274,6 +260,9 @@ export default class CadastroAnuncio extends Component {
                 aux = this.state[name+"sOptions"][i].label
             }
         }
+
+        if(name == "cidade")
+            this.bairros(key)
 
         this.setState({[name+"Nome"]: aux, modalOpen: false, [name]: key, [name+"Visible"]: false})
     }
@@ -305,9 +294,9 @@ export default class CadastroAnuncio extends Component {
         const arquivos = this.state.arquivo.map((arquivo,index) => {
             return (
                 <View style={styles.arquivosAdicionados} >
-                    <Text style={{marginBottom: "2%",position: 'absolute',left: 5, width:"70%"}}>{arquivo.name}</Text>
-                    <TouchableOpacity style={{height: 40, width:40,position: 'absolute',right: 5}} onPress={() => this.excluirArquivo(index)}>
-                        <Icon name="window-close" size={40}/>
+                    <Image source={{uri: arquivo.uri}} style={{width: "100%",height: 150}}/>
+                    <TouchableOpacity style={{height: 40, width:40,position: 'absolute',right: 5, top:5}} onPress={() => this.excluirArquivo(index)}>
+                        <Icon name="window-close" color="white" size={40}/>
                     </TouchableOpacity>
                 </View>
             )   
@@ -328,7 +317,7 @@ export default class CadastroAnuncio extends Component {
                         <View style={styles.tituloContent}>
                             <Text style={styles.titulo}>Anúncio</Text>
                         </View>
-                        <TextField maxLength={9} error={this.state.tituloAnuncioErro} onChangeText={(tituloAnuncio) => { this.setState( {tituloAnuncio}) }} value={this.state.tituloAnuncio} label={"Título"} onEndEditing={() => this.valida("tituloAnuncio","tituloAnuncioErro",1)}/>
+                        <TextField maxLength={50} error={this.state.tituloAnuncioErro} onChangeText={(tituloAnuncio) => { this.setState( {tituloAnuncio}) }} value={this.state.tituloAnuncio} label={"Título"} onEndEditing={() => this.valida("tituloAnuncio","tituloAnuncioErro",1)}/>
                         <TextField multiline={true} error={this.state.descricaoErro} onChangeText={(descricao) => {this.setState({descricao})}} value={this.state.descricao} label={"Descrição"} onEndEditing={() => this.valida("descricao","descricaoErro",1)}/>
                         <View style={{paddingBottom: "6%"}} ></View>
                         <TouchableOpacity style={[styles.picker, { borderBottomWidth: (this.state.categoriaErro == "" ? 0.5 : 2),borderBottomColor: ( this.state.categoriaErro == "" ? "black" : "#d50000" )} ]} onPress={() => this.onShow("categoriaVisible")}>
@@ -388,6 +377,7 @@ export default class CadastroAnuncio extends Component {
                             cancelButtonText={"Cancelar"}
                         />
                     </View>
+                    <View>
                     <View style={[styles.formulario,{alignItems:"center"}]}>
                         <View style={styles.tituloContent}>
                             <Text style={styles.titulo}>Arquivos</Text>
@@ -395,9 +385,9 @@ export default class CadastroAnuncio extends Component {
                         <View style={{paddingBottom: "10%"}} ></View>
                         <View style={{flexDirection: "row", flex: 1}}>
                             <TouchableOpacity style={styles.arquivoContent} onPress={() => this.arquivo()}>
-                                <Icon name="file-upload" size={40}/>
-                                <View><Text style={{fontSize:16}}>Adicionar</Text></View>
-                                <View><Text style={{fontSize:16}}>arquivo</Text></View>
+                                <Icon name="images" size={40}/>
+                                <View><Text style={{fontSize:16}}>Foto da</Text></View>
+                                <View><Text style={{fontSize:16}}>galeria</Text></View>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.arquivoContent,{marginLeft: 10}]} onPress={() => this.adicionarFoto()}>
                                 <Icon name="camera" size={40}/>
@@ -406,12 +396,17 @@ export default class CadastroAnuncio extends Component {
                             </TouchableOpacity>
                         </View>
                         <View style={{paddingBottom: "6%"}} ></View>
-                        {arquivos}
+                        <View style={{width: "100%"}}>
+                            <ScrollView horizontal={true}>
+                                {arquivos}
+                            </ScrollView>
+                        </View>
 
                         <View style={{paddingBottom: "6%"}} ></View>
                         {   this.state.arquivoErro != "" &&
                             (<Text style={{color:"#d50000"}}>{this.state.arquivoErro}</Text>)
                         }
+                    </View>
                     </View>
 
                     <View style={styles.cadastrar}>
@@ -509,12 +504,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 5,
         borderColor: "#7f8c8d",
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 10,
         flexDirection: 'row',
-        width: "95%",
-        height: 45,
+        width: width*0.5,
     },
     cadastrar: {
         width: width*0.9,
