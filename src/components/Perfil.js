@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { StatusBar,Alert,AppRegistry, StyleSheet,View , Text, TextInput, Button, Image,ScrollView, ReactNative, AsyncStorage, TouchableOpacity, Dimensions, ImageBackground, TouchableHighlight } from 'react-native';
 import logo from './../brasao.png'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import Icon2 from 'react-native-vector-icons/FontAwesome5'
+import Icon from 'react-native-vector-icons/FontAwesome5'
 import { NavigationActions, withNavigationFocus } from 'react-navigation';
 import Modal from 'react-native-modal'
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -12,10 +11,7 @@ export default class Menu extends Component {
         super(props);
         this.state = {
             nome : "",
-            cpf: "",
             email: "",
-            telefone: "",
-            endereco: "",
             mensagem: [],
             isVisible: false,
             header: false,
@@ -29,23 +25,12 @@ export default class Menu extends Component {
     componentDidMount() {
         StatusBar.setHidden(false)   
 
-        AsyncStorage.multiGet(['cpf','token']).then((values) => {
-            this.setState({cpf: values[0][1]})
-            this.setState({token: values[1][1]})
-        })
-        this.setState({
-            nome: this.props.navigation.state.params.nome,
-            email: this.props.navigation.state.params.email, 
-            telefone: this.props.navigation.state.params.telefone, 
-            endereco: this.props.navigation.state.params.endereco
+        AsyncStorage.multiGet(['nome', 'email']).then((values) => {
+            this.setState({nome: values[0][1]})
+            this.setState({email: values[1][1]})
         })
         var that = this
         setTimeout(function(){that.carregarHeader()}, 1)
-    }
-
-    componentWillMount(){
-        // this.props.navigation.state.params.spinner(false)
-        // setTimeout(() => this.props.navigation.state.params.spinner(false),3000)
     }
 
     carregarHeader(){
@@ -53,7 +38,7 @@ export default class Menu extends Component {
         this.props.navigation.setParams({ 
             headerRight: (
                 <TouchableOpacity onPress={() => { this.editar() }}>
-                    <Icon2 style={{marginRight: 15}} name="edit" size={25} color="white" />
+                    <Icon style={{marginRight: 15}} name="edit" size={25} color="white" />
                 </TouchableOpacity>
             )
         })
@@ -76,44 +61,18 @@ export default class Menu extends Component {
     }
 
     editar(){
-        fetch('http://192.168.11.51/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
+        this.props.navigation.navigate({
+            routeName: 'EditarPerfil', 
+            key: 'EditarPerfil',
+            params: {
+                "nome" : this.state.nome,
+                "email" : this.state.email,
             },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            this.spinner(true)
-            setTimeout(() => {this.props.navigation.dispatch(
-                NavigationActions.navigate({
-                    routeName: 'EditarPerfil', 
-                    key: 'EditarPerfil',
-                    params: {
-                        "nome"	            : responseJson.nome,
-                        "telefonePrincipal" : responseJson.telefonePrincipal, 
-                        "telefoneSecundario": responseJson.telefoneSecundario, 
-                        "cep"               : responseJson.cep,
-                        "estado" 	        : responseJson.estado,
-                        "cidade"	        : responseJson.cidade,
-                        "bairro" 	        : responseJson.bairro,
-                        "logradouro"        : responseJson.logradouro,
-                        "numero" 	        : responseJson.numero,
-                        "referencia"        : responseJson.referencia,
-                        atualiza            : this.atualiza.bind(this),
-                        spinner             : this.spinner.bind(this)
-                    },
-                })
-            ),1})
         })
-        .catch((error) => {
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-            this.spinner(false)
-        });
     }
 
     atualiza(){
-        fetch('http://192.168.11.51/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
+        fetch('http://10.10.209.11/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -188,31 +147,35 @@ export default class Menu extends Component {
                     {this._renderModalContent()}
                 </Modal>
                 <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
-                <View style={{backgroundColor: "rgba(44, 62, 80, 1)", height: "100%", width: "100%"}}>
+                <View style={{backgroundColor: "#E0E0E0", height: "100%", width: "100%"}}>
                     <View style={styles.perfilSection}>
                         <View style={styles.mensagem}>
-                            <Text style={styles.textoHeader}>{this.state.nome}</Text> 
+                            <Text style={[styles.textoHeader, {color: "white"}]}>{this.state.nome}</Text> 
                         </View>
                     </View>
                     <View style={styles.imagemContainer}>
-                        <Image source={logo} style={styles.logo}/>
+                        <Icon color="white" size={45} name="user"/>
                     </View>
                     <View style={styles.containerInformacoes}>
-                        <View style={{marginBottom:"5%"}}>
-                            <Text style={styles.textoHeader}>CPF</Text>
-                            <Text style={styles.informacoes}>{this.state.cpf}</Text>
+                        <View style={{flexDirection: 'row', height: "50%"}}>
+                            <View style={styles.blocoInformacoes}>
+                                <Text style={styles.textoHeader}>Cadastro</Text>
+                                <Text style={styles.textoHeader}>24/08/2019</Text>
+                            </View>
+                            <View style={styles.blocoInformacoes}>
+                                <Text style={styles.textoHeader}>Anunciados</Text>
+                                <Text style={styles.textoHeader}>4</Text>
+                            </View>
                         </View>
-                        <View style={{marginBottom:"5%"}}>
-                            <Text style={styles.textoHeader}>E-mail</Text>
-                            <Text style={styles.informacoes}>{this.state.email}</Text>
-                        </View>
-                        <View style={{marginBottom:"5%"}}>
-                            <Text style={styles.textoHeader}>Telefone</Text>
-                            <Text style={styles.informacoes}>{this.state.telefone}</Text>
-                        </View>
-                        <View style={{marginBottom:"5%"}}>
-                            <Text style={styles.textoHeader}>Endereço</Text>
-                            <Text style={styles.informacoes}>{this.state.endereco}</Text>
+                        <View style={{flexDirection: 'row', height: "50%"}}>
+                            <View style={styles.blocoInformacoes}>
+                                <Text style={styles.textoHeader}>Doados</Text>
+                                <Text style={styles.textoHeader}>4</Text>
+                            </View>
+                            <View style={styles.blocoInformacoes}>
+                                <Text style={styles.textoHeader}>Avaliação</Text>
+                                <Text style={styles.textoHeader}>4</Text>
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -225,9 +188,15 @@ var height = Dimensions.get('window').height;
 var width = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
+    blocoInformacoes:{
+        width: "50%",
+        height: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+    },
     informacoes: {
         fontSize: 18,
-        color: '#E0E0E0',
+        color: '#800000',
     },
     divisao:{
         height: height*0.08,
@@ -241,17 +210,18 @@ const styles = StyleSheet.create({
         alignItems: "center",      
     },
     perfilSection:{
-        height: "20%",
-        backgroundColor: "rgba(44, 62, 80, 1)",
+        height: "25%",
+        backgroundColor: "#660000",
         borderBottomWidth: 1,
         borderColor:'white',
     },
     containerInformacoes:{
         flex: 1,
         justifyContent: "center",
-        marginTop: "18%",
-        width: "90%",
-        marginLeft: "5%",
+        alignItems: "center",
+        borderWidth: 2,
+        borderColor:'white',
+        height: "100%",
     },
     icones: {
         width: "50%",
@@ -270,7 +240,7 @@ const styles = StyleSheet.create({
     },    
     textoHeader:{
         fontSize: 21,
-        color: '#E0E0E0',
+        color: '#800000',
         fontWeight: 'bold'
     },    
     fundo: {
@@ -285,16 +255,17 @@ const styles = StyleSheet.create({
     },
     imagemContainer:{
         position: 'absolute',
-        left: "38%",
-        top: "13%",
+        left: "39%",
+        top: "17%",
         justifyContent: "center",
         alignItems: "center",   
         width: width*0.23,
         height: width*0.23,
         borderRadius: width*0.23,
-        backgroundColor: "rgba(44, 62, 80, 1)",
+        backgroundColor: "#800000",
         borderWidth: 2,
         borderColor: "white",
+        elevation: 1,
     },
     modalContent: {
         backgroundColor: "white",
