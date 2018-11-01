@@ -72,7 +72,7 @@ export default class Menu extends Component {
     }
 
     atualiza(){
-        fetch('http://10.10.209.11/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
+        fetch('http://192.168.11.51/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

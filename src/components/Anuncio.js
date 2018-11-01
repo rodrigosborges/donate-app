@@ -4,6 +4,8 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 import RNFetchBlob from 'rn-fetch-blob'
 import ImageSlider from 'react-native-image-slider';
 import { Header } from 'react-navigation';
+import Stars from 'react-native-stars';
+import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default class Anuncio extends Component {
   constructor(props){
@@ -15,7 +17,13 @@ export default class Anuncio extends Component {
       erro: null,
       token: null,
       imagemFull: false,
+      nivel: 0,
     };
+  }
+
+  componentDidMount(){
+    var that = this
+    setTimeout(function(){that.carregarHeader()}, 1)  
   }
 
   componentWillMount(){
@@ -30,6 +38,16 @@ export default class Anuncio extends Component {
     });
   }
 
+  carregarHeader(){
+    this.props.navigation.setParams({ 
+      headerRight: (
+        <TouchableOpacity onPress={() => {this.chat()}}>
+            <Icon style={{marginRight: 15}} name="comments" size={30} color="white" />
+        </TouchableOpacity>
+      )
+    })
+  }
+
   formatarDataCompleta(data){
     return (data.substring(8,10) + '/' + data.substring(5,7) + '/' +  data.substring(0,4) + " " + data.substring(11,16)) 
   } 
@@ -39,13 +57,29 @@ export default class Anuncio extends Component {
   }
   
   static navigationOptions = ({ navigation }) => {
-
     if (navigation.state.params.hideHeader == true) {
       return {
         header: null,
+        headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>
+      }
+    }else{
+      return {
+        headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>
       }
     }
   };
+
+  avaliar(nivel){
+    this.setState({nivel})
+    fetch('http://192.168.11.51/donate/avaliacoes/avaliar?avaliador_id='
+    +this.state.id+'&avaliado_id='
+    +this.state.doador+'&nivel='
+    +nivel, {
+    method: 'GET',
+    }).catch((error) => {
+        Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
+    });
+  }
   
   render() {
     const {state} = this.props.navigation
@@ -78,9 +112,32 @@ export default class Anuncio extends Component {
             <Text style={styles.anuncio}><Text style={styles.texto}>Categoria:</Text> {anuncio.categoriaNome}</Text>
             <View style={styles.linhaText} />
             <Text style={styles.anuncio}>{anuncio.descricao}</Text>
-            <TouchableOpacity onPress={() => {this.chat()}} style={styles.chat}>
+            {/* <TouchableOpacity onPress={() => {this.chat()}} style={styles.chat}>
               <Text style={{fontSize: 25, color: "white" }}><Icon name="comments" size={25}/> CHAT</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <View style={{width: "100%", alignItems: 'center', justifyContent: 'center', height: 120}}>
+              {this.state.nivel == 0 && 
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  <Text style={styles.anuncio}>Avalie este doador!</Text>
+                  <Stars
+                    count={5}
+                    half={false}
+                    fullStar={<Icon2 name={'star'} size={45} style={[styles.myStarStyle]}/>}
+                    emptyStar={<Icon2 name={'star-outline'} size={45} style={[styles.myStarStyle, styles.myEmptyStarStyle]}/>}
+                    update={(nivel) => this.avaliar(nivel)}
+                  />
+                  </View>
+                }
+              {this.state.nivel != 0 && 
+                <View>
+                  <Text style={[styles.anuncio, {textAlign: 'center'}]}>Você avaliou este doador com {this.state.nivel} estrelas!</Text>
+                  <TouchableOpacity onPress={() => this.setState({nivel: 0})}>
+                    <Text style={[styles.anuncio, {color: "blue",textAlign: 'center'}]}>Clique aqui para mudar a sua avaliação.</Text>
+                  </TouchableOpacity>
+                </View>
+              }
+            </View>
           </View>
           } 
         </ScrollView>}
@@ -90,6 +147,16 @@ export default class Anuncio extends Component {
 }
 let height = Dimensions.get('window').height
 const styles = StyleSheet.create({
+  myStarStyle: {
+    color: 'gold',
+    backgroundColor: 'transparent',
+    textShadowColor: 'black',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 2,
+  },
+  myEmptyStarStyle: {
+    color: 'white',
+  },
   container: {
     backgroundColor: 'white',
     flex: 1

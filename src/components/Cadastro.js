@@ -35,7 +35,7 @@ export default class Cadastro extends PureComponent {
     }
 
     buscarCepIds(bairro, cidade, estado){
-        fetch('http://10.10.209.11/ouvidoria/app/buscaCep', {
+        fetch('http://192.168.11.51/ouvidoria/app/buscaCep', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -86,7 +86,7 @@ export default class Cadastro extends PureComponent {
 
     cadastrar(){
         const { navigate } = this.props.navigation;
-        fetch('http://10.10.209.11/ouvidoria/app/cadastroUsuario', {
+        fetch('http://192.168.11.51/ouvidoria/app/cadastroUsuario', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -125,7 +125,7 @@ export default class Cadastro extends PureComponent {
     }
 
     estados(){
-        fetch('http://10.10.209.11/ouvidoria/app/estados', {
+        fetch('http://192.168.11.51/ouvidoria/app/estados', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -152,7 +152,7 @@ export default class Cadastro extends PureComponent {
             })  
         }
         
-        fetch('http://10.10.209.11/ouvidoria/app/cidades/'+estado_id, {
+        fetch('http://192.168.11.51/ouvidoria/app/cidades/'+estado_id, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -172,7 +172,7 @@ export default class Cadastro extends PureComponent {
     }
 
     bairros(){
-        fetch('http://10.10.209.11/ouvidoria/app/bairros', {
+        fetch('http://192.168.11.51/ouvidoria/app/bairros', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

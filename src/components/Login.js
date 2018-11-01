@@ -29,7 +29,7 @@ export default class Login extends Component {
   logar(){
     const { navigate } = this.props.navigation;
     const { goBack } = this.props.navigation;
-    fetch('http://10.10.209.11/donate/app/logarUsuario?email='+this.state.email+'&password='+this.state.password, {
+    fetch('http://192.168.11.51/donate/app/logarUsuario?email='+this.state.email+'&password='+this.state.password, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -118,7 +118,7 @@ export default class Login extends Component {
             </Modal>
             <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
             <View style={styles.login}>
-              <Image resizeMode="stretch" source={require("./../logo.png")} style={styles.logo} />
+              {/* <Image resizeMode="stretch" source={require("./../logo.png")} style={styles.logo} /> */}
               <View style={styles.loginContent}>
                 <TextField textColor="#E0E0E0" error={this.state.emailErro} tintColor="#E0E0E0" baseColor="#E0E0E0" keyboardType="email-address" style={styles.input} label="E-mail" value={this.state.email} autoCapitalize="none" onChangeText={(email) => this.setState({email})}/>
                 <TextField textColor="#E0E0E0" error={this.state.senhaErro} tintColor="#E0E0E0" autoCapitalize="none" baseColor="#E0E0E0" style={styles.input} label="Senha" value={this.state.password} onChangeText={(password) => this.setState({password})} secureTextEntry={true}/>
@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
   login:{
     flex: 1,
     alignItems : 'center',
+    justifyContent: "center",
   },
   textfieldWithFloatingLabel: {
     height: 60,

@@ -125,7 +125,7 @@ export default class CadastroAnuncio extends Component {
             body: body 
         };
 
-        fetch('http://10.10.209.11/donate/app/doacoes/insert', config)
+        fetch('http://192.168.11.51/donate/app/doacoes/insert', config)
 
         .then((response) => response.json()).then((responseJson) => {
             var titulo = responseJson[1][0] == "Anúncio cadastrado" ? "SUCESSO" : "ERRO"
@@ -140,7 +140,7 @@ export default class CadastroAnuncio extends Component {
     }
 
     bairros(cidade){
-        fetch('http://10.10.209.11/donate/app/bairros/'+cidade, {
+        fetch('http://192.168.11.51/donate/app/bairros/'+cidade, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

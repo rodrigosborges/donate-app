@@ -34,7 +34,7 @@ export default class Cadastro extends PureComponent {
 
     editar(){
         const { navigate } = this.props.navigation;
-        fetch('http://10.10.209.11/ouvidoria/app/edicaoUsuario', {
+        fetch('http://192.168.11.51/ouvidoria/app/edicaoUsuario', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
