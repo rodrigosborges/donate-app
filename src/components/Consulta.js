@@ -30,7 +30,7 @@ export default class Consulta extends Component {
   pesquisar() {
     this.spinner(true)
     var nav = this.props.navigation
-    fetch(`http://192.168.11.51/ouvidoria/app/pesquisaManifestacao?codigo=`+this.state.codigo+"&token="+this.state.token, {
+    fetch(`http://192.168.1.101/ouvidoria/app/pesquisaManifestacao?codigo=`+this.state.codigo+"&token="+this.state.token, {
       method: 'GET',
       headers: {
         Accept: 'application/json',

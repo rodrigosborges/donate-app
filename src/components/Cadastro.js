@@ -34,59 +34,10 @@ export default class Cadastro extends PureComponent {
         setTimeout(() => this.props.navigation.state.params.spinner(false),3000)
     }
 
-    buscarCepIds(bairro, cidade, estado){
-        fetch('http://192.168.11.51/ouvidoria/app/buscaCep', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                bairro: bairro,
-                cidade: cidade,
-                estado: estado,
-            }),
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            this.cidades(responseJson.estado, responseJson.cidade)
-            this.setState({estado: responseJson.estado, cidade: responseJson.cidade},() => {
-                this.find("bairro",(responseJson.cidade == 4826 ? responseJson.bairro : bairro))
-                this.find("estado",responseJson.estado)
-                this.find("cidade",responseJson.cidade)
-            })
-            this.valida("bairro","bairroErro",1)
-            this.valida("cidade","cidadeErro",1)
-            this.valida("estado","estadoErro",1)
-            this.spinner(false)
-        })
-        .catch((error) => {
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-            this.spinner(false)
-        });
-    }
-
-    buscarCep(){
-        fetch('https://viacep.com.br/ws/'+this.state.cep+'/json/', {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            if(responseJson.logradouro){
-                this.setState({logradouro: responseJson.logradouro})
-                this.buscarCepIds(responseJson.bairro, responseJson.localidade, responseJson.uf)
-            }
-        })
-        .catch((error) => {
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-        });
-    }
 
     cadastrar(){
         const { navigate } = this.props.navigation;
-        fetch('http://192.168.11.51/ouvidoria/app/cadastroUsuario', {
+        fetch('http://192.168.1.101/donate/app/usuario/insert', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -94,170 +45,33 @@ export default class Cadastro extends PureComponent {
             },
             body: JSON.stringify({
                 nome: this.state.nome,
-                cpf: this.state.cpf,
-                telefonePrincipal: this.state.telefonePrincipal,
-                telefoneSecundario: this.state.telefoneSecundario,
-
                 email: this.state.email,
                 password: this.state.password,
-                password_confirmation: this.state.passwordConfirm,
-
-                cep: this.state.cep,
-                rua: this.state.logradouro,
-                numero: this.state.numero,
-                referencia: this.state.referencia,
-                cidade_id: this.state.cidade,
-                bairro: this.state.bairro,
+                passwordConfirm: this.state.passwordConfirm,
             }),
         }).then((response) => response.json())
         .then((responseJson) => {
-            if(responseJson[1][0] == "Cadastro efetuado com sucesso!")
-                var titulo = "SUCESSO"
-            else
-                var titulo = "ERRO"
-            this.setState({cadastrado: responseJson[0],titulo: titulo, mensagem: responseJson[1], isVisible: true})
+            if(responseJson == true){
+                Alert.alert(
+                    'Sucesso',
+                    'Cadastro realizado!',
+                    [{text: 'Ok', onPress: () => navigation.goBack()}],
+                    {cancelable: false}
+                );
+            }else{
+                Alert.alert(
+                    'Sem conexão',
+                    'Verifique sua conexão com a internet',
+                );
+            }
             this.spinner(false)
         })
         .catch((error) => {
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
+            Alert.alert(
+                'Sem conexão',
+                'Verifique sua conexão com a internet',
+            );
             this.spinner(false)
-        })
-    }
-
-    estados(){
-        fetch('http://192.168.11.51/ouvidoria/app/estados', {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({estadosOptions: responseJson})
-        })
-        .catch((error) => {
-            this.setState({cadastrado: true, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-        });
-    }
-
-    cidades(estado_id, cidade){
-        if(estado_id == 26){
-            this.setState({cidade: 4826, cidadeNome: "Caraguatatuba"},() => {
-                this.valida("cidade","cidadeErro",1)
-                this.find("bairro","")
-            })
-        }else{
-            this.setState({cidade: "", cidadeNome: "Selecione uma opção"},() => {
-                this.find("bairro","")
-            })  
-        }
-        
-        fetch('http://192.168.11.51/ouvidoria/app/cidades/'+estado_id, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({cidadesOptions: responseJson}, () => {
-                if(!(estado_id == 26 && cidade == 0)){
-                    this.find("cidade",cidade)
-                }
-            })                
-        })
-        .catch((error) => {
-            this.setState({cadastrado: true, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-        });
-    }
-
-    bairros(){
-        fetch('http://192.168.11.51/ouvidoria/app/bairros', {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({bairrosOptions: responseJson})
-        })
-        .catch((error) => {
-            this.setState({cadastrado: true, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-        });
-    }
-
-    localizacaoAtual(){
-        this.spinner(true)
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                this.preencherEnderecoAtual(position.coords.latitude, position.coords.longitude)
-            },
-            (error) => {
-                if(error != null){
-                    this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro ao tentar localizar sua posição","Favor verificar a internet e o gps"], isVisible: true})
-                    this.spinner(false)
-                }
-            },
-            { enableHighAccuracy: false, timeout: 25000},
-        );
-    }
-
-    preencherEnderecoAtual(lat, lng){
-        fetch('https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyBdOhvMaCRWAOo1goFQtbRO2lDY-Y2ONLw&latlng='+lat+","+lng, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            var loc = responseJson.results[0].address_components
-            this.setState({numero: loc[0].long_name, logradouro: loc[1].long_name, cep: loc[6].long_name }, () => {
-                this.valida("numero","numeroErro",1)
-                this.buscarCepIds(loc[2].long_name, loc[3].long_name, loc[4].short_name)
-            })
-            this.setState({cadastrado: false, titulo: "SUCESSO", mensagem: ["Endereço encontrado","Verifique os dados preenchidos"], isVisible: true})
-            this.refs._scrollView.scrollTo({x: this.state.enderecoLocation.x, y: this.state.enderecoLocation.y, animated: true})
-        })
-        .catch((error) => {
-            this.spinner(false)
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-        });
-    }
-
-    mascaraCep(cep){
-        cep = cep.replace(/[^0-9]/g, '');
-        this.setState({cep},() => {
-            if(cep.length>4)
-                cep = cep.substring(0,5)+"-"+ cep.substring(5,8)
-            this.setState({cep})
-        })
-    }
-
-    mascaraTelefonePrimario(telefonePrincipal){
-        telefonePrincipal = telefonePrincipal.replace(/[^0-9]/g, '');
-        this.setState({telefonePrincipal},() => {
-            if(telefonePrincipal.length >= 2)
-                telefonePrincipal = "("+ telefonePrincipal.substring(0,2)+")"+telefonePrincipal.substring(2,12)
-            if(telefonePrincipal.length > 8 && telefonePrincipal.length <= 12)
-                telefonePrincipal = telefonePrincipal.substring(0,8)+ "-" + telefonePrincipal.substring(8,12)
-            else if(telefonePrincipal.length > 8 && telefonePrincipal.length > 12)
-                telefonePrincipal = telefonePrincipal.substring(0,9)+ "-"+ telefonePrincipal.substring(9,13)
-            this.setState({telefonePrincipal})
-        })
-    }
-
-    mascaraTelefoneSecundario(telefoneSecundario){
-        telefoneSecundario = telefoneSecundario.replace(/[^0-9]/g, '');
-        this.setState({telefoneSecundario},() => {
-            if(telefoneSecundario.length >= 2)
-                telefoneSecundario = "("+ telefoneSecundario.substring(0,2)+")"+telefoneSecundario.substring(2,12)
-            if(telefoneSecundario.length > 8 && telefoneSecundario.length <= 12)
-                telefoneSecundario = telefoneSecundario.substring(0,8)+ "-" + telefoneSecundario.substring(8,12)
-            else if(telefoneSecundario.length > 8 && telefoneSecundario.length > 12)
-                telefoneSecundario = telefoneSecundario.substring(0,9)+ "-"+ telefoneSecundario.substring(9,13)
-            this.setState({telefoneSecundario})
         })
     }
 
@@ -268,20 +82,6 @@ export default class Cadastro extends PureComponent {
             case 1:
                 if(val.length == 0)
                     mensagemErro += "Digite um "+ ref +" válido"
-                break
-            case 2:
-                if(!cpfValido(val))
-                    mensagemErro += "Digite um "+ref+" válido"
-                break
-            case 3:
-                if(val.length < 13 && val.length != 0)
-                    mensagemErro += "Digite um telefone válido"
-                break
-            case 4:
-                if(val.length < 9 && val.length != 0)
-                    mensagemErro += "Digite um CEP válido"
-                else if(val.length == 9)
-                    this.buscarCep()
                 break
             case 5:
                 if(val.length == 0 || !val.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/) && val.length != 0)
@@ -312,14 +112,6 @@ export default class Cadastro extends PureComponent {
         this.spinner(true)
         setTimeout(() => {
             this.valida("nome","nomeErro",1)
-            this.valida("cpf","cpfErro",2)
-            this.valida("telefonePrincipal","telefonePrincipalErro",3)
-            this.valida("telefoneSecundario","telefoneSecundarioErro",3)
-            this.valida("cidade","cidadeErro",1)
-            this.valida("estado","estadoErro",1)
-            this.valida("bairro","bairroErro",1)
-            this.valida("logradouro","logradouroErro",1)
-            this.valida("numero","numeroErro",1)
             this.valida("email","emailErro",5)
             this.valida("password","passwordErro",6)
             this.valida("passwordConfirm","passwordConfirmErro",7)
@@ -330,19 +122,6 @@ export default class Cadastro extends PureComponent {
             }else
                 this.cadastrar()
         }, 1)            
-    }
-    
-    mascaraCpf(cpf){
-        cpf = cpf.replace(/[^0-9]/g, '');
-        this.setState({cpf},() => {
-            if(cpf.length>3)
-            cpf = cpf.substring(0,3)+ "."+ cpf.substring(3,13)
-            if(cpf.length>7)
-            cpf = cpf.substring(0,7)+ "."+ cpf.substring(7,13)
-            if(cpf.length>11)
-                cpf = cpf.substring(0,11)+ "-"+ cpf.substring(11,13)
-            this.setState({cpf})
-        })
     }
 
     mensagens() {
@@ -459,7 +238,7 @@ export default class Cadastro extends PureComponent {
                 <ScrollView keyboardShouldPersistTaps="handled" ref="_scrollView" contentContainerStyle={styles.scroll}>
                     <View style={styles.formulario}>
                         <View style={styles.tituloContent}>
-                            <Text style={styles.titulo}>Dados Pessoais</Text>
+                            <Text style={styles.titulo}>Dados cadastrais</Text>
                         </View>
                         <View style={styles.inputs}>
                             <TextField label="Nome" error={this.state.nomeErro} value={this.state.nome} onChangeText={(nome) => this.setState({nome})} onEndEditing={(e) => this.valida("nome","nomeErro",1)}/>
@@ -532,7 +311,7 @@ const styles = StyleSheet.create({
     titulo: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: '#7f8c8d',
+        color: '#800000',
     },
     tituloContent: {
         alignItems: 'center',

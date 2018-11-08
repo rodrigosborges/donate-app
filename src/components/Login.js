@@ -29,16 +29,20 @@ export default class Login extends Component {
   logar(){
     const { navigate } = this.props.navigation;
     const { goBack } = this.props.navigation;
-    fetch('http://192.168.11.51/donate/app/logarUsuario?email='+this.state.email+'&password='+this.state.password, {
-      method: 'GET',
+    fetch('http://192.168.1.101/donate/app/logarUsuario', {
+      method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        email: this.state.email,
+        password: this.state.password,
+      })
     }).then((response) => response.json())
     .then((responseJson) => {
       if(responseJson.nome){
-        AsyncStorage.multiSet([['email', this.state.email],['password', this.state.password],['nome', responseJson.nome]])
+        AsyncStorage.multiSet([['email', this.state.email],['password', this.state.password],['nome', JSON.stringify(responseJson.nome)], ['id',JSON.stringify(responseJson.id)]])
         this.props.navigation.state.params.atualiza(this.state.email, this.state.password, responseJson.nome)
         this.props.navigation.goBack()
         this.spinner(false)

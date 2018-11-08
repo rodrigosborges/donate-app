@@ -48,7 +48,7 @@ export default class Anuncios extends Component {
 
     
     carregarAnuncios(){
-        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='
+        fetch('http://192.168.1.101/donate/app/anuncios?categoria_id='
         +(this.state.categoria_id == null ? "" : this.state.categoria_id)+'&cidade_id='
         +(this.state.cidade_id == null ? "" : this.state.cidade_id)+'&page='
         +this.state.pagina+'&email='

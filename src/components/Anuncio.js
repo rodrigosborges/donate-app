@@ -17,6 +17,7 @@ export default class Anuncio extends Component {
       erro: null,
       token: null,
       imagemFull: false,
+      id: null,
       nivel: 0,
     };
   }
@@ -24,6 +25,9 @@ export default class Anuncio extends Component {
   componentDidMount(){
     var that = this
     setTimeout(function(){that.carregarHeader()}, 1)  
+    AsyncStorage.getItem('id').then((id) => {
+      this.setState({id: JSON.parse(id)})
+    })
   }
 
   componentWillMount(){
@@ -39,13 +43,15 @@ export default class Anuncio extends Component {
   }
 
   carregarHeader(){
-    this.props.navigation.setParams({ 
-      headerRight: (
-        <TouchableOpacity onPress={() => {this.chat()}}>
-            <Icon style={{marginRight: 15}} name="comments" size={30} color="white" />
-        </TouchableOpacity>
-      )
-    })
+    if(this.state.id != this.props.navigation.state.params.anuncio.doador_id){
+      this.props.navigation.setParams({ 
+        headerRight: (
+          <TouchableOpacity onPress={() => {this.chat()}}>
+              <Icon style={{marginRight: 15}} name="comments" size={30} color="white" />
+          </TouchableOpacity>
+        )
+      })
+    }
   }
 
   formatarDataCompleta(data){
@@ -71,9 +77,9 @@ export default class Anuncio extends Component {
 
   avaliar(nivel){
     this.setState({nivel})
-    fetch('http://192.168.11.51/donate/avaliacoes/avaliar?avaliador_id='
+    fetch('http://192.168.1.101/donate/avaliacoes/avaliar?avaliador_id='
     +this.state.id+'&avaliado_id='
-    +this.state.doador+'&nivel='
+    +this.props.navigation.state.params.anuncio.doador_id+'&nivel='
     +nivel, {
     method: 'GET',
     }).catch((error) => {
@@ -111,33 +117,33 @@ export default class Anuncio extends Component {
             <View style={styles.linhaText} />
             <Text style={styles.anuncio}><Text style={styles.texto}>Categoria:</Text> {anuncio.categoriaNome}</Text>
             <View style={styles.linhaText} />
+            <Text style={styles.anuncio}><Text style={styles.texto}>Doador:</Text> {anuncio.usuarioNome}</Text>
+            <View style={styles.linhaText} />
             <Text style={styles.anuncio}>{anuncio.descricao}</Text>
-            {/* <TouchableOpacity onPress={() => {this.chat()}} style={styles.chat}>
-              <Text style={{fontSize: 25, color: "white" }}><Icon name="comments" size={25}/> CHAT</Text>
-            </TouchableOpacity> */}
-
-            <View style={{width: "100%", alignItems: 'center', justifyContent: 'center', height: 120}}>
-              {this.state.nivel == 0 && 
-                <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                  <Text style={styles.anuncio}>Avalie este doador!</Text>
-                  <Stars
-                    count={5}
-                    half={false}
-                    fullStar={<Icon2 name={'star'} size={45} style={[styles.myStarStyle]}/>}
-                    emptyStar={<Icon2 name={'star-outline'} size={45} style={[styles.myStarStyle, styles.myEmptyStarStyle]}/>}
-                    update={(nivel) => this.avaliar(nivel)}
-                  />
+            {this.state.id != anuncio.doador_id && 
+              <View style={{width: "100%", alignItems: 'center', justifyContent: 'center', height: 120}}>
+                {this.state.nivel == 0 &&
+                  <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <Text>Avalie este doador!</Text>
+                    <Stars
+                      count={5}
+                      half={false}
+                      fullStar={<Icon2 name={'star'} size={45} style={[styles.myStarStyle]}/>}
+                      emptyStar={<Icon2 name={'star-outline'} size={45} style={[styles.myStarStyle, styles.myEmptyStarStyle]}/>}
+                      update={(nivel) => setTimeout(() => this.avaliar(nivel), 500)}
+                    />
+                    </View>
+                  }
+                {this.state.nivel != 0 && 
+                  <View>
+                    <Text style={{textAlign: 'center'}}>Você avaliou este doador com {this.state.nivel} estrelas!</Text>
+                    <TouchableOpacity onPress={() => this.setState({nivel: 0})}>
+                      <Text style={{color: "blue",textAlign: 'center'}}>Clique aqui para mudar a sua avaliação.</Text>
+                    </TouchableOpacity>
                   </View>
                 }
-              {this.state.nivel != 0 && 
-                <View>
-                  <Text style={[styles.anuncio, {textAlign: 'center'}]}>Você avaliou este doador com {this.state.nivel} estrelas!</Text>
-                  <TouchableOpacity onPress={() => this.setState({nivel: 0})}>
-                    <Text style={[styles.anuncio, {color: "blue",textAlign: 'center'}]}>Clique aqui para mudar a sua avaliação.</Text>
-                  </TouchableOpacity>
-                </View>
-              }
-            </View>
+              </View>
+            }
           </View>
           } 
         </ScrollView>}

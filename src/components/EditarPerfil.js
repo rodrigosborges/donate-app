@@ -13,6 +13,7 @@ export default class Cadastro extends PureComponent {
             nome: "",
             email:  "",
             password: "",
+            id: "",
 
             mensagem: [],
             cadastrado: false,
@@ -27,14 +28,15 @@ export default class Cadastro extends PureComponent {
     componentWillMount(){
         StatusBar.setHidden(false)
         this.setState({
-            nome	            : this.props.navigation.state.params.nome,
-            email                 : this.props.navigation.state.params.email,
+            nome	   : this.props.navigation.state.params.nome,
+            email      : this.props.navigation.state.params.email,
+            id         : this.props.navigation.state.params.id,
         })
    }
 
     editar(){
-        const { navigate } = this.props.navigation;
-        fetch('http://192.168.11.51/ouvidoria/app/edicaoUsuario', {
+        const navigation = this.props.navigation;
+        fetch('http://192.168.1.101/donate/app/usuario/update', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -43,17 +45,31 @@ export default class Cadastro extends PureComponent {
             body: JSON.stringify({
                 nome: this.state.nome,
                 email: this.state.email,
-
-                token: this.state.token,
+                password: this.state.password,
+                id: this.state.id,
             }),
         }).then((response) => response.json())
         .then((responseJson) => {
-            var titulo = (responseJson[1][0] == "Edição efetuada com sucesso!" ? "SUCESSO" : "ERRO")
-            this.setState({cadastrado: responseJson[0],titulo: titulo, mensagem: responseJson[1], isVisible: true})
+            if(responseJson == true){
+                Alert.alert(
+                    'Sucesso',
+                    'Perfil atualizado!',
+                    [{text: 'Ok', onPress: () => navigation.goBack()}],
+                    {cancelable: false}
+                );
+            }else{
+                Alert.alert(
+                    'Sem conexão',
+                    'Verifique sua conexão com a internet',
+                );
+            }
             this.spinner(false)
         })
         .catch((error) => {
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
+            Alert.alert(
+                'Sem conexão',
+                'Verifique sua conexão com a internet',
+            );
             this.spinner(false)
         })
     }
@@ -66,31 +82,13 @@ export default class Cadastro extends PureComponent {
                 if(val.length == 0)
                     mensagemErro += "Digite um "+ ref +" válido"
                 break
-            case 2:
-                if(!cpfValido(val))
-                    mensagemErro += "Digite um "+ref+" válido"
-                break
-            case 3:
-                if(val.length < 13 && val.length != 0)
-                    mensagemErro += "Digite um telefone válido"
-                break
-            case 4:
-                if(val.length < 9 && val.length != 0)
-                    mensagemErro += "Digite um CEP válido"
-                else if(val.length == 9)
-                    this.buscarCep()
-                break
             case 5:
                 if(val.length == 0 || !val.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/) && val.length != 0)
                     mensagemErro += "Digite um e-mail válido"
                 break
             case 6:
-                if(!val.match(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/))
+                if(val.length != 0 && !val.match(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/))
                     mensagemErro += "Deve conter números, letras e caractere especial"
-                break
-            case 7:
-                if(val != this.state.password)
-                    mensagemErro += "As senhas não conferem"
                 break
         }
         this.setState({[refErro]: mensagemErro});
@@ -109,8 +107,8 @@ export default class Cadastro extends PureComponent {
         this.spinner(true)
         setTimeout(() => {
             this.valida("nome","nomeErro",1)
-            this.valida("email","emailErro",1)
-            this.valida("password","passwordErro",1)
+            this.valida("email","emailErro",5)
+            this.valida("password","passwordErro",6)
 
             if(this.state.erroForm == true){
                 this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true})
@@ -206,7 +204,7 @@ export default class Cadastro extends PureComponent {
                         </View>
                     </View>
                     <View style={styles.cadastrar}>
-                        <Button disabled={this.state.spinner} onPress={() => {this.spinner(true), setTimeout(() => this.resetarFormulario(),1)}} title="Atualizar" color="#2C3E50" />
+                        <Button disabled={this.state.spinner} onPress={() => {this.spinner(true), setTimeout(() => this.resetarFormulario(),1)}} title="Atualizar" color="#800000" />
                     </View>
                 </ScrollView>
             </View>
@@ -263,7 +261,7 @@ const styles = StyleSheet.create({
     titulo: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: '#7f8c8d',
+        color: '#800000',
     },
     tituloContent: {
         alignItems: 'center',

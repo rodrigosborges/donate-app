@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StatusBar,Alert,AppRegistry, StyleSheet,View , Text, TextInput, Button, Image,ScrollView, ReactNative, AsyncStorage, TouchableOpacity, Dimensions, ImageBackground, TouchableHighlight } from 'react-native';
+import { StatusBar,Alert,AppRegistry, StyleSheet,View , Text, TextInput, Button, Image,ScrollView, ActivityIndicator ,ReactNative, AsyncStorage, TouchableOpacity, Dimensions, ImageBackground, TouchableHighlight } from 'react-native';
 import logo from './../brasao.png'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { NavigationActions, withNavigationFocus } from 'react-navigation';
@@ -18,6 +18,10 @@ export default class Menu extends Component {
             spinner: false,
             cadastrado: false,
             titulo: "",
+            cadastro: null,
+            anunciados: null,
+            doados: null,
+            avaliacao: null,
         };      
 
     }
@@ -25,12 +29,11 @@ export default class Menu extends Component {
     componentDidMount() {
         StatusBar.setHidden(false)   
 
-        AsyncStorage.multiGet(['nome', 'email']).then((values) => {
-            this.setState({nome: values[0][1]})
-            this.setState({email: values[1][1]})
+        AsyncStorage.multiGet(['nome', 'email', 'id']).then((values) => {
+            this.setState({nome: JSON.parse(values[0][1]), email: values[1][1], id: values[2][1]})
+            this.carregarDados(values[2][1])
         })
-        var that = this
-        setTimeout(function(){that.carregarHeader()}, 1)
+        setTimeout(() => {this.carregarHeader()}, 1)
     }
 
     carregarHeader(){
@@ -49,12 +52,33 @@ export default class Menu extends Component {
         headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>,
     });
 
+    carregarDados(id){
+        fetch('http://192.168.1.101/donate/app/dadosUsuario/'+id, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            this.setState({
+                cadastro: responseJson.cadastro,
+                anunciados: responseJson.anunciados,
+                doados: responseJson.doados,
+                avaliacao: responseJson.avaliacao,
+            })
+        })
+        .catch((error) => {
+            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
+            this.props.navigation.goBack()
+        });
+    }
 
     mensagens() {
         return this.state.mensagem.map(function(mensagem, i){
             return(
                 <View key={i}>
-                <Text style={{fontSize: 16, marginBottom: 3}}>{mensagem}</Text>
+                    <Text style={{fontSize: 16, marginBottom: 3}}>{mensagem}</Text>
                 </View>
             );
         });
@@ -67,12 +91,13 @@ export default class Menu extends Component {
             params: {
                 "nome" : this.state.nome,
                 "email" : this.state.email,
+                "id" : this.state.id,
             },
         })
     }
 
     atualiza(){
-        fetch('http://192.168.11.51/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
+        fetch('http://192.168.1.101/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -137,6 +162,7 @@ export default class Menu extends Component {
     render() {
         const width = Dimensions.get('window').width
         const { dispatch } = this.props.navigation;
+        const carregando = <ActivityIndicator size="small" color="#800000"/>
         return (
             <View style={styles.container} shouldRasterizeIOS={true} renderToHardwareTextureAndroid={true}>
                 <Modal
@@ -150,7 +176,7 @@ export default class Menu extends Component {
                 <View style={{backgroundColor: "#E0E0E0", height: "100%", width: "100%"}}>
                     <View style={styles.perfilSection}>
                         <View style={styles.mensagem}>
-                            <Text style={[styles.textoHeader, {color: "white"}]}>{this.state.nome}</Text> 
+                            <Text style={[styles.textoHeader, {color: "white", textAlign: 'center'}]}>{this.state.nome}</Text> 
                         </View>
                     </View>
                     <View style={styles.imagemContainer}>
@@ -160,21 +186,21 @@ export default class Menu extends Component {
                         <View style={{flexDirection: 'row', height: "50%"}}>
                             <View style={styles.blocoInformacoes}>
                                 <Text style={styles.textoHeader}>Cadastro</Text>
-                                <Text style={styles.textoHeader}>24/08/2019</Text>
+                                {this.state.cadastro == null ? carregando : (<Text style={styles.textoHeader}>{this.state.cadastro}</Text>)}
                             </View>
                             <View style={styles.blocoInformacoes}>
                                 <Text style={styles.textoHeader}>Anunciados</Text>
-                                <Text style={styles.textoHeader}>4</Text>
+                                {this.state.anunciados == null ? carregando : (<Text style={styles.textoHeader}>{this.state.anunciados}</Text>)}
                             </View>
                         </View>
                         <View style={{flexDirection: 'row', height: "50%"}}>
                             <View style={styles.blocoInformacoes}>
                                 <Text style={styles.textoHeader}>Doados</Text>
-                                <Text style={styles.textoHeader}>4</Text>
+                                {this.state.doados == null ? carregando : (<Text style={styles.textoHeader}>{this.state.doados}</Text>)}
                             </View>
                             <View style={styles.blocoInformacoes}>
                                 <Text style={styles.textoHeader}>Avaliação</Text>
-                                <Text style={styles.textoHeader}>4</Text>
+                                {this.state.avaliacao == null ? carregando : (<Text style={styles.textoHeader}>{this.state.avaliacao}</Text>)}
                             </View>
                         </View>
                     </View>

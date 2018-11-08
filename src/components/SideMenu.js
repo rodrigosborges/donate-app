@@ -18,9 +18,9 @@ class SideMenu extends Component {
     }
 
     componentDidMount(){
-        AsyncStorage.multiGet(['email','password','nome']).then((values) => {
-            this.setState({email: values[0][1],password: values[1][1], nome: values[2][1]},() => {
-                this.atualiza(this.state.email, this.state.password, this.state.nome)
+        AsyncStorage.multiGet(['email','password','nome', 'id']).then((values) => {
+            this.setState({email: values[0][1],password: values[1][1], nome: JSON.parse(values[2][1]), id: JSON.parse(values[3][1])},() => {
+                this.atualiza(this.state.email, this.state.password, this.state.nome, this.state.id)
             })
         })
     }   
@@ -33,12 +33,16 @@ class SideMenu extends Component {
     }
 
     atualiza(email, password, nome = ""){
-        fetch('http://192.168.11.51/donate/app/checkarAuth?email='+email+'&password='+password, {
-            method: 'GET',
+        fetch('http://192.168.1.101/donate/app/checkarAuth', {
+            method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+            })
         }).then((response) => response.json())
         .then((responseJson) => {
             if(responseJson == true){
