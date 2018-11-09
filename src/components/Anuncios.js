@@ -16,7 +16,8 @@ export default class Anuncios extends Component {
             categoria_id: "",
             cidade_id: "",
             cidadeNome: "",
-            email: "",
+            id: "",
+            pesquisa: "",
             spinner: false,
             pagina: 1,
             cidades: [
@@ -30,12 +31,14 @@ export default class Anuncios extends Component {
             scrollMax: 0,
             heightLayout: 0,
             fim: false,
+            pesquisaVisible: false,
         };  
     }
 
     componentWillMount(){
+        this.carregarHeader()
         this.spinner(true)
-        this.setState({categoria_id: this.props.navigation.state.params.categoria_id, email: this.props.navigation.state.params.email}, () => {
+        this.setState({categoria_id: this.props.navigation.state.params.categoria_id, id: this.props.navigation.state.params.id}, () => {
             AsyncStorage.multiGet(["cidade_id",'cidadeNome']).then((val) => {
                 if(val[0][1] == null)
                     val[0][1] = ""
@@ -46,12 +49,22 @@ export default class Anuncios extends Component {
         })
     }
 
+    carregarHeader(){
+        this.props.navigation.setParams({ 
+            headerRight: (
+                <TouchableOpacity onPress={() => {this.setState({pesquisaVisible: true})}}>
+                    <Icon style={{marginRight: 15}} name="search" size={28} color="white" />
+                </TouchableOpacity>
+            )
+        })
+      }
     
     carregarAnuncios(){
-        fetch('http://192.168.1.101/donate/app/anuncios?categoria_id='
+        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='
         +(this.state.categoria_id == null ? "" : this.state.categoria_id)+'&cidade_id='
         +(this.state.cidade_id == null ? "" : this.state.cidade_id)+'&page='
-        +this.state.pagina+'&email='
+        +this.state.pagina+'&pesquisa='
+        +this.state.pesquisa+'&email='
         +(this.state.email == null ? "" : this.state.email), {
         method: 'GET',
         }).then((response) => response.json())
@@ -83,6 +96,7 @@ export default class Anuncios extends Component {
 
     static navigationOptions = ({ navigation, screenProps }) => ({
         title: navigation.state.params.title,
+        headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>
     });
 
     verAnuncio(id) {
@@ -153,7 +167,7 @@ export default class Anuncios extends Component {
                     options={this.state.cidades}
                     cancelButtonText={"Cancelar"}
                 />
-                {this.state.email == "" && (
+                {this.state.id == "" || this.state.id == null && (
                 <TouchableOpacity style={styles.filtros} onPress={() => { this.setState({cidadeVisible: true}) }}>
                     <Text style={{fontSize: 22}}><Icon style={{marginRight: 15}} name="map-marker-alt" size={25} color="black" /> {this.state.cidadeNome}</Text>
                 </TouchableOpacity>

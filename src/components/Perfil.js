@@ -53,7 +53,7 @@ export default class Menu extends Component {
     });
 
     carregarDados(id){
-        fetch('http://192.168.1.101/donate/app/dadosUsuario/'+id, {
+        fetch('http://192.168.11.51/donate/app/dadosUsuario/'+id, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -97,7 +97,7 @@ export default class Menu extends Component {
     }
 
     atualiza(){
-        fetch('http://192.168.1.101/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
+        fetch('http://192.168.11.51/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

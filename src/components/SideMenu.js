@@ -33,7 +33,7 @@ class SideMenu extends Component {
     }
 
     atualiza(email, password, nome = ""){
-        fetch('http://192.168.1.101/donate/app/checkarAuth', {
+        fetch('http://192.168.11.51/donate/app/checkarAuth', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -90,13 +90,13 @@ class SideMenu extends Component {
             {this.state.logado && (
                 <View>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Anuncios",{title: "Meus anúncios", email: this.state.email})}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Anuncios",{title: "Meus anúncios", id: this.state.id})}}>
                         <Text style={styles.sectionHeadingStyle}>
                             Meus anúncios
                         </Text>         
                     </TouchableOpacity>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("CadastroAnuncio",{email: this.state.email})}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("CadastroAnuncio",{id: this.state.id})}}>
                         <Text style={styles.sectionHeadingStyle}>
                             Anunciar
                         </Text>

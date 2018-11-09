@@ -23,7 +23,7 @@ export default class Login extends Component {
     }
 
     enviar(){
-        fetch('http://192.168.1.101/ouvidoria/app/solicitarSenha', {
+        fetch('http://192.168.11.51/ouvidoria/app/solicitarSenha', {
         method: 'POST',
         headers: {
             Accept: 'application/json',

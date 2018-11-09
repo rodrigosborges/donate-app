@@ -22,7 +22,7 @@ export default class CadastroAnuncio extends Component {
 
             tituloAnuncio: "",
             descricao: "",
-            email: "",
+            id: "",
 
             cidade: "",
             bairro: "",
@@ -59,8 +59,8 @@ export default class CadastroAnuncio extends Component {
     }
 
     componentDidMount(){
-        AsyncStorage.getItem('email').then((email) => {
-            this.setState({email})
+        AsyncStorage.getItem('id').then((id) => {
+            this.setState({id})
         })
     }
 
@@ -115,7 +115,7 @@ export default class CadastroAnuncio extends Component {
         body.append('titulo', this.state.tituloAnuncio)
         body.append('bairro_id', this.state.bairro)
         body.append('categoria_id', this.state.categoria)
-        body.append('email', this.state.email)
+        body.append('id', this.state.id)
         
         config = { 
             method: 'POST', 
@@ -125,7 +125,7 @@ export default class CadastroAnuncio extends Component {
             body: body 
         };
 
-        fetch('http://192.168.1.101/donate/app/doacoes/insert', config)
+        fetch('http://192.168.11.51/donate/app/doacoes/insert', config)
 
         .then((response) => response.json()).then((responseJson) => {
             var titulo = responseJson[1][0] == "Anúncio cadastrado" ? "SUCESSO" : "ERRO"
@@ -140,7 +140,7 @@ export default class CadastroAnuncio extends Component {
     }
 
     bairros(cidade){
-        fetch('http://192.168.1.101/donate/app/bairros/'+cidade, {
+        fetch('http://192.168.11.51/donate/app/bairros/'+cidade, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

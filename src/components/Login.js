@@ -29,7 +29,7 @@ export default class Login extends Component {
   logar(){
     const { navigate } = this.props.navigation;
     const { goBack } = this.props.navigation;
-    fetch('http://192.168.1.101/donate/app/logarUsuario', {
+    fetch('http://192.168.11.51/donate/app/logarUsuario', {
       method: 'POST',
       headers: {
         Accept: 'application/json',

@@ -26,7 +26,7 @@ export default class SplashScreen extends Component {
 
     verificar=()=>{
         const { navigate } = this.props.navigation
-        fetch('http://192.168.1.101/ouvidoria/app/checkarAuth', {
+        fetch('http://192.168.11.51/ouvidoria/app/checkarAuth', {
             method: 'POST',
             headers: {
             Accept: 'application/json',

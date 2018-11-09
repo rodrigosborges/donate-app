@@ -36,7 +36,7 @@ export default class Cadastro extends PureComponent {
 
     editar(){
         const navigation = this.props.navigation;
-        fetch('http://192.168.1.101/donate/app/usuario/update', {
+        fetch('http://192.168.11.51/donate/app/usuario/update', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
