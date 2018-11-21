@@ -32,11 +32,14 @@ export default class Cadastro extends PureComponent {
             email      : this.props.navigation.state.params.email,
             id         : this.props.navigation.state.params.id,
         })
+        AsyncStorage.getItem('token').then((val) => {
+            this.setState({token: val})
+        })
    }
 
     editar(){
         const navigation = this.props.navigation;
-        fetch('http://192.168.11.51/donate/app/usuario/update', {
+        fetch('http://192.168.1.104/donate/app/usuario/update', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -47,6 +50,7 @@ export default class Cadastro extends PureComponent {
                 email: this.state.email,
                 password: this.state.password,
                 id: this.state.id,
+                token: this.state.token,
             }),
         }).then((response) => response.json())
         .then((responseJson) => {
@@ -57,6 +61,9 @@ export default class Cadastro extends PureComponent {
                     [{text: 'Ok', onPress: () => navigation.goBack()}],
                     {cancelable: false}
                 );
+                AsyncStorage.setItem('email', this.state.email)
+                if(this.state.password != "")
+                    AsyncStorage.setItem('password',this.state.password)
             }else{
                 Alert.alert(
                     'Sem conexão',

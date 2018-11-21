@@ -15,15 +15,8 @@ export default class Cadastro extends PureComponent {
             email: "",
             password: "",
             passwordConfirm: "",
-
-            mensagem: [],
-            cadastrado: false,
-            titulo: "",
-
+            
             erroForm: true,
-
-            modalOpen: false,
-
             spinner: false,
         };
     }
@@ -37,7 +30,7 @@ export default class Cadastro extends PureComponent {
 
     cadastrar(){
         const { navigate } = this.props.navigation;
-        fetch('http://192.168.11.51/donate/app/usuario/insert', {
+        fetch('http://192.168.1.104/donate/app/usuario/insert', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -134,49 +127,6 @@ export default class Cadastro extends PureComponent {
         });
     }
 
-    header(){
-        if(this.state.titulo == "SUCESSO"){
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#B2FF59'}]}><View style={styles.icone}><Icon color="#B2FF59" size={35} name="check-circle"/></View><Text style={styles.mensagemAlerta}>SUCESSO</Text></View>)
-        }else{
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#F44336'}]}><View style={styles.icone}><Icon size={35} color="#F44336" name="times-circle"/></View><Text style={styles.mensagemAlerta}>ERRO</Text></View>)
-        }
-    }
-
-    _renderButton = (text, onPress) => (
-        <TouchableOpacity style={styles.modalButton} onPress={onPress}>
-        <View style={styles.button}>
-            <Text>{text}</Text>
-        </View>
-        </TouchableOpacity>
-    );
-
-    _renderModalContent = (goBack) => (
-        <View style={styles.modalContent}>
-            <View style={styles.header}>
-                {this.header()}
-            </View>
-            <ScrollView style={styles.modalMensagem} contentContainerStyle={{flexGrow: 1, justifyContent : 'center'}}>
-                <View style={{alignItems: 'center'}}>
-                    {this.mensagens()}
-                </View>
-            </ScrollView>
-            <View>
-                {this._renderButton("Fechar", () => (this.state.cadastrado) ? (goBack()) : (this.setState({ isVisible: false })))}
-            </View>
-        </View>
-    );
-    
-    onShow = (nome) => {
-        this.setState({ [nome]: true, modalOpen: true });
-    }
-    
-    onCancel = (nome) => {
-        this.setState({
-            [nome]: false,
-            modalOpen: false,
-        });
-    }
-
     find(name, key){
         var aux = "Selecione uma opção"
         for(var i=0; i < this.state[name+"sOptions"].length; i++){
@@ -226,14 +176,6 @@ export default class Cadastro extends PureComponent {
             (<View><View style={{paddingBottom: "2%"}} ></View><TextField error={this.state.bairroErro} onChangeText={(bairro) => this.setState({bairro})} onEndEditing={(e) => this.valida("bairro","bairroErro",1)} value={this.state.bairro+""} label={"Bairro"}/></View>)
         return (
             <View style={styles.container}>
-                {this.state.modalOpen == true && (<View style={styles.modalOpen}></View>)}
-                <Modal
-                    isVisible={this.state.isVisible}
-                    animationIn="slideInLeft"
-                    animationOut="slideOutRight"
-                    >
-                    {this._renderModalContent(goBack)}
-                </Modal>
                 <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
                 <ScrollView keyboardShouldPersistTaps="handled" ref="_scrollView" contentContainerStyle={styles.scroll}>
                     <View style={styles.formulario}>

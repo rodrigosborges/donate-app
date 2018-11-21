@@ -55,6 +55,10 @@ export default class CadastroAnuncio extends Component {
             concluido: false,
             
             arquivo: [],
+
+            editar: false,
+            arquivoExcluir: [],
+            idAnuncio: "",
         };
     }
 
@@ -62,7 +66,30 @@ export default class CadastroAnuncio extends Component {
         AsyncStorage.getItem('id').then((id) => {
             this.setState({id})
         })
+        AsyncStorage.getItem('token').then((val) => {
+            this.setState({token: val})
+        })
+        var anuncio = this.props.navigation.state.params.anuncio
+        if(anuncio != null){
+            this.setState({
+                editar: true,
+                tituloAnuncio: anuncio.titulo,
+                descricao: anuncio.descricao,
+                categoriaNome: anuncio.categoriaNome,
+                cidadeNome: anuncio.cidadeNome,
+                bairroNome: anuncio.bairroNome,
+                categoria: anuncio.categoria,
+                cidade: anuncio.cidade,
+                arquivo: anuncio.imagens,
+                idAnuncio: anuncio.id,
+            })
+            this.bairros(anuncio.cidade, anuncio.bairro, anuncio.bairroNome)
+        }
     }
+
+    static navigationOptions = ({ navigation, screenProps }) => ({
+        title: navigation.state.params.title,
+    });
 
     arquivo(){
         const options = {
@@ -99,6 +126,7 @@ export default class CadastroAnuncio extends Component {
 
     excluirArquivo(i){
         var arquivos = this.state.arquivo
+        this.setState({arquivoExcluir: [ ...this.state.arquivoExcluir, arquivos[i]]})
         arquivos.splice(i,1)
         this.setState({arquivo: arquivos})
     }
@@ -108,15 +136,23 @@ export default class CadastroAnuncio extends Component {
         
         var body = new FormData();
         this.state.arquivo.map(function(v,i){
-            body.append('anexos['+i+']',v)
+            if(typeof v != "string")
+                body.append('anexos['+i+']',v)
         })
 
         body.append('descricao', this.state.descricao)
         body.append('titulo', this.state.tituloAnuncio)
         body.append('bairro_id', this.state.bairro)
         body.append('categoria_id', this.state.categoria)
-        body.append('id', this.state.id)
-        
+        body.append('usuario_id', this.state.id)
+        body.append('token', this.state.token)
+        if(this.state.editar){
+            this.state.arquivoExcluir.map(function(v,i){
+                body.append('arquivoExcluir['+i+']', v)
+            })
+            body.append('id', this.state.idAnuncio)
+        }
+
         config = { 
             method: 'POST', 
             headers: { 
@@ -125,22 +161,24 @@ export default class CadastroAnuncio extends Component {
             body: body 
         };
 
-        fetch('http://192.168.11.51/donate/app/doacoes/insert', config)
+        fetch(('http://192.168.1.104/donate/app/doacoes/'+(this.state.editar ? "update" : "insert")), config)
 
         .then((response) => response.json()).then((responseJson) => {
-            var titulo = responseJson[1][0] == "Anúncio cadastrado" ? "SUCESSO" : "ERRO"
+            var titulo = responseJson[0] == true ? "SUCESSO" : "ERRO"
             this.setState({cadastrado: responseJson[0],titulo: titulo, mensagem: responseJson[1], isVisible: true, concluido: (titulo == "SUCESSO"), codigo: responseJson[2]})
             setTimeout(() => {this.spinner(false)}, 1)
         })
         .catch((error) => {
-            alert(error.message)
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-            setTimeout(() => {this.spinner(false)}, 1)
+            Alert.alert(
+                'Sem conexão',
+                'Verifique sua conexão com a internet',
+            );
+            this.spinner(false)
         })
     }
 
-    bairros(cidade){
-        fetch('http://192.168.11.51/donate/app/bairros/'+cidade, {
+    bairros(cidade, bairro = "", bairroNome= ""){
+        fetch('http://192.168.1.104/donate/app/bairros/'+cidade, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -148,10 +186,16 @@ export default class CadastroAnuncio extends Component {
             },
         }).then((response) => response.json())
         .then((responseJson) => {
-            this.setState({bairrosOptions: responseJson})
+            this.setState({bairrosOptions: responseJson, bairroNome: "Selecione uma opção", bairro: ""})
+            if(bairro != "")[
+                this.setState({bairro: bairro, bairroNome: bairroNome})
+            ]
         })
         .catch((error) => {
-            this.setState({cadastrado: true, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
+            Alert.alert(
+                'Sem conexão',
+                'Verifique sua conexão com a internet',
+            );
         });
     }
     
@@ -267,23 +311,6 @@ export default class CadastroAnuncio extends Component {
         this.setState({[name+"Nome"]: aux, modalOpen: false, [name]: key, [name+"Visible"]: false})
     }
 
-    _onPress () {   
-    
-        RNFileSelector.Show(
-          {
-            title: 'Select File',
-            closeMenu: true,
-            editable: true,
-            onDone: (path) => {
-              console.log('file selected: ' + path)
-            },
-            onCancel: () => {
-              console.log('cancelled')
-            }
-          }
-        )
-    }
-
     spinner(bol){
         this.setState({spinner: bol})
     }
@@ -294,7 +321,7 @@ export default class CadastroAnuncio extends Component {
         const arquivos = this.state.arquivo.map((arquivo,index) => {
             return (
                 <View style={styles.arquivosAdicionados} >
-                    <Image source={{uri: arquivo.uri}} style={{width: "100%",height: 150}}/>
+                    <Image source={{uri: (typeof arquivo == "string" ? arquivo : arquivo.uri)}} style={{width: "100%",height: 150}}/>
                     <TouchableOpacity style={{height: 40, width:40,position: 'absolute',right: 5, top:5}} onPress={() => this.excluirArquivo(index)}>
                         <Icon name="window-close" color="white" size={40}/>
                     </TouchableOpacity>
@@ -410,7 +437,7 @@ export default class CadastroAnuncio extends Component {
                     </View>
 
                     <View style={styles.cadastrar}>
-                        <Button disabled={this.state.spinner} onPress={() => {this.spinner(true), setTimeout(() => this.resetarFormulario(),1)}} title="Cadastrar" color="#800" />
+                        <Button disabled={this.state.spinner} onPress={() => {this.spinner(true), setTimeout(() => this.resetarFormulario(),1)}} title={this.state.editar ? "Editar" : "Cadastrar"} color="#800" />
                     </View>
                 </ScrollView>
             </View>

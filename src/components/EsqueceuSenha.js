@@ -11,8 +11,6 @@ export default class Login extends Component {
         super(props);
         this.state = {
         email: "",
-        isVisible: false,
-        mensagem: [],
         spinner: false,
         };
     }
@@ -23,7 +21,7 @@ export default class Login extends Component {
     }
 
     enviar(){
-        fetch('http://192.168.11.51/ouvidoria/app/solicitarSenha', {
+        fetch('http://192.168.1.104/ouvidoria/app/solicitarSenha', {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -35,61 +33,26 @@ export default class Login extends Component {
         }).then((response) => response.json())
         .then((responseJson) => {
             if(responseJson){
-                this.setState({isVisible:true,cadastrar:true,cadastrado: true,mensagem: ["Mensagem enviada para seu e-mail."]})
+                Alert.alert(
+                    'SUCESSO',
+                    'Mensagem enviada para seu e-mail.',
+                );
             }else{
-                this.setState({isVisible:true, mensagem: ["E-mail não cadastrado"]})
+                Alert.alert(
+                    'Erro',
+                    'E-mail não cadastrado',
+                );
             }
             this.spinner(false)
         })
         .catch((error) => {
-            this.setState({isVisible:true, mensagem: ["Erro de conexão"]})
+            Alert.alert(
+                'Sem conexão',
+                'Verifique sua conexão com a internet',
+            );
             this.spinner(false)
         });
     }
-
-
-    mensagens() {
-        return this.state.mensagem.map(function(mensagem, i){
-            return(
-                <View key={i}>
-                <Text style={{fontSize: 16, marginBottom: 3}}>{mensagem}</Text>
-                </View>
-            );
-        });
-    }
-
-    header(){
-        if(this.state.cadastrar){
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#B2FF59'}]}><View style={styles.icone}><Icon color="#B2FF59" size={35} name="check-circle"/></View><Text style={styles.mensagemAlerta}>SUCESSO</Text></View>)
-        }else{
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#F44336'}]}><View style={styles.icone}><Icon size={35} color="#F44336" name="times-circle"/></View><Text style={styles.mensagemAlerta}>ERRO</Text></View>)
-        }
-    }
-
-
-    _renderButton = (text, onPress) => (
-        <TouchableOpacity style={styles.modalButton} onPress={onPress}>
-        <View style={styles.button}>
-            <Text>{text}</Text>
-        </View>
-        </TouchableOpacity>
-    );
-
-    _renderModalContent = () => (
-        <View style={styles.modalContent}>
-            <View style={styles.header}>
-                {this.header()}
-            </View>
-            <ScrollView style={styles.modalMensagem} contentContainerStyle={{flexGrow: 1, justifyContent : 'center'}}>
-                <View style={{alignItems: 'center'}}>
-                    {this.mensagens()}
-                </View>
-            </ScrollView>
-            <View>
-                {this._renderButton("Fechar", () => (this.state.cadastrado) ? (this.props.navigation.goBack()) : (this.setState({ isVisible: false })))}
-            </View>
-        </View>
-    );
 
     spinner(bol){
         this.setState({spinner: bol})
@@ -103,13 +66,6 @@ export default class Login extends Component {
     
         return (
             <View style={styles.container}>
-                <Modal
-                isVisible={this.state.isVisible}
-                animationIn="slideInLeft"
-                animationOut="slideOutRight"
-                >
-                {this._renderModalContent()}
-                </Modal>
                 <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
                 <View style={styles.login}>
                     <View style={styles.loginContent}>

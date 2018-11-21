@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 import Spinner from 'react-native-loading-spinner-overlay';
 import { NavigationActions } from 'react-navigation';
 import ModalFilterPicker from 'react-native-modal-filter-picker'
-
+import SearchBar from 'react-native-searchbar';
 
 export default class Anuncios extends Component {
 
@@ -27,6 +27,7 @@ export default class Anuncios extends Component {
                 {"key": 3, "label": "São Sebastião"},
                 {"key": 4, "label": "Ubatuba"}, 
             ],
+            modalOpen: false,
             cidadeVisible: false,
             scrollMax: 0,
             heightLayout: 0,
@@ -52,20 +53,20 @@ export default class Anuncios extends Component {
     carregarHeader(){
         this.props.navigation.setParams({ 
             headerRight: (
-                <TouchableOpacity onPress={() => {this.setState({pesquisaVisible: true})}}>
+                <TouchableOpacity onPress={() => {this.searchBar.show()}}>
                     <Icon style={{marginRight: 15}} name="search" size={28} color="white" />
                 </TouchableOpacity>
             )
         })
-      }
+    }
     
     carregarAnuncios(){
-        fetch('http://192.168.11.51/donate/app/anuncios?categoria_id='
+        fetch('http://192.168.1.104/donate/app/anuncios?categoria_id='
         +(this.state.categoria_id == null ? "" : this.state.categoria_id)+'&cidade_id='
         +(this.state.cidade_id == null ? "" : this.state.cidade_id)+'&page='
         +this.state.pagina+'&pesquisa='
-        +this.state.pesquisa+'&email='
-        +(this.state.email == null ? "" : this.state.email), {
+        +this.state.pesquisa+'&id='
+        +(this.state.id == null ? "" : this.state.id), {
         method: 'GET',
         }).then((response) => response.json())
         .then((responseJson) => {
@@ -78,6 +79,14 @@ export default class Anuncios extends Component {
             Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
             this.props.navigation.goBack()
         });
+    }
+
+    pesquisar(){
+        this.setState({pesquisa: this.searchBar.getValue(), pagina: 1, fim: false, spinner: true, anuncios: [], dadosAnuncios: []}, () => {
+            this.refs._scrollView.scrollTo(0)
+            this.carregarAnuncios()
+            this.searchBar.hide()
+        })
     }
 
     atualizarAnuncios(cidade){
@@ -110,6 +119,18 @@ export default class Anuncios extends Component {
         }));
     }
 
+    editar(id){
+        const { navigate } = this.props.navigation
+        this.props.navigation.dispatch(NavigationActions.navigate({
+            routeName: 'CadastroAnuncio', 
+            key: 'anuncio',
+            params:{
+                anuncio: this.state.dadosAnuncios[id],
+                title: "Edição"
+            }
+        }));
+    }
+
     anuncios(anunciosnovos){
         const anuncios = [];
         var i = 1;
@@ -117,18 +138,25 @@ export default class Anuncios extends Component {
         if(anunciosnovos.length > 0){
             anunciosnovos.map((anuncio,key) => {(
             anuncios.push(
-                <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verAnuncio(num+key)}} style={[styles.manifestContainer]}>
-                    <View style={{flex:1, flexDirection: 'row'}}>
-                        <Image source={{uri: anuncio.imagens[0]}} style={styles.imagem}/>
-                        <View style={[styles.containerInformacoes]}>
-                            <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
-                            <View style={{position: "absolute", bottom:8}}>
-                                <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> {anuncio.bairroNome+", "+anuncio.cidadeNome }</Text></View>
-                                <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {this.formatadata(anuncio.data)} </Text></View>
+                <View style={[styles.manifestContainer]}>
+                    <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verAnuncio(num+key)}} style={{width: "100%", height: "100%"}}>
+                        <View style={{flex:1, flexDirection: 'row'}}>
+                            <Image source={{uri: anuncio.imagens[0]}} style={styles.imagem}/>
+                            <View style={[styles.containerInformacoes]}>
+                                <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
+                                <View style={{position: "absolute", bottom:8}}>
+                                    <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> {anuncio.bairroNome+", "+anuncio.cidadeNome }</Text></View>
+                                    <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {this.formatadata(anuncio.data)} </Text></View>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </TouchableHighlight>
+                    </TouchableHighlight>
+                    {this.state.id != null && 
+                        <TouchableHighlight underlayColor="#FFFFCC" onPress={() => {this.editar(num+key)}} style={styles.botaoEditar}>
+                            <Icon size={15} name="edit"/>
+                        </TouchableHighlight>
+                    }
+                </View>
             )
             )})
         }
@@ -152,6 +180,17 @@ export default class Anuncios extends Component {
             this.setState({scrollMax: contentHeight - this.state.heightLayout})
         },1)
     };
+
+    onShow = (nome) => {
+        this.setState({ [nome]: true, modalOpen: true });
+    }
+    
+    onCancel = (nome) => {
+        this.setState({
+            [nome]: false,
+            modalOpen: false,
+        });
+    }
 
     render() {
         return (
@@ -182,6 +221,11 @@ export default class Anuncios extends Component {
                     }} 
                     contentContainerStyle={styles.scroll} 
                     style={{backgroundColor: "white"}}>
+                    <SearchBar
+                        ref={(ref) => this.searchBar = ref}
+                        onSubmitEditing={() =>this.pesquisar()}
+                        placeholder="Procure algo aqui"
+                    />
                     <View style={styles.anuncios}>
                         {this.state.anuncios}
                     </View>
@@ -277,5 +321,16 @@ const styles = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
-    }
+    },
+    botaoEditar:{
+        position: "absolute",
+        top: 0,
+        left:0,
+        height: 35,
+        width: 35,
+        backgroundColor: "#FFFF66",
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 5,
+    },
 })

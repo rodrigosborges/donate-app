@@ -13,14 +13,14 @@ class SideMenu extends Component {
             email: null,
             password: null,
             id: "",
-            logado: null,
+            token: null,
         };
     }
 
     componentDidMount(){
         AsyncStorage.multiGet(['email','password','nome', 'id']).then((values) => {
-            this.setState({email: values[0][1],password: values[1][1], nome: JSON.parse(values[2][1]), id: JSON.parse(values[3][1])},() => {
-                this.atualiza(this.state.email, this.state.password, this.state.nome, this.state.id)
+            this.setState({email: values[0][1],password: values[1][1], nome: values[2][1], id: JSON.parse(values[3][1])},() => {
+                this.atualiza(this.state.email, this.state.password)
             })
         })
     }   
@@ -32,8 +32,8 @@ class SideMenu extends Component {
         this.props.navigation.dispatch(navigateAction);
     }
 
-    atualiza(email, password, nome = ""){
-        fetch('http://192.168.11.51/donate/app/checkarAuth', {
+    atualiza(email, password){
+        fetch('http://192.168.1.104/donate/app/checkarAuth', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -45,12 +45,12 @@ class SideMenu extends Component {
             })
         }).then((response) => response.json())
         .then((responseJson) => {
-            if(responseJson == true){
-                this.setState({logado: true, nome: nome, email: email})
-                AsyncStorage.setItem("logado",true)
+            if(responseJson != false){
+                this.setState({token: responseJson.token, nome: responseJson.nome, email: email})
+                AsyncStorage.setItem("token",responseJson.token)
+                AsyncStorage.setItem("nome",responseJson.nome)
             }else{
-                this.setState({logado: false})
-                AsyncStorage.setItem("logado",false)
+                AsyncStorage.setItem("token","")
             }
         })
         .catch((error) => {
@@ -65,29 +65,29 @@ class SideMenu extends Component {
 
     deslogar(){
         AsyncStorage.clear();
-        this.setState({nome: null, email: null, password: null,logado: false})
-        AsyncStorage.setItem("logado",false)
+        this.setState({nome: null, email: null, password: null, token: null})
+        AsyncStorage.setItem("token","")
     }
 
   render () {
     return (
         <ScrollView style={styles.container}>
             <TouchableOpacity onPress={() => {
-                if(this.state.logado == true)
-                    this.props.navigation.navigate("Perfil",{atualiza: this.atualiza.bind(this)})
-                else
+                if(this.state.token == null)
                     this.props.navigation.navigate("Login",{atualiza: this.atualiza.bind(this)})
+                else
+                    this.props.navigation.navigate("Perfil",{atualiza: this.atualiza.bind(this)})
             }} style={styles.login}>
                 <View style={{width: 50, paddingLeft: 10, paddingRight: 10}}>
                     <Icon name="user" color="white" size={30}/>
                 </View>
                 <View style={{flex:1}}>
                     <Text style={{color: "white", fontSize: 20}}>
-                        {this.state.logado ? this.state.nome :"Clique aqui e acesse sua conta!"}
+                        {this.state.token == null ? "Clique aqui e acesse sua conta!" : this.state.nome}
                     </Text>
                 </View>
             </TouchableOpacity>
-            {this.state.logado && (
+            {this.state.token != null && (
                 <View>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
                     <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Anuncios",{title: "Meus anúncios", id: this.state.id})}}>
@@ -96,7 +96,7 @@ class SideMenu extends Component {
                         </Text>         
                     </TouchableOpacity>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("CadastroAnuncio",{id: this.state.id})}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("CadastroAnuncio",{id: this.state.id, title: "Cadastro"})}}>
                         <Text style={styles.sectionHeadingStyle}>
                             Anunciar
                         </Text>

@@ -22,7 +22,7 @@ export default class Menu extends Component {
     }
 
     componentWillMount(){
-        setTimeout(() => {this.props.navigation.navigate('DrawerClose')},2000)
+        setTimeout(() => StatusBar.setHidden(false), 1)
     }
 
     anuncios(id, nome){
@@ -40,70 +40,6 @@ export default class Menu extends Component {
         headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>,
     });
 
-    mensagens() {
-        return this.state.mensagem.map(function(mensagem, i){
-            return(
-                <View key={i}>
-                <Text style={{fontSize: 16, marginBottom: 3}}>{mensagem}</Text>
-                </View>
-            );
-        });
-    }
-
-    header(){
-        if(this.state.titulo == "SUCESSO"){
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#B2FF59'}]}><View style={styles.icone}><Icon color="#B2FF59" size={35} name="check-circle"/></View><Text style={styles.mensagemAlerta}>SUCESSO</Text></View>)
-        }else if(this.state.titulo == "SAIR"){
-            return (<View style={[styles.successError]}><View style={styles.icone}></View><Text style={styles.mensagemAlerta}>SAIR</Text></View>)            
-        }else{
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#F44336'}]}><View style={styles.icone}><Icon size={35} color="#F44336" name="times-circle"/></View><Text style={styles.mensagemAlerta}>ERRO</Text></View>)
-        }
-    }
-
-    _renderButton(text, onPress){
-        if(this.state.titulo != "SAIR"){
-            return (
-                <TouchableOpacity style={styles.modalButton} onPress={onPress}>
-                    <View style={styles.button}>
-                        <Text>{text}</Text>
-                    </View>
-                </TouchableOpacity>
-            )
-        }else{
-            return (
-                <View style={{flexDirection: 'row'}}>
-                    <TouchableOpacity style={[styles.modalSair, {borderBottomLeftRadius: 15}]} onPress={() => this.setState({ isVisible: false })}>
-                        <View style={styles.button}>
-                            <Text>Cancelar</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <View style={styles.divisao} />
-                    <TouchableOpacity style={[styles.modalSair, {borderBottomRightRadius: 15}]} onPress={() => this.deslogar()}>
-                        <View style={styles.button}>
-                            <Text>Confirmar</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            )
-        }
-    }
-
-    _renderModalContent = (goBack) => (
-        <View style={styles.modalContent}>
-            <View style={styles.header}>
-                {this.header()}
-            </View>
-            <ScrollView style={styles.modalMensagem} contentContainerStyle={{flexGrow: 1, justifyContent : 'center'}}>
-                <View style={{alignItems: 'center'}}>
-                    {this.mensagens()}
-                </View>
-            </ScrollView>
-            <View>
-                {this._renderButton("Fechar", () => (this.state.cadastrado) ? (goBack()) : (this.setState({ isVisible: false })))}
-            </View>
-        </View>
-    );
-
     spinner(bol){
         this.setState({spinner: bol})
     }
@@ -113,13 +49,6 @@ export default class Menu extends Component {
         const { dispatch } = this.props.navigation;
         return (
             <View style={styles.container} shouldRasterizeIOS={true} renderToHardwareTextureAndroid={true}>
-                <Modal
-                    isVisible={this.state.isVisible}
-                    animationIn="slideInLeft"
-                    animationOut="slideOutRight"
-                >
-                {this._renderModalContent()}
-                </Modal>
                 <StatusBar
                     backgroundColor="#660000"
                     barStyle="light-content"

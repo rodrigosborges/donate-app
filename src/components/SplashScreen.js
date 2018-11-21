@@ -17,49 +17,17 @@ export default class SplashScreen extends Component {
   
     componentDidMount() {
         StatusBar.setHidden(true)
-
-        AsyncStorage.multiGet(['email','password']).then((values) => {
-            this.setState({email: values[0][1]})
-            this.setState({password: values[1][1]})
-        })
     }
-
-    verificar=()=>{
-        const { navigate } = this.props.navigation
-        fetch('http://192.168.11.51/ouvidoria/app/checkarAuth', {
-            method: 'POST',
-            headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-            email: this.state.email,
-            password: this.state.password,
-            }),
-        }).then((response) => response.json())
-        .then((responseJson) => {
-                if(responseJson == true){
-                    this.props.navigation.dispatch({
-                        type: 'Navigation/RESET',
-                        index: 0,
-                        actions: [NavigationActions.navigate({ routeName: 'Menu', params:{fundo: this.state.fundo,logo: this.state.logo} })],
-                    });
-                }else{
-                    this.props.navigation.dispatch({
-                        type: 'Navigation/RESET',
-                        index: 0,
-                        actions: [NavigationActions.navigate({ routeName: 'Home' , params:{fundo: this.state.fundo, logo: this.state.logo}})],
-                    });
-                }
-        })
-        .catch((error) => {
-            const resetAction = NavigationActions.reset({
+    
+    componentWillMount(){
+        setTimeout(() => {
+            this.props.navigation.dispatch({
+                type: 'Navigation/RESET',
                 index: 0,
-                actions: [NavigationActions.navigate({ routeName: 'Home',params:{fundo: this.state.fundo, logo: this.state.logo} })],
+                actions: [NavigationActions.navigate({ routeName: 'Menu'})],
             });
-            
-            this.props.navigation.dispatch(resetAction);
-        });
+        }
+        ,1000)
     }
 
     render() {
@@ -68,11 +36,10 @@ export default class SplashScreen extends Component {
                 <View style={[styles.container]}>
                     <View style={styles.center}>
                         <Image resizeMode="stretch" source={logo} style={styles.logo}></Image>
-                        <Text style={styles.text}>Prefeitura Municipal da Estância</Text>
-                        <Text style={styles.text}>Balneária de Caraguatatuba</Text>
+                        <Text style={[styles.donate]}>Donate</Text>
                     </View>
                     <View style={{marginTop: 50}}>
-                        <ActivityIndicator size="large" color="white" />
+                        <ActivityIndicator size="large" color="#800000" />
                     </View>
                 </View>
             </View>
@@ -91,7 +58,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
-        backgroundColor: '#2C3E50',
+        backgroundColor: '#dfe1e2',
     },
     container: {
         flex: 1,
@@ -100,7 +67,7 @@ const styles = StyleSheet.create({
     logo: {
         width: width*0.45,
         height: height*0.28,
-        backgroundColor: '#2C3E50',
+        backgroundColor: '#dfe1e2',
         marginBottom: 20, 
     },
     text: {
@@ -110,5 +77,10 @@ const styles = StyleSheet.create({
     horizontal: {
         flexDirection: 'row',
         justifyContent: 'space-around',
+    },
+    donate: {
+        fontFamily: 'Admiration Pains',
+        color: '#800000',
+        fontSize: 50,
     }
 })

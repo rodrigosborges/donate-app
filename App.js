@@ -1,7 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { StackNavigator } from 'react-navigation'
-import Consulta from './src/components/Consulta'
 import Anuncio from './src/components/Anuncio'
 import SplashScreen from './src/components/SplashScreen'
 import Login from './src/components/Login'
@@ -28,6 +27,16 @@ const styles = StyleSheet.create({
 })
 
 const SimpleApp = StackNavigator({
+  SplashScreen: {
+    screen: SplashScreen,
+    navigationOptions:{
+      drawerLockMode: 'locked-closed',
+      header: null,
+      title: 'SplashScreen',
+      headerTitleStyle: styles.back,
+      headerTintColor: '#E0E0E0',
+    }
+  },
   Menu: {
     screen: Menu,
     navigationOptions: ({navigation}) => ({
@@ -45,16 +54,8 @@ const SimpleApp = StackNavigator({
   Anuncios: {
     screen: Anuncios,
     navigationOptions:{
+      drawerLockMode: 'locked-closed',
       headerStyle: styles.header,
-      headerTitleStyle: styles.back,
-      headerTintColor: '#E0E0E0',
-    }
-  },
-  SplashScreen: {
-    screen: SplashScreen,
-    navigationOptions:{
-      header: null,
-      title: 'SplashScreen',
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',
     }
@@ -62,8 +63,8 @@ const SimpleApp = StackNavigator({
   CadastroAnuncio: {
     screen: CadastroAnuncio,
     navigationOptions:{
+      drawerLockMode: 'locked-closed',
       headerStyle: styles.header,
-      title: 'Cadastro',
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',
     }
@@ -71,6 +72,7 @@ const SimpleApp = StackNavigator({
   Cadastro: {
     screen: Cadastro,
     navigationOptions:{
+      drawerLockMode: 'locked-closed',
       headerStyle: styles.header,
       title: 'Cadastro',
       headerTitleStyle: styles.back,
@@ -80,17 +82,9 @@ const SimpleApp = StackNavigator({
   EsqueceuSenha: {
     screen: EsqueceuSenha,
     navigationOptions:{
+      drawerLockMode: 'locked-closed',
       headerStyle: styles.header,
       title: 'Recuperar senha',
-      headerTitleStyle: styles.back,
-      headerTintColor: '#E0E0E0',
-    }
-  },
-  Consulta: {
-    screen: Consulta,
-    navigationOptions:{
-      headerStyle: styles.header,
-      title: 'Consulta',
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',
     }
@@ -98,6 +92,7 @@ const SimpleApp = StackNavigator({
   Login: {
     screen: Login,
     navigationOptions:{
+      drawerLockMode: 'locked-closed',
       headerStyle: styles.header,
       title: 'Login',
       headerTitleStyle: styles.back,
@@ -107,6 +102,7 @@ const SimpleApp = StackNavigator({
   Anuncio: {
     screen: Anuncio,
     navigationOptions:{
+      drawerLockMode: 'locked-closed',
       headerStyle: styles.header,
       title: 'Anúncio',
       headerTitleStyle: styles.back,
@@ -116,6 +112,7 @@ const SimpleApp = StackNavigator({
   Perfil: {
     screen: Perfil,
     navigationOptions:{
+      drawerLockMode: 'locked-closed',
       headerStyle: styles.header,
       title: 'Perfil',
       headerTitleStyle: styles.back,
@@ -125,6 +122,7 @@ const SimpleApp = StackNavigator({
   EditarPerfil: {
     screen: EditarPerfil,
     navigationOptions:{
+      drawerLockMode: 'locked-closed',
       headerStyle: styles.header,
       title: 'Editar Perfil',
       headerTitleStyle: styles.back,

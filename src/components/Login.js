@@ -12,8 +12,6 @@ export default class Login extends Component {
     this.state = {
       email: "",
       password: "",
-      isVisible: false,
-      mensagem: [],
       spinner: false,
     };
   }
@@ -29,7 +27,7 @@ export default class Login extends Component {
   logar(){
     const { navigate } = this.props.navigation;
     const { goBack } = this.props.navigation;
-    fetch('http://192.168.11.51/donate/app/logarUsuario', {
+    fetch('http://192.168.1.104/donate/app/logarUsuario', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -42,64 +40,26 @@ export default class Login extends Component {
     }).then((response) => response.json())
     .then((responseJson) => {
       if(responseJson.nome){
-        AsyncStorage.multiSet([['email', this.state.email],['password', this.state.password],['nome', JSON.stringify(responseJson.nome)], ['id',JSON.stringify(responseJson.id)]])
-        this.props.navigation.state.params.atualiza(this.state.email, this.state.password, responseJson.nome)
+        AsyncStorage.multiSet([['email', this.state.email],['password', this.state.password],['nome', responseJson.nome], ['id',JSON.stringify(responseJson.id)]])
+        this.props.navigation.state.params.atualiza(this.state.email, this.state.password)
         this.props.navigation.goBack()
         this.spinner(false)
       }else{
-        this.setState({isVisible:true, mensagem: ["E-mail ou senha incorretos"]})
+        Alert.alert(
+          'ERRO',
+          "E-mail ou senha incorretos",
+        );
         this.spinner(false)
       }
     })
     .catch((error) => {
-      this.setState({isVisible:true, mensagem: ["Erro de conexão"]})
+      Alert.alert(
+        'Sem conexão',
+        'Verifique sua conexão com a internet',
+      );
       this.spinner(false)
     });
   }
-
-
-  mensagens() {
-    return this.state.mensagem.map(function(mensagem, i){
-      return(
-        <View key={i}>
-          <Text style={{fontSize: 16, marginBottom: 3}}>{mensagem}</Text>
-        </View>
-      );
-    });
-  }
-
-    header(){
-        if(this.state.cadastrar){
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#B2FF59'}]}><View style={styles.icone}><Icon color="#B2FF59" size={35} name="check-circle"/></View><Text style={styles.mensagemAlerta}>SUCESSO</Text></View>)
-        }else{
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#F44336'}]}><View style={styles.icone}><Icon size={35} color="#F44336" name="times-circle"/></View><Text style={styles.mensagemAlerta}>ERRO</Text></View>)
-        }
-    }
-
-
-  _renderButton = (text, onPress) => (
-    <TouchableOpacity style={styles.modalButton} onPress={onPress}>
-      <View style={styles.button}>
-        <Text>{text}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  _renderModalContent = () => (
-    <View style={styles.modalContent}>
-        <View style={styles.header}>
-            {this.header()}
-        </View>
-        <ScrollView style={styles.modalMensagem} contentContainerStyle={{flexGrow: 1, justifyContent : 'center'}}>
-            <View style={{alignItems: 'center'}}>
-                {this.mensagens()}
-            </View>
-        </ScrollView>
-        <View>
-            {this._renderButton("Fechar", () => (this.state.cadastrado) ? (navigate("Home")) : (this.setState({ isVisible: false })))}
-        </View>
-    </View>
-  );
 
   spinner(bol){
     this.setState({spinner: bol})
@@ -113,13 +73,7 @@ export default class Login extends Component {
     
     return (
         <View style={styles.container}>
-            <Modal
-              isVisible={this.state.isVisible}
-              animationIn="slideInLeft"
-              animationOut="slideOutRight"
-              >
-              {this._renderModalContent()}
-            </Modal>
+
             <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
             <View style={styles.login}>
               {/* <Image resizeMode="stretch" source={require("./../logo.png")} style={styles.logo} /> */}

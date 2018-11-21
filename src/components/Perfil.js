@@ -29,9 +29,9 @@ export default class Menu extends Component {
     componentDidMount() {
         StatusBar.setHidden(false)   
 
-        AsyncStorage.multiGet(['nome', 'email', 'id']).then((values) => {
-            this.setState({nome: JSON.parse(values[0][1]), email: values[1][1], id: values[2][1]})
-            this.carregarDados(values[2][1])
+        AsyncStorage.multiGet(['nome', 'email', 'id', 'token']).then((values) => {
+            this.setState({nome: values[0][1], email: values[1][1], id: values[2][1], token: values[3][1]})
+            this.carregarDados(values[2][1],values[3][1])
         })
         setTimeout(() => {this.carregarHeader()}, 1)
     }
@@ -52,13 +52,17 @@ export default class Menu extends Component {
         headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>,
     });
 
-    carregarDados(id){
-        fetch('http://192.168.11.51/donate/app/dadosUsuario/'+id, {
-            method: 'GET',
+    carregarDados(id, token){
+        fetch('http://192.168.1.104/donate/app/dadosUsuario', {
+            method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify({
+              id: id,
+              token: token,
+            })
         }).then((response) => response.json())
         .then((responseJson) => {
             this.setState({
@@ -69,17 +73,11 @@ export default class Menu extends Component {
             })
         })
         .catch((error) => {
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
-            this.props.navigation.goBack()
-        });
-    }
-
-    mensagens() {
-        return this.state.mensagem.map(function(mensagem, i){
-            return(
-                <View key={i}>
-                    <Text style={{fontSize: 16, marginBottom: 3}}>{mensagem}</Text>
-                </View>
+            Alert.alert(
+                'Sem conexão',
+                'Verifique sua conexão com a internet',
+                [{text: 'Ok', onPress: () => this.props.navigation.goBack()}],
+                {cancelable: false}
             );
         });
     }
@@ -97,7 +95,7 @@ export default class Menu extends Component {
     }
 
     atualiza(){
-        fetch('http://192.168.11.51/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
+        fetch('http://192.168.1.104/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -114,46 +112,13 @@ export default class Menu extends Component {
             AsyncStorage.setItem('nome',responseJson.nome)
         })
         .catch((error) => {
-            this.setState({cadastrado: false, titulo: "ERRO", mensagem: ["Erro de conexão"], isVisible: true})
+            Alert.alert(
+                'Sem conexão',
+                'Verifique sua conexão com a internet',
+            );
         });        
     }
 
-    header(){
-        if(this.state.titulo == "SUCESSO"){
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#B2FF59'}]}><View style={styles.icone}><Icon color="#B2FF59" size={35} name="check-circle"/></View><Text style={styles.mensagemAlerta}>SUCESSO</Text></View>)
-        }else if(this.state.titulo == "SAIR"){
-            return (<View style={[styles.successError]}><View style={styles.icone}></View><Text style={styles.mensagemAlerta}>SAIR</Text></View>)            
-        }else{
-            return (<View style={[styles.successError, {borderWidth: 2, borderColor: '#F44336'}]}><View style={styles.icone}><Icon size={35} color="#F44336" name="times-circle"/></View><Text style={styles.mensagemAlerta}>ERRO</Text></View>)
-        }
-    }
-    
-
-    _renderButton(text, onPress){
-        return (
-            <TouchableOpacity style={styles.modalButton} onPress={onPress}>
-                <View style={styles.button}>
-                    <Text>{text}</Text>
-                </View>
-            </TouchableOpacity>
-        )
-    }
-
-    _renderModalContent = (goBack) => (
-        <View style={styles.modalContent}>
-            <View style={styles.header}>
-                {this.header()}
-            </View>
-            <ScrollView style={styles.modalMensagem} contentContainerStyle={{flexGrow: 1, justifyContent : 'center'}}>
-                <View style={{alignItems: 'center'}}>
-                    {this.mensagens()}
-                </View>
-            </ScrollView>
-            <View>
-                {this._renderButton("Fechar", () => (this.state.cadastrado) ? (goBack()) : (this.setState({ isVisible: false })))}
-            </View>
-        </View>
-    );
 
     spinner(bol){
         this.setState({spinner: bol})    
@@ -165,13 +130,6 @@ export default class Menu extends Component {
         const carregando = <ActivityIndicator size="small" color="#800000"/>
         return (
             <View style={styles.container} shouldRasterizeIOS={true} renderToHardwareTextureAndroid={true}>
-                <Modal
-                    isVisible={this.state.isVisible}
-                    animationIn="slideInLeft"
-                    animationOut="slideOutRight"
-                    >
-                    {this._renderModalContent()}
-                </Modal>
                 <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
                 <View style={{backgroundColor: "#E0E0E0", height: "100%", width: "100%"}}>
                     <View style={styles.perfilSection}>
@@ -199,7 +157,7 @@ export default class Menu extends Component {
                                 {this.state.doados == null ? carregando : (<Text style={styles.textoHeader}>{this.state.doados}</Text>)}
                             </View>
                             <View style={styles.blocoInformacoes}>
-                                <Text style={styles.textoHeader}>Avaliação</Text>
+                                <Text style={[styles.textoHeader, {textAlign: "center"}]}>Média de Avaliação</Text>
                                 {this.state.avaliacao == null ? carregando : (<Text style={styles.textoHeader}>{this.state.avaliacao}</Text>)}
                             </View>
                         </View>
