@@ -84,7 +84,7 @@ export default class Login extends Component {
                   <Text style={[styles.textoLogin, {fontSize: 14, textAlign: 'right'}]}>Esqueceu sua senha?</Text>
                 </TouchableOpacity>
                 <View style={styles.cadastrar}>
-                  <Button onPress={() => {this.spinner(true),this.logar()}} textStyle={{color: "black"}} title="LOGAR" color="#4994BC" />
+                  <Button onPress={() => {this.spinner(true),this.logar()}} title="LOGAR" color="#660000" />
                 </View>
 
                 <TouchableOpacity style={styles.containerMensagem} onPress={() => {this.spinner(true),setTimeout(() => dispatch(NavigationActions.navigate({routeName: 'Cadastro', key: '1234',params:{spinner: this.spinner.bind(this)}})),1)}}>

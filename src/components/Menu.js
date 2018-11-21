@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 import { NavigationActions } from 'react-navigation';
 import Modal from 'react-native-modal'
 import Spinner from 'react-native-loading-spinner-overlay';
+import FastImage from 'react-native-fast-image'
 
 export default class Menu extends Component {
     constructor(props){
@@ -58,75 +59,67 @@ export default class Menu extends Component {
                     <View style={styles.iconesSection}>
                         <View style={styles.containerIcones}>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(1,"Animal")} style={[styles.icones]}>
-                                <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/animal.jpg')}>
-                                    <View style={styles.dark}>
-                                        <Icon size={width*0.2} color={"#E0E0E0"} name="paw"/>
-                                        <Text style={styles.texto}>Animal</Text>
-                                    </View>
-                                </ImageBackground>
+                                <FastImage style={styles.fundo} source={require('./../backgrounds/animal.jpg')}/>
+                                <View style={styles.dark}>
+                                    <Icon size={width*0.2} color={"#E0E0E0"} name="paw"/>
+                                    <Text style={styles.texto}>Animal</Text>
+                                </View>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(2,"Doméstico") } style={[styles.icones]}>
-                                <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/domestico.jpg')}>
+                                <FastImage style={styles.fundo} source={require('./../backgrounds/domestico.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="home"/>
                                         <Text style={styles.texto}>Doméstico</Text>
                                     </View>
-                                </ImageBackground>
                             </TouchableOpacity>
                         </View>
                         <View style={styles.containerIcones}>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(3,"Educação") } style={[styles.icones]}>
-                                <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/educacao.jpg')}>
+                                <FastImage style={styles.fundo} source={require('./../backgrounds/educacao.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="graduation-cap"/>
                                         <Text style={styles.texto}>Educação</Text>
                                     </View>
-                                </ImageBackground>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(4,"Eletrônico") } style={[styles.icones]}>
-                                <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/eletronico.jpg')}>
+                                <FastImage style={styles.fundo} source={require('./../backgrounds/eletronico.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="mobile-alt"/>
                                         <Text style={styles.texto}>Eletrônico</Text>
                                     </View>
-                                </ImageBackground>
                             </TouchableOpacity>
 
                         </View>
                         <View style={styles.containerIcones}>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(5,"Esporte e Lazer") } style={[styles.icones]}>
-                                <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/esporte.jpg')}>
+                                <FastImage style={styles.fundo} source={require('./../backgrounds/esporte.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="bicycle"/>
                                         <Text style={styles.texto}>Esporte e Lazer</Text>
                                     </View>
-                                </ImageBackground>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(6,"Infantil") } style={[styles.icones]}>
-                                <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/infantil.jpg')}>
+                                <FastImage style={styles.fundo} source={require('./../backgrounds/infantil.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="child"/>
                                         <Text style={styles.texto}>Infantil</Text>
                                     </View>
-                                </ImageBackground>
                             </TouchableOpacity>
                         </View>
                         <View style={styles.containerIcones}>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(7,"Música") } style={[styles.icones]}>
-                                <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/musica.jpg')}>
+                                <FastImage style={styles.fundo} source={require('./../backgrounds/musica.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="music"/>
                                         <Text style={styles.texto}>Música</Text>
                                     </View>
-                                </ImageBackground>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(8,"Vestuário") } style={[styles.icones]}>
-                                <ImageBackground blurRadius={2} style={styles.fundo} source={require('./../backgrounds/vestuario.jpg')}>
+                                <FastImage style={styles.fundo} source={require('./../backgrounds/vestuario.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="tshirt"/>
                                         <Text style={styles.texto}>Vestuário</Text>
                                     </View>
-                                </ImageBackground>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -197,11 +190,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },    
     dark:{
-        backgroundColor: 'rgba(0,0,0,.2)',
-        justifyContent: "center",
-        alignItems: "center",
+        position: "absolute",
         width: "100%",
         height: "100%",
+        justifyContent: "center",
+        alignItems: "center",  
     },
     fundo: {
         width: null,

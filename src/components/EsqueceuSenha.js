@@ -72,7 +72,7 @@ export default class Login extends Component {
                         <Text style={styles.textoLogin}>Informe seu e-mail para que seja enviada as instruções para recuperação da senha:</Text>
                         <TextField textColor="#E0E0E0" error={this.state.emailErro} tintColor="#E0E0E0" baseColor="#E0E0E0" keyboardType="email-address" style={styles.input} label="E-mail" value={this.state.email} autoCapitalize="none" onChangeText={(email) => this.setState({email})}/>
                         <View style={styles.cadastrar}>
-                            <Button disabled={this.state.spinner} onPress={() => {this.spinner(true),setTimeout(() =>{this.enviar()}, 1)}} textStyle={{color: "black"}} title="Enviar" color="#4994BC" />
+                            <Button disabled={this.state.spinner} onPress={() => {this.spinner(true),setTimeout(() =>{this.enviar()}, 1)}} title="Enviar" color="#660000" />
                         </View>
                     </View>
                 </View>

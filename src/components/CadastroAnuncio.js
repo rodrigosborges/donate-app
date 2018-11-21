@@ -13,6 +13,7 @@ import {RadioGroup, RadioButton} from 'react-native-flexi-radio-button'
 import { NavigationActions } from 'react-navigation'
 import { DocumentPicker, DocumentPickerUtil } from 'react-native-document-picker'
 import ImagePicker from 'react-native-image-picker';
+import FastImage from 'react-native-fast-image'
 
 export default class CadastroAnuncio extends Component {
     constructor(props){
@@ -280,7 +281,7 @@ export default class CadastroAnuncio extends Component {
                 </View>
             </ScrollView>
             <View>
-                {this._renderButton("Fechar", () => {(this.state.concluido) ? (this.setState({ isVisible: false }),this.props.navigation.navigate("Anuncios",{title: "Meus anúncios", email: this.state.email})) : ((this.state.cadastrado) ? (goBack()) : (this.setState({ isVisible: false })))})}
+                {this._renderButton("Fechar", () => {(this.state.concluido) ? (this.setState({ isVisible: false }),this.props.navigation.navigate("Anuncios",{title: "Meus anúncios", id: this.state.id})) : ((this.state.cadastrado) ? (goBack()) : (this.setState({ isVisible: false })))})}
             </View>
         </View>
     );
@@ -321,7 +322,7 @@ export default class CadastroAnuncio extends Component {
         const arquivos = this.state.arquivo.map((arquivo,index) => {
             return (
                 <View style={styles.arquivosAdicionados} >
-                    <Image source={{uri: (typeof arquivo == "string" ? arquivo : arquivo.uri)}} style={{width: "100%",height: 150}}/>
+                    <FastImage source={{uri: (typeof arquivo == "string" ? arquivo : arquivo.uri)}} style={{width: "100%",height: 150}}/>
                     <TouchableOpacity style={{height: 40, width:40,position: 'absolute',right: 5, top:5}} onPress={() => this.excluirArquivo(index)}>
                         <Icon name="window-close" color="white" size={40}/>
                     </TouchableOpacity>

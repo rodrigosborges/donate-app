@@ -13,6 +13,7 @@
     "react-native-camera": "^1.1.1",
     "react-native-camera-kit": "^6.2.6",
     "react-native-document-picker": "^2.1.0",
+    "react-native-fast-image": "^5.1.1",
     "react-native-file-selector": "0.0.2",
     "react-native-flexi-radio-button": "^0.2.2",
     "react-native-image-picker": "^0.27.1",

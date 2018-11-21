@@ -1,6 +1,7 @@
 /node_modules/*
 !/node_modules/react-native-modal-filter-picker
 !/node_modules/react-native-image-slider
+!/node_modules/react-native-fast-image
 composer.phar
 composer.lock
 .env.*.php

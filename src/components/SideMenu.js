@@ -46,7 +46,7 @@ class SideMenu extends Component {
         }).then((response) => response.json())
         .then((responseJson) => {
             if(responseJson != false){
-                this.setState({token: responseJson.token, nome: responseJson.nome, email: email})
+                this.setState({token: responseJson.token, nome: responseJson.nome, email: email, id: responseJson.id})
                 AsyncStorage.setItem("token",responseJson.token)
                 AsyncStorage.setItem("nome",responseJson.nome)
             }else{
