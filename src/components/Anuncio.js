@@ -80,7 +80,7 @@ export default class Anuncio extends Component {
 
   avaliar(nivel){
     this.setState({nivel})
-    fetch('http://192.168.1.104/donate/avaliacoes/avaliar?avaliador_id='
+    fetch('http://donate-ifsp.ga/avaliacoes/avaliar?avaliador_id='
     +this.state.id+'&avaliado_id='
     +this.props.navigation.state.params.anuncio.doador_id+'&nivel='
     +nivel, {

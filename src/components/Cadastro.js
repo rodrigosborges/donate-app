@@ -30,7 +30,7 @@ export default class Cadastro extends PureComponent {
 
     cadastrar(){
         const { navigate } = this.props.navigation;
-        fetch('http://192.168.1.104/donate/app/usuario/insert', {
+        fetch('http://donate-ifsp.ga/app/usuario/insert', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',

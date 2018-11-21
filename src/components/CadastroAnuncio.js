@@ -161,7 +161,7 @@ export default class CadastroAnuncio extends Component {
             body: body 
         };
 
-        fetch(('http://192.168.1.104/donate/app/doacoes/'+(this.state.editar ? "update" : "insert")), config)
+        fetch(('http://donate-ifsp.ga/app/doacoes/'+(this.state.editar ? "update" : "insert")), config)
 
         .then((response) => response.json()).then((responseJson) => {
             var titulo = responseJson[0] == true ? "SUCESSO" : "ERRO"
@@ -178,7 +178,7 @@ export default class CadastroAnuncio extends Component {
     }
 
     bairros(cidade, bairro = "", bairroNome= ""){
-        fetch('http://192.168.1.104/donate/app/bairros/'+cidade, {
+        fetch('http://donate-ifsp.ga/app/bairros/'+cidade, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

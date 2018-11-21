@@ -27,7 +27,7 @@ export default class Login extends Component {
   logar(){
     const { navigate } = this.props.navigation;
     const { goBack } = this.props.navigation;
-    fetch('http://192.168.1.104/donate/app/logarUsuario', {
+    fetch('http://donate-ifsp.ga/app/logarUsuario', {
       method: 'POST',
       headers: {
         Accept: 'application/json',

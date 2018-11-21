@@ -53,7 +53,7 @@ export default class Menu extends Component {
     });
 
     carregarDados(id, token){
-        fetch('http://192.168.1.104/donate/app/dadosUsuario', {
+        fetch('http://donate-ifsp.ga/app/dadosUsuario', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
