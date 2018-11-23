@@ -102,7 +102,7 @@ class SideMenu extends Component {
                         </Text>
                     </TouchableOpacity>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Conversas")}}>
                         <Text style={styles.sectionHeadingStyle}>
                             Mensagens
                         </Text>

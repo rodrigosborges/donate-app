@@ -12,6 +12,8 @@ import CadastroAnuncio from './src/components/CadastroAnuncio'
 import EsqueceuSenha from './src/components/EsqueceuSenha'
 import Perfil from './src/components/Perfil'
 import EditarPerfil from './src/components/EditarPerfil'
+import Conversas from './src/components/Conversas'
+import Chat from './src/components/Chat'
 
 const styles = StyleSheet.create({
   header: {
@@ -125,6 +127,25 @@ const SimpleApp = StackNavigator({
       drawerLockMode: 'locked-closed',
       headerStyle: styles.header,
       title: 'Editar Perfil',
+      headerTitleStyle: styles.back,
+      headerTintColor: '#E0E0E0',
+    }
+  },
+  Conversas: {
+    screen: Conversas,
+    navigationOptions:{
+      drawerLockMode: 'locked-closed',
+      headerStyle: styles.header,
+      title: 'Conversas',
+      headerTitleStyle: styles.back,
+      headerTintColor: '#E0E0E0',
+    }
+  },
+  Chat: {
+    screen: Chat,
+    navigationOptions:{
+      drawerLockMode: 'locked-closed',
+      headerStyle: styles.header,
       headerTitleStyle: styles.back,
       headerTintColor: '#E0E0E0',
     }

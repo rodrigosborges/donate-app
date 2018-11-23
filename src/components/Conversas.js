@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Alert, Dimensions, AppRegistry, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { Alert, Dimensions, AppRegistry, RefreshControl, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import Spinner from 'react-native-loading-spinner-overlay';
 import { NavigationActions } from 'react-navigation';
@@ -10,229 +10,104 @@ export default class Anuncios extends Component {
     constructor(props){
     super(props);
         this.state = {
-            anuncios: [],
-            dadosAnuncios: [],
-            categoria_id: "",
-            cidade_id: "",
-            cidadeNome: "",
+            conversas: [],
             id: "",
-            pesquisa: "",
             spinner: false,
-            pagina: 1,
-            cidades: [
-                {"key": "", "label": "Todas as cidades"}, 
-                {"key": 1, "label": "Caraguatatuba"},
-                {"key": 2, "label": "Ilha Bela"},
-                {"key": 3, "label": "São Sebastião"},
-                {"key": 4, "label": "Ubatuba"}, 
-            ],
             modalOpen: false,
-            cidadeVisible: false,
-            scrollMax: 0,
-            heightLayout: 0,
-            fim: false,
-            pesquisaVisible: false,
+            refreshing: false,
         };  
     }
 
     componentWillMount(){
-        this.carregarHeader()
         this.spinner(true)
-        this.setState({categoria_id: this.props.navigation.state.params.categoria_id, id: this.props.navigation.state.params.id}, () => {
-            AsyncStorage.multiGet(["cidade_id",'cidadeNome']).then((val) => {
-                if(val[0][1] == null)
-                    val[0][1] = ""
-                if(val[1][1] == null)
-                    val[1][1] = "Todas as cidades"
-                this.setState({cidade_id: val[0][1],cidadeNome: val[1][1]},() => this.carregarAnuncios())
-            })
+        AsyncStorage.multiGet(["id",'token']).then((val) => {
+            this.setState({id: val[0][1],token: val[1][1]},() => this.carregarConversas())
         })
     }
 
-    carregarHeader(){
-        this.props.navigation.setParams({ 
-            headerRight: (
-                <TouchableOpacity onPress={() => {this.searchBar.show()}}>
-                    <Icon style={{marginRight: 15}} name="search" size={28} color="white" />
-                </TouchableOpacity>
-            )
-        })
+    _onRefresh = () => {
+        this.setState({refreshing: true});
+        this.carregarConversas()
     }
     
-    carregarAnuncios(){
-        fetch('http://donate-ifsp.ga/app/anuncios?categoria_id='
-        +(this.state.categoria_id == null ? "" : this.state.categoria_id)+'&cidade_id='
-        +(this.state.cidade_id == null ? "" : this.state.cidade_id)+'&page='
-        +this.state.pagina+'&pesquisa='
-        +this.state.pesquisa+'&id='
-        +(this.state.id == null ? "" : this.state.id), {
-        method: 'GET',
+    carregarConversas(){
+        fetch('http://donate-ifsp.ga/app/conversas', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: this.state.id,
+                token: this.state.token,
+            }),
         }).then((response) => response.json())
         .then((responseJson) => {
-            if(responseJson != "")
-                this.anuncios(responseJson.data)
-            this.setState({pagina: this.state.pagina+1})
+            this.conversas(responseJson)
             this.spinner(false)
         })
         .catch((error) => {
             Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
             this.props.navigation.goBack()
+            this.setState({refreshing: false})
         });
-    }
-
-    pesquisar(){
-        this.setState({pesquisa: this.searchBar.getValue(), pagina: 1, fim: false, spinner: true, anuncios: [], dadosAnuncios: []}, () => {
-            this.refs._scrollView.scrollTo(0)
-            this.carregarAnuncios()
-            this.searchBar.hide()
-        })
-    }
-
-    atualizarAnuncios(cidade){
-        var cidadeNome = (cidade == "" ? "Todas as cidades" : (cidade == 1 ? "Caraguatatuba" : (cidade == 2 ? "Ilha Bela" : (cidade == 3 ? "São Sebastião" : "Ubatuba"))))
-        this.setState({cidadeVisible: false, pagina: 1, fim: false, spinner: true, anuncios: [], dadosAnuncios: [],cidade_id: cidade, cidadeNome}, () => {
-            this.refs._scrollView.scrollTo(0)
-            AsyncStorage.setItem("cidade_id",cidade != "" ? JSON.stringify(cidade) : "")
-            AsyncStorage.setItem("cidadeNome", cidadeNome)
-            this.carregarAnuncios()
-        })
     }
 
     formatadata(data){
         return data.substr(0, 10).split('-').reverse().join('/')+data.substr(10,6)
     }
 
-    static navigationOptions = ({ navigation, screenProps }) => ({
-        title: navigation.state.params.title,
-        headerRight: navigation.state.params ? navigation.state.params.headerRight : <View/>
-    });
-
-    verAnuncio(id) {
-        const { navigate } = this.props.navigation
-        this.props.navigation.dispatch(NavigationActions.navigate({
-            routeName: 'Anuncio', 
-            key: 'anuncio',
-            params:{
-                anuncio: this.state.dadosAnuncios[id],
-            }
-        }));
+    verConversa(destinatario_id){
+        this.props.navigation.navigate('Chat',{destinatario_id: destinatario_id, id: this.state.id, token: this.state.token})
     }
 
-    editar(id){
-        const { navigate } = this.props.navigation
-        this.props.navigation.dispatch(NavigationActions.navigate({
-            routeName: 'CadastroAnuncio', 
-            key: 'anuncio',
-            params:{
-                anuncio: this.state.dadosAnuncios[id],
-                title: "Edição"
-            }
-        }));
-    }
-
-    anuncios(anunciosnovos){
-        const anuncios = [];
+    conversas(dadosConversas){
+        var conversas = [];
         var i = 1;
-        const num = this.state.dadosAnuncios.length
-        if(anunciosnovos.length > 0){
-            anunciosnovos.map((anuncio,key) => {(
-            anuncios.push(
+        if(dadosConversas.length > 0){
+            dadosConversas.map((conversa,key) => {(
+            conversas.push(
                 <View style={[styles.manifestContainer]}>
-                    <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verAnuncio(num+key)}} style={{width: "100%", height: "100%"}}>
-                        <View style={{flex:1, flexDirection: 'row'}}>
-                            <FastImage style={styles.imagem} 
-                                source={{
-                                    uri: anuncio.imagens[0],
-                                    headers:{ Authorization: 'someAuthToken' },
-                                    priority: FastImage.priority.normal,
-                                }}
-                            />
-                            <View style={[styles.containerInformacoes]}>
-                                <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
-                                <View style={{position: "absolute", bottom:8}}>
-                                    <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> {anuncio.bairroNome+", "+anuncio.cidadeNome }</Text></View>
-                                    <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {this.formatadata(anuncio.data)} </Text></View>
-                                </View>
-                            </View>
+                    <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verConversa(conversa.outra_pessoa)}} style={{width: "100%", height: "100%"}}>
+                        <View style={{flex:1, padding: 10}}>
+                            <View style={{flex:1, flexDirection: 'row'}}><View><Icon size={28} color="black" name="user"/></View><View style={{flex:1}}><Text style={[styles.texto, {fontSize: 25, fontWeight:"bold"}]}> {conversa.nome}</Text></View></View>
+                            <View style={{flex:1, flexDirection: 'row'}}><View><Icon size={18} color="black" name="comment"/></View><View style={{flex:1}}><Text numberOfLines={1} style={styles.texto}> {conversa.texto} </Text></View></View>
+                            <View style={{position: 'absolute',bottom: 10, left: 10,}}><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {this.formatadata(conversa.ultima_msg)} </Text></View>
                         </View>
                     </TouchableHighlight>
-                    {this.state.id != null && 
-                        <TouchableHighlight underlayColor="#FFFFCC" onPress={() => {this.editar(num+key)}} style={styles.botaoEditar}>
-                            <Icon size={15} name="edit"/>
-                        </TouchableHighlight>
-                    }
                 </View>
             )
             )})
-        }
-        if(anunciosnovos.length < 10){
-            anuncios.push(
+        }else{
+            conversas.push(
                 <View style={{marginBottom:"5%"}}>
-                <Text style={styles.texto}>Não há mais anúncios disponíveis </Text>
+                <Text style={styles.texto}>Não há conversas disponíveis </Text>
                 </View>
             )
-            this.setState({fim: true})
         }
-        this.setState({anuncios : this.state.anuncios.concat(anuncios), dadosAnuncios: this.state.dadosAnuncios.concat(anunciosnovos)})
+        this.setState({conversas: conversas, refreshing: false})
     }
 
     spinner(bol){
         this.setState({spinner: bol})
     }
 
-    onContentSizeChange = (contentWidth, contentHeight) => {
-        setTimeout(() => {
-            this.setState({scrollMax: contentHeight - this.state.heightLayout})
-        },1)
-    };
-
-    onShow = (nome) => {
-        this.setState({ [nome]: true, modalOpen: true });
-    }
-    
-    onCancel = (nome) => {
-        this.setState({
-            [nome]: false,
-            modalOpen: false,
-        });
-    }
-
     render() {
         return (
             <View style={styles.container} 
             onLayout={(event) => {this.setState({heightLayout: event.nativeEvent.layout.height})}}>
-                <ModalFilterPicker
-                    title="Cidade"
-                    visible={this.state.cidadeVisible}
-                    onSelect={(cidade) => {this.atualizarAnuncios(cidade)}}
-                    onCancel={() => this.setState({cidadeVisible: false})}
-                    noResultsText={"Nenhum resultado encontrado"}
-                    placeholderText="Filtro..."
-                    options={this.state.cidades}
-                    cancelButtonText={"Cancelar"}
-                />
-                {this.state.id == "" || this.state.id == null && (
-                <TouchableOpacity style={styles.filtros} onPress={() => { this.setState({cidadeVisible: true}) }}>
-                    <Text style={{fontSize: 22}}><Icon style={{marginRight: 15}} name="map-marker-alt" size={25} color="black" /> {this.state.cidadeNome}</Text>
-                </TouchableOpacity>
-                )}
                 <ScrollView ref='_scrollView' 
-                    onContentSizeChange={this.onContentSizeChange} 
-                    onScroll={
-                    ({nativeEvent}) => {
-                        if(nativeEvent.contentOffset.y+2 > this.state.scrollMax && !this.state.fim && !this.state.spinner) {
-                            this.spinner(true),this.carregarAnuncios() 
-                        }
-                    }} 
                     contentContainerStyle={styles.scroll} 
-                    style={{backgroundColor: "white"}}>
-                    <SearchBar
-                        ref={(ref) => this.searchBar = ref}
-                        onSubmitEditing={() =>this.pesquisar()}
-                        placeholder="Procure algo aqui"
-                    />
-                    <View style={styles.anuncios}>
-                        {this.state.anuncios}
+                    style={{backgroundColor: "white"}}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                        />
+                    }
+                >
+                    <View style={styles.conversas}>
+                        {this.state.conversas}
                     </View>
                     <ActivityIndicator size="large" color="#a64c4c" animating={this.state.spinner} />
                 </ScrollView>
@@ -286,7 +161,6 @@ const styles = StyleSheet.create({
     texto:{
         fontSize: 17,
         color: 'black',
-        fontWeight: 'bold'
     },
     textoSecundario:{
         fontSize: 14,
@@ -303,7 +177,7 @@ const styles = StyleSheet.create({
         elevation:8,
         marginBottom: 20
     },
-    anuncios: {
+    conversas: {
         paddingTop: 20,
         alignItems: 'center',
         backgroundColor: 'white',
