@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
         height: "100%",
         justifyContent: "center",
         alignItems: "center",  
+        backgroundColor: 'rgba(0,0,0,.1)',
     },
     fundo: {
         width: null,

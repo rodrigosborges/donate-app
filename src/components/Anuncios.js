@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Alert, Dimensions, AppRegistry, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { RefreshControl, Alert, Dimensions, AppRegistry, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import Spinner from 'react-native-loading-spinner-overlay';
 import { NavigationActions } from 'react-navigation';
@@ -34,6 +34,7 @@ export default class Anuncios extends Component {
             heightLayout: 0,
             fim: false,
             pesquisaVisible: false,
+            refreshing: false,
         };  
     }
 
@@ -41,14 +42,19 @@ export default class Anuncios extends Component {
         this.carregarHeader()
         this.spinner(true)
         this.setState({categoria_id: this.props.navigation.state.params.categoria_id, id: this.props.navigation.state.params.id}, () => {
-            AsyncStorage.multiGet(["cidade_id",'cidadeNome']).then((val) => {
+            AsyncStorage.multiGet(["cidade_id",'cidadeNome', 'token']).then((val) => {
                 if(val[0][1] == null)
                     val[0][1] = ""
                 if(val[1][1] == null)
                     val[1][1] = "Todas as cidades"
-                this.setState({cidade_id: val[0][1],cidadeNome: val[1][1]},() => this.carregarAnuncios())
+                this.setState({cidade_id: val[0][1],cidadeNome: val[1][1], token: val[2][1]},() => this.carregarAnuncios())
             })
         })
+    }
+
+    _onRefresh = () => {
+        this.setState({refreshing: true});
+        this.carregarAnuncios(true)
     }
 
     carregarHeader(){
@@ -61,25 +67,31 @@ export default class Anuncios extends Component {
         })
     }
     
-    carregarAnuncios(){
-        fetch('http://donate-ifsp.ga/app/anuncios?categoria_id='
-        +(this.state.categoria_id == null ? "" : this.state.categoria_id)+'&cidade_id='
-        +(this.state.cidade_id == null ? "" : this.state.cidade_id)+'&page='
-        +this.state.pagina+'&pesquisa='
-        +this.state.pesquisa+'&id='
-        +(this.state.id == null ? "" : this.state.id), {
-        method: 'GET',
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            if(responseJson != "")
-                this.anuncios(responseJson.data)
-            this.setState({pagina: this.state.pagina+1})
-            this.spinner(false)
-        })
-        .catch((error) => {
-            Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
-            this.props.navigation.goBack()
-        });
+    carregarAnuncios(resetar = false){
+        if(resetar == true){
+            this.spinner(true)
+            this.setState({anuncios: [], dadosAnuncios: [], pagina: 1})
+        }
+        setTimeout(() => {
+            fetch('http://donate-ifsp.ga/app/anuncios?categoria_id='
+            +(this.state.categoria_id == null ? "" : this.state.categoria_id)+'&cidade_id='
+            +(this.state.cidade_id == null ? "" : this.state.cidade_id)+'&page='
+            +this.state.pagina+'&pesquisa='
+            +this.state.pesquisa+'&id='
+            +(this.state.id == null ? "" : this.state.id), {
+            method: 'GET',
+            }).then((response) => response.json())
+            .then((responseJson) => {
+                if(responseJson != "")
+                    this.anuncios(responseJson.data)
+                this.setState({pagina: this.state.pagina+1, refreshing: false})
+                this.spinner(false)
+            })
+            .catch((error) => {
+                Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
+                this.props.navigation.goBack()
+            });
+        },1)
     }
 
     pesquisar(){
@@ -132,6 +144,42 @@ export default class Anuncios extends Component {
         }));
     }
 
+    excluir(anuncio_id, tipo){     
+        fetch('http://donate-ifsp.ga/app/deleteRestoreAnuncio', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                anuncio_id: anuncio_id,
+                id: this.state.id,
+                token: this.state.token,
+            }),
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            if(responseJson == true){
+                Alert.alert(
+                    'Sucesso',
+                    'Anuncio '+tipo,
+                    [{text: 'Ok', onPress: () => this.carregarAnuncios(true)}],
+                    {cancelable: false}
+                );
+            }else{
+                Alert.alert(
+                    'Sem conexão',
+                    'Verifique sua conexão com a internet',
+                );
+            }
+        })
+        .catch((error) => {
+            Alert.alert(
+                'Sem conexão',
+                'Verifique sua conexão com a internet',
+            );
+        })
+    }
+
     anuncios(anunciosnovos){
         const anuncios = [];
         var i = 1;
@@ -165,7 +213,7 @@ export default class Anuncios extends Component {
                         </TouchableHighlight>
                     }
                     {this.state.id != null && 
-                        <TouchableHighlight underlayColor="#bf7f7f" onPress={() => {this.excluir(num+key)}} style={[styles.botaoExcluir, anuncio.deleted_at != null ? {backgroundColor: "#4ca64c"} : {}]}>
+                        <TouchableHighlight underlayColor="#bf7f7f" onPress={() => {this.excluir(anuncio.id, anuncio.deleted_at != null ? "restaurado!" : "deletado!")}} style={[styles.botaoExcluir, anuncio.deleted_at != null ? {backgroundColor: "#4ca64c"} : {}]}>
                             <Icon size={18} name={anuncio.deleted_at != null ? "undo" : "times"}/>
                         </TouchableHighlight>
                     }
@@ -229,15 +277,23 @@ export default class Anuncios extends Component {
                     onScroll={
                     ({nativeEvent}) => {
                         if(nativeEvent.contentOffset.y+2 > this.state.scrollMax && !this.state.fim && !this.state.spinner) {
-                            this.spinner(true),this.carregarAnuncios() 
+                            this.spinner(true),this.carregarAnuncios()
                         }
                     }} 
                     contentContainerStyle={styles.scroll} 
-                    style={{backgroundColor: "#ededed"}}>
+                    style={{backgroundColor: "#ededed"}}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                        />
+                    }
+                    >
                     <SearchBar
                         ref={(ref) => this.searchBar = ref}
                         onSubmitEditing={() =>this.pesquisar()}
                         placeholder="Procure algo aqui"
+                        
                     />
                     <View style={styles.anuncios}>
                         {this.state.anuncios}

@@ -80,7 +80,6 @@ export default class Anuncios extends Component {
                     <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verConversa(conversa.outra_pessoa, conversa.nome)}} style={{width: "100%", height: "100%"}}>
                         <View style={{flex:1, padding: 10}}>
                             <View style={{flex:1, flexDirection: 'row'}}><View><Icon size={28} color="black" name="user"/></View><View style={{flex:1}}><Text style={[styles.texto, {fontSize: 25, fontWeight:"bold"}]}> {conversa.nome}</Text></View></View>
-                            <View style={{flex:1, flexDirection: 'row'}}><View><Icon size={18} color="black" name="comment"/></View><View style={{flex:1}}><Text numberOfLines={1} style={styles.texto}> {conversa.texto} </Text></View></View>
                             <View style={{position: 'absolute',bottom: 10, left: 10,}}><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {this.formatadata(conversa.ultima_msg)} </Text></View>
                         </View>
                     </TouchableHighlight>
@@ -89,8 +88,8 @@ export default class Anuncios extends Component {
             )})
         }else{
             conversas.push(
-                <View style={{marginBottom:"5%"}}>
-                <Text style={styles.texto}>Não há conversas disponíveis </Text>
+                <View style={{marginTop:"5%", width:"100%", alignItems:'center'}}>
+                    <Text style={styles.texto}>Não há conversas disponíveis </Text>
                 </View>
             )
         }
@@ -150,7 +149,7 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     manifestContainer: {
-        height: height*0.25,
+        height: 120,
         width: width*0.95,
         backgroundColor: "white",
         elevation:8,

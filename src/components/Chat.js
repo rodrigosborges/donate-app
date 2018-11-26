@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Keyboard,Platform, Alert, Dimensions, TextInput, AppRegistry, RefreshControl, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { Keyboard,Platform, Alert, Dimensions, TextInput, AppRegistry, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import Spinner from 'react-native-loading-spinner-overlay';
 import { NavigationActions } from 'react-navigation';
@@ -14,8 +14,11 @@ export default class Anuncios extends Component {
             id: "",
             spinner: false,
             modalOpen: false,
-            refreshing: false,
             texto: "",
+            dadosMensagens: [],
+            pagina: 1,
+            fim: false,
+            height: 0,
         };  
     }
 
@@ -26,27 +29,29 @@ export default class Anuncios extends Component {
     }
     
     carregarMensagens(){
-        fetch('http://donate-ifsp.ga/app/mensagens', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: this.state.id,
-                token: this.state.token,
-                destinatario_id: this.state.destinatario_id
-            }),
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            this.mensagens(responseJson)
-            this.spinner(false)
-        })
-        .catch((error) => {
-            Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
-            this.props.navigation.goBack()
-            this.setState({refreshing: false})
-        });
+        if(this.state.fim == false){
+            fetch('http://donate-ifsp.ga/app/mensagens', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: this.state.id,
+                    token: this.state.token,
+                    destinatario_id: this.state.destinatario_id,
+                    page: this.state.pagina,
+                }),
+            }).then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({pagina: this.state.pagina+1}, () => this.mensagens(responseJson.data))
+                this.spinner(false)
+            })
+            .catch((error) => {
+                Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
+                this.props.navigation.goBack()
+            });
+        }
     }
 
     static navigationOptions = ({ navigation }) => ({
@@ -60,25 +65,36 @@ export default class Anuncios extends Component {
     mensagens(dadosMensagens){
         var mensagens = [];
         var i = 1;
+        var pagina = this.state.pagina;
         if(dadosMensagens.length > 0){
-            dadosMensagens.map((mensagem,key) => {(
-            mensagens.push(
-                <View key={i++} style={[styles.mensagemContainer, mensagem.remetente_id == this.state.id ? {alignSelf: "flex-end", backgroundColor: "#f2e5e5", marginLeft: "20%"} : {alignSelf: "flex-start", marginRight: "20%"}]}>
-                    <View style={styles.mensagem}>
-                        <Text style={styles.texto}>{mensagem.texto}</Text>
+            dadosMensagens.slice(0).reverse().map((mensagem,key) => {
+                mensagens.push(
+                    <View key={i++} style={[styles.mensagemContainer, mensagem.remetente_id == this.state.id ? {alignSelf: "flex-end", backgroundColor: "#f2e5e5", marginLeft: "20%"} : {alignSelf: "flex-start", marginRight: "20%"}]}>
+                        <View style={styles.mensagem}>
+                            <Text style={styles.texto}>{mensagem.texto}</Text>
+                        </View>
                     </View>
-                </View>
-            )
-            )})
+                )
+                if(pagina == 2)
+                    setTimeout(() => this.scrollView.scrollToEnd({animated: true}),1)
+            })
         }else{
-            mensagens.push(
-                <View style={{marginBottom:"5%"}}>
-                <Text style={styles.texto}>Não há mensagens disponíveis</Text>
-                </View>
-            )
+            if(pagina == 2){
+                mensagens.push(
+                    <View style={{paddingTop:"5%", width:"100%", alignItems:'center'}}>
+                        <Text style={styles.texto}>Não há mensagens disponíveis</Text>
+                    </View>
+                )
+            }else{
+                mensagens.push(
+                    <View style={{paddingTop:"5%",paddingBottom:"5%", width:"100%", alignItems:'center'}}>
+                        <Text style={styles.texto}>Início da conversa</Text>
+                    </View>
+                )   
+            }
+            this.setState({fim: true})   
         }
-        this.setState({mensagens: mensagens, dadosMensagens: dadosMensagens})
-        setTimeout(() => this.scrollView.scrollToEnd({animated: true}),500)
+        this.setState({mensagens: [mensagens, ...this.state.mensagens], dadosMensagens: dadosMensagens, height: height})
     }
 
     enviarMensagem(){
@@ -99,6 +115,9 @@ export default class Anuncios extends Component {
             }).then((response) => response.json())
             .then((responseJson) => {
                 if(responseJson == true){
+                    if(this.state.dadosMensagens.length == 0){
+                        this.setState({mensagens: []})
+                    }
                     this.setState({mensagens: [... this.state.mensagens, 
                         <View style={[styles.mensagemContainer, {alignSelf: "flex-end", backgroundColor: "#f2e5e5", marginLeft: "20%"}]}>
                             <View style={styles.mensagem}>
@@ -106,6 +125,7 @@ export default class Anuncios extends Component {
                             </View>
                         </View>
                     ]})
+                    setTimeout(() => this.scrollView.scrollToEnd({animated: true}),1)
                 }else{
                     Alert.alert(
                         'Sem conexão',
@@ -132,8 +152,16 @@ export default class Anuncios extends Component {
             <View style={styles.container} 
             onLayout={(event) => {this.setState({heightLayout: event.nativeEvent.layout.height})}}>
                 <ScrollView ref={ref => this.scrollView = ref} 
+                    onContentSizeChange={this.onContentSizeChange} 
                     contentContainerStyle={styles.scroll} 
                     style={{backgroundColor: "#ededed"}}
+                    onScroll={
+                        ({nativeEvent}) => {
+                            if(nativeEvent.contentOffset.y == 0){
+                                this.carregarMensagens()
+                            }
+                        }
+                    }
                 >
                     <View style={styles.mensagens}>
                         {this.state.mensagens}
@@ -188,7 +216,7 @@ const styles = StyleSheet.create({
     mensagemContainer: {
         backgroundColor: "white",
         elevation: 10,
-        margin: 15,
+        margin: 10,
         borderRadius: 10,
     },
     mensagem: {

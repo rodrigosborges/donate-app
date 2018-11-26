@@ -44,6 +44,7 @@ export default class Cadastro extends PureComponent {
             }),
         }).then((response) => response.json())
         .then((responseJson) => {
+            const { navigation } = this.props.navigation
             if(responseJson == true){
                 Alert.alert(
                     'Sucesso',
