@@ -152,6 +152,7 @@ export default class Anuncios extends Component {
                             <View style={[styles.containerInformacoes]}>
                                 <View><Text style={styles.texto}>{anuncio.titulo}</Text></View>
                                 <View style={{position: "absolute", bottom:8}}>
+                                    <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> Status: { anuncio.deleted_at != null ? "Deletado" : (anuncio.aprovado == 0 ? "Aguardando aprovação" : (anuncio.doado == 1 ? "Doado" : "Disponível")) }</Text></View>
                                     <View style={{marginBottom: 8}}><Text style={styles.textoSecundario}><Icon size={14} name="map-marker-alt"/> {anuncio.bairroNome+", "+anuncio.cidadeNome }</Text></View>
                                     <View><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {this.formatadata(anuncio.data)} </Text></View>
                                 </View>
@@ -160,7 +161,12 @@ export default class Anuncios extends Component {
                     </TouchableHighlight>
                     {this.state.id != null && 
                         <TouchableHighlight underlayColor="#FFFFCC" onPress={() => {this.editar(num+key)}} style={styles.botaoEditar}>
-                            <Icon size={15} name="edit"/>
+                            <Icon size={22} name="edit"/>
+                        </TouchableHighlight>
+                    }
+                    {this.state.id != null && 
+                        <TouchableHighlight underlayColor="#bf7f7f" onPress={() => {this.excluir(num+key)}} style={[styles.botaoExcluir, anuncio.deleted_at != null ? {backgroundColor: "#4ca64c"} : {}]}>
+                            <Icon size={18} name={anuncio.deleted_at != null ? "undo" : "times"}/>
                         </TouchableHighlight>
                     }
                 </View>
@@ -227,7 +233,7 @@ export default class Anuncios extends Component {
                         }
                     }} 
                     contentContainerStyle={styles.scroll} 
-                    style={{backgroundColor: "white"}}>
+                    style={{backgroundColor: "#ededed"}}>
                     <SearchBar
                         ref={(ref) => this.searchBar = ref}
                         onSubmitEditing={() =>this.pesquisar()}
@@ -282,7 +288,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex:1,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: '#ededed',
         overflow: 'hidden',
     },
     texto:{
@@ -308,7 +314,7 @@ const styles = StyleSheet.create({
     anuncios: {
         paddingTop: 20,
         alignItems: 'center',
-        backgroundColor: 'white',
+        backgroundColor: '#ededed',
     },
     imagem: {
         width: "40%",
@@ -333,9 +339,20 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 0,
         left:0,
-        height: "32%",
-        width: "18%",
+        height: "28%",
+        width: "15%",
         backgroundColor: "#FFFF66",
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 5,
+    },
+    botaoExcluir:{
+        position: "absolute",
+        top: 0,
+        right:0,
+        height: "20%",
+        width: "10%",
+        backgroundColor: "#a64c4c",
         alignItems: 'center',
         justifyContent: 'center',
         elevation: 5,

@@ -90,19 +90,42 @@ class SideMenu extends Component {
             {this.state.token != null && (
                 <View>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Anuncios",{title: "Meus anúncios", id: this.state.id})}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {
+                        this.props.navigation.dispatch(NavigationActions.navigate({
+                            routeName: 'Anuncios', 
+                            key: 'key',
+                            params:{
+                                title: "Meus anúncios", 
+                                id: this.state.id
+                            }
+                        }));
+                        }}>
                         <Text style={styles.sectionHeadingStyle}>
                             Meus anúncios
                         </Text>         
                     </TouchableOpacity>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("CadastroAnuncio",{id: this.state.id, title: "Cadastro"})}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {
+                        this.props.navigation.dispatch(NavigationActions.navigate({
+                            routeName: 'CadastroAnuncio', 
+                            key: 'key',
+                            params:{
+                                title: "Cadastro", 
+                                id: this.state.id
+                            }
+                        }));
+                    }}>
                         <Text style={styles.sectionHeadingStyle}>
                             Anunciar
                         </Text>
                     </TouchableOpacity>
                     <View style={{borderBottomWidth: 1,borderBottomColor: "#bcbcbc"}}/>
-                    <TouchableOpacity style={styles.options} onPress={() => {this.props.navigation.navigate("Conversas")}}>
+                    <TouchableOpacity style={styles.options} onPress={() => {
+                        this.props.navigation.dispatch(NavigationActions.navigate({
+                            routeName: 'Conversas', 
+                            key: 'key',
+                        }));
+                    }}>
                         <Text style={styles.sectionHeadingStyle}>
                             Mensagens
                         </Text>

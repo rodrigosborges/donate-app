@@ -6,6 +6,7 @@ import ImageSlider from 'react-native-image-slider';
 import { Header } from 'react-navigation';
 import Stars from 'react-native-stars';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { NavigationActions } from 'react-navigation';
 
 export default class Anuncio extends Component {
   constructor(props){
@@ -26,7 +27,7 @@ export default class Anuncio extends Component {
     var that = this
     AsyncStorage.multiGet(['id', 'token']).then((values) => {
       if(values[1][1] != ""){
-        this.setState({id: JSON.parse(values[0][1])}, () => {
+        this.setState({id: values[0][1], token: values[1][1]}, () => {
           that.carregarHeader()
         })
       }
@@ -62,7 +63,17 @@ export default class Anuncio extends Component {
   } 
   
   chat(){
-    
+    const { navigate } = this.props.navigation
+    this.props.navigation.dispatch(NavigationActions.navigate({
+        routeName: 'Chat', 
+        key: 'Chat',
+        params:{
+          destinatario_id: this.props.navigation.state.params.anuncio.doador_id, 
+          id: this.state.id, 
+          token: this.state.token, 
+          nome: this.props.navigation.state.params.anuncio.usuarioNome
+        }
+    }));
   }
   
   static navigationOptions = ({ navigation }) => {

@@ -57,8 +57,17 @@ export default class Anuncios extends Component {
         return data.substr(0, 10).split('-').reverse().join('/')+data.substr(10,6)
     }
 
-    verConversa(destinatario_id){
-        this.props.navigation.navigate('Chat',{destinatario_id: destinatario_id, id: this.state.id, token: this.state.token})
+    verConversa(destinatario_id, nome){
+        this.props.navigation.dispatch(NavigationActions.navigate({
+            routeName: 'Chat', 
+            key: 'chat',
+            params:{
+                destinatario_id: destinatario_id, 
+                id: this.state.id, 
+                token: this.state.token, 
+                nome: nome
+            }
+        }));
     }
 
     conversas(dadosConversas){
@@ -68,7 +77,7 @@ export default class Anuncios extends Component {
             dadosConversas.map((conversa,key) => {(
             conversas.push(
                 <View style={[styles.manifestContainer]}>
-                    <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verConversa(conversa.outra_pessoa)}} style={{width: "100%", height: "100%"}}>
+                    <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verConversa(conversa.outra_pessoa, conversa.nome)}} style={{width: "100%", height: "100%"}}>
                         <View style={{flex:1, padding: 10}}>
                             <View style={{flex:1, flexDirection: 'row'}}><View><Icon size={28} color="black" name="user"/></View><View style={{flex:1}}><Text style={[styles.texto, {fontSize: 25, fontWeight:"bold"}]}> {conversa.nome}</Text></View></View>
                             <View style={{flex:1, flexDirection: 'row'}}><View><Icon size={18} color="black" name="comment"/></View><View style={{flex:1}}><Text numberOfLines={1} style={styles.texto}> {conversa.texto} </Text></View></View>
@@ -98,7 +107,7 @@ export default class Anuncios extends Component {
             onLayout={(event) => {this.setState({heightLayout: event.nativeEvent.layout.height})}}>
                 <ScrollView ref='_scrollView' 
                     contentContainerStyle={styles.scroll} 
-                    style={{backgroundColor: "white"}}
+                    style={{backgroundColor: "#ededed"}}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.refreshing}
@@ -109,7 +118,6 @@ export default class Anuncios extends Component {
                     <View style={styles.conversas}>
                         {this.state.conversas}
                     </View>
-                    <ActivityIndicator size="large" color="#a64c4c" animating={this.state.spinner} />
                 </ScrollView>
             </View>
         );
@@ -119,35 +127,6 @@ export default class Anuncios extends Component {
 let width = Dimensions.get('window').width
 let height = Dimensions.get('window').height
 const styles = StyleSheet.create({
-    buttonContainer:{
-        position: 'absolute', 
-        bottom: height*0.03, 
-        right: -width*0.04, 
-        elevation: 20,
-        borderRadius: 5,
-    },
-    button:{
-        width: width*0.22,
-        height: height*0.06,
-        backgroundColor: "#2C3E50",
-        alignItems: 'center',
-        justifyContent: 'center',
-        right:0,
-        elevation: 2,
-        borderRadius: 5,
-    },
-    containerInformacoes:{
-        width: "56%",
-        marginLeft: "2%",
-    },
-    containerTitulo:{
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: "#2c3E50",
-        elevation: 3,
-        width: "100%",
-        height: "22%",
-    },
     titulo: {
         fontSize: 20,
         fontWeight: 'bold',
@@ -155,7 +134,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex:1,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: '#ededed',
         overflow: 'hidden',
     },
     texto:{
@@ -180,36 +159,6 @@ const styles = StyleSheet.create({
     conversas: {
         paddingTop: 20,
         alignItems: 'center',
-        backgroundColor: 'white',
-    },
-    imagem: {
-        width: "40%",
-        height: "100%",
-    },
-    filtros:{
-        position: "relative",
-        height:60,
-        width: "100%",
-        top: 0,
-        elevation: 3,
-        backgroundColor: "white",
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    filtrosOptions:{
-        flex:1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    botaoEditar:{
-        position: "absolute",
-        top: 0,
-        left:0,
-        height: "32%",
-        width: "18%",
-        backgroundColor: "#FFFF66",
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 5,
+        backgroundColor: '#ededed',
     },
 })

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Alert, Dimensions, AppRegistry, RefreshControl, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { Keyboard,Platform, Alert, Dimensions, TextInput, AppRegistry, RefreshControl, StyleSheet, View, Text, Button, ScrollView, ReactNative, AsyncStorage, TouchableHighlight, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import Spinner from 'react-native-loading-spinner-overlay';
 import { NavigationActions } from 'react-navigation';
@@ -10,26 +10,22 @@ export default class Anuncios extends Component {
     constructor(props){
     super(props);
         this.state = {
-            conversas: [],
+            mensagens: [],
             id: "",
             spinner: false,
             modalOpen: false,
             refreshing: false,
+            texto: "",
         };  
     }
 
     componentWillMount(){
         this.spinner(true)
         var params = this.props.navigation.state.params
-        this.setState({id: params.id, destinatario_id: params.destinatario_id, token: params.token})
-    }
-
-    _onRefresh = () => {
-        this.setState({refreshing: true});
-        this.carregarmensagens()
+        this.setState({id: params.id, destinatario_id: params.destinatario_id, token: params.token}, () => this.carregarMensagens())
     }
     
-    carregarmensagens(){
+    carregarMensagens(){
         fetch('http://donate-ifsp.ga/app/mensagens', {
             method: 'POST',
             headers: {
@@ -39,6 +35,7 @@ export default class Anuncios extends Component {
             body: JSON.stringify({
                 id: this.state.id,
                 token: this.state.token,
+                destinatario_id: this.state.destinatario_id
             }),
         }).then((response) => response.json())
         .then((responseJson) => {
@@ -52,35 +49,78 @@ export default class Anuncios extends Component {
         });
     }
 
+    static navigationOptions = ({ navigation }) => ({
+        title: navigation.state.params.nome,
+    });
+
     formatadata(data){
         return data.substr(0, 10).split('-').reverse().join('/')+data.substr(10,6)
     }
 
-    conversas(dadosConversas){
-        var conversas = [];
+    mensagens(dadosMensagens){
+        var mensagens = [];
         var i = 1;
-        if(dadosConversas.length > 0){
-            dadosConversas.map((conversa,key) => {(
-            conversas.push(
-                <View style={[styles.manifestContainer]}>
-                    <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verConversa(key)}} style={{width: "100%", height: "100%"}}>
-                        <View style={{flex:1, padding: 10}}>
-                            <View style={{flex:1, flexDirection: 'row'}}><View><Icon size={28} color="black" name="user"/></View><View style={{flex:1}}><Text style={[styles.texto, {fontSize: 25, fontWeight:"bold"}]}> {conversa.nome}</Text></View></View>
-                            <View style={{flex:1, flexDirection: 'row'}}><View><Icon size={18} color="black" name="comment"/></View><View style={{flex:1}}><Text numberOfLines={1} style={styles.texto}> {conversa.texto} </Text></View></View>
-                            <View style={{position: 'absolute',bottom: 10, left: 10,}}><Text style={styles.textoSecundario}><Icon size={14} name="clock"/> {this.formatadata(conversa.ultima_msg)} </Text></View>
-                        </View>
-                    </TouchableHighlight>
+        if(dadosMensagens.length > 0){
+            dadosMensagens.map((mensagem,key) => {(
+            mensagens.push(
+                <View key={i++} style={[styles.mensagemContainer, mensagem.remetente_id == this.state.id ? {alignSelf: "flex-end", backgroundColor: "#f2e5e5", marginLeft: "20%"} : {alignSelf: "flex-start", marginRight: "20%"}]}>
+                    <View style={styles.mensagem}>
+                        <Text style={styles.texto}>{mensagem.texto}</Text>
+                    </View>
                 </View>
             )
             )})
         }else{
-            conversas.push(
+            mensagens.push(
                 <View style={{marginBottom:"5%"}}>
-                <Text style={styles.texto}>Não há conversas disponíveis </Text>
+                <Text style={styles.texto}>Não há mensagens disponíveis</Text>
                 </View>
             )
         }
-        this.setState({conversas: conversas, dadosConversas: dadosConversas, refreshing: false})
+        this.setState({mensagens: mensagens, dadosMensagens: dadosMensagens})
+        setTimeout(() => this.scrollView.scrollToEnd({animated: true}),500)
+    }
+
+    enviarMensagem(){
+        if(this.state.texto != ""){
+            Keyboard.dismiss()
+            fetch('http://donate-ifsp.ga/app/enviarMensagem', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: this.state.id,
+                    token: this.state.token,
+                    destinatario_id: this.state.destinatario_id,
+                    texto: this.state.texto,
+                }),
+            }).then((response) => response.json())
+            .then((responseJson) => {
+                if(responseJson == true){
+                    this.setState({mensagens: [... this.state.mensagens, 
+                        <View style={[styles.mensagemContainer, {alignSelf: "flex-end", backgroundColor: "#f2e5e5", marginLeft: "20%"}]}>
+                            <View style={styles.mensagem}>
+                                <Text style={styles.texto}>{this.state.texto}</Text>
+                            </View>
+                        </View>
+                    ]})
+                }else{
+                    Alert.alert(
+                        'Sem conexão',
+                        'Verifique sua conexão com a internet',
+                    );
+                }
+                this.setState({texto: ""})
+            })
+            .catch((error) => {
+                Alert.alert(
+                    'Sem conexão',
+                    'Verifique sua conexão com a internet',
+                );
+            })
+        }
     }
 
     spinner(bol){
@@ -91,21 +131,31 @@ export default class Anuncios extends Component {
         return (
             <View style={styles.container} 
             onLayout={(event) => {this.setState({heightLayout: event.nativeEvent.layout.height})}}>
-                <ScrollView ref='_scrollView' 
+                <ScrollView ref={ref => this.scrollView = ref} 
                     contentContainerStyle={styles.scroll} 
-                    style={{backgroundColor: "white"}}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={this.state.refreshing}
-                            onRefresh={this._onRefresh}
-                        />
-                    }
+                    style={{backgroundColor: "#ededed"}}
                 >
-                    <View style={styles.conversas}>
-                        
+                    <View style={styles.mensagens}>
+                        {this.state.mensagens}
                     </View>
-                    <ActivityIndicator size="large" color="#a64c4c" animating={this.state.spinner} />
                 </ScrollView>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        ref={ref => this.input = ref}
+                        editable = {true}
+                        multiline = {true}
+                        scrollEnabled={true}
+                        style={styles.input}
+                        placeholder={"Escreva uma mensagem aqui"}
+                        underlineColorAndroid="transparent"
+                        value={this.state.texto}
+                        onChangeText={(val) => this.setState({texto: val})}
+                        onFocus={() => setTimeout(() => this.scrollView.scrollToEnd({animated: true}),500)}
+                    />
+                    <TouchableHighlight underlayColor={"#993232"} style={styles.button} onPress={() => { this.enviarMensagem() }}>
+                        <Icon size={35} color="white" name="arrow-right"/>
+                    </TouchableHighlight>
+                </View>
             </View>
         );
     }
@@ -114,35 +164,6 @@ export default class Anuncios extends Component {
 let width = Dimensions.get('window').width
 let height = Dimensions.get('window').height
 const styles = StyleSheet.create({
-    buttonContainer:{
-        position: 'absolute', 
-        bottom: height*0.03, 
-        right: -width*0.04, 
-        elevation: 20,
-        borderRadius: 5,
-    },
-    button:{
-        width: width*0.22,
-        height: height*0.06,
-        backgroundColor: "#2C3E50",
-        alignItems: 'center',
-        justifyContent: 'center',
-        right:0,
-        elevation: 2,
-        borderRadius: 5,
-    },
-    containerInformacoes:{
-        width: "56%",
-        marginLeft: "2%",
-    },
-    containerTitulo:{
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: "#2c3E50",
-        elevation: 3,
-        width: "100%",
-        height: "22%",
-    },
     titulo: {
         fontSize: 20,
         fontWeight: 'bold',
@@ -150,8 +171,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex:1,
-        backgroundColor: '#E0E0E0',
-        overflow: 'hidden',
+        backgroundColor: '#ededed',
     },
     texto:{
         fontSize: 17,
@@ -165,46 +185,39 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'black',
     },
-    manifestContainer: {
-        height: height*0.25,
-        width: width*0.95,
+    mensagemContainer: {
         backgroundColor: "white",
-        elevation:8,
-        marginBottom: 20
+        elevation: 10,
+        margin: 15,
+        borderRadius: 10,
     },
-    conversas: {
-        paddingTop: 20,
-        alignItems: 'center',
-        backgroundColor: 'white',
+    mensagem: {
+        padding: 5, 
+        margin: 5,
     },
-    imagem: {
-        width: "40%",
-        height: "100%",
-    },
-    filtros:{
-        position: "relative",
-        height:60,
-        width: "100%",
-        top: 0,
-        elevation: 3,
+    input:{
+        minHeight: 60,
+        maxHeight: 120,
         backgroundColor: "white",
-        alignItems: 'center',
-        justifyContent: 'center',
+        fontSize: 16,
+        lineHeight: 16,
+        paddingLeft: 10,
+        elevation:10,
+        margin: 8,
+        borderRadius: 3,
+        width: width-85
     },
-    filtrosOptions:{
-        flex:1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    botaoEditar:{
+    button:{
+        backgroundColor: "#800000",
+        alignItems: "center",
+        justifyContent: "center",
+        elevation:10,
+        padding: 8,
+        height: 60,
+        width: 60,
+        borderRadius: 30,
         position: "absolute",
-        top: 0,
-        left:0,
-        height: "32%",
-        width: "18%",
-        backgroundColor: "#FFFF66",
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 5,
+        bottom: 8,
+        right: 8,
     },
 })
