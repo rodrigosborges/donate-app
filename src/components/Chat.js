@@ -18,7 +18,6 @@ export default class Anuncios extends Component {
             dadosMensagens: [],
             pagina: 1,
             fim: false,
-            height: 0,
         };  
     }
 
@@ -92,7 +91,7 @@ export default class Anuncios extends Component {
                     </View>
                 )   
             }
-            this.setState({fim: true})   
+            this.setState({fim: true})
         }
         this.setState({mensagens: [mensagens, ...this.state.mensagens], dadosMensagens: dadosMensagens, height: height})
     }
@@ -115,7 +114,7 @@ export default class Anuncios extends Component {
             }).then((response) => response.json())
             .then((responseJson) => {
                 if(responseJson == true){
-                    if(this.state.dadosMensagens.length == 0){
+                    if(this.state.mensagens[0] == <View style={{paddingTop:"5%", width:"100%", alignItems:'center'}}><Text style={styles.texto}>Não há mensagens disponíveis</Text></View>){
                         this.setState({mensagens: []})
                     }
                     this.setState({mensagens: [... this.state.mensagens, 
@@ -124,7 +123,7 @@ export default class Anuncios extends Component {
                                 <Text style={styles.texto}>{this.state.texto}</Text>
                             </View>
                         </View>
-                    ]})
+                    ], dadosMensagens: [{mensagem: this.state.texto}]})
                     setTimeout(() => this.scrollView.scrollToEnd({animated: true}),1)
                 }else{
                     Alert.alert(
@@ -152,7 +151,6 @@ export default class Anuncios extends Component {
             <View style={styles.container} 
             onLayout={(event) => {this.setState({heightLayout: event.nativeEvent.layout.height})}}>
                 <ScrollView ref={ref => this.scrollView = ref} 
-                    onContentSizeChange={this.onContentSizeChange} 
                     contentContainerStyle={styles.scroll} 
                     style={{backgroundColor: "#ededed"}}
                     onScroll={

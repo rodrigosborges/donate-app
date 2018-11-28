@@ -94,32 +94,6 @@ export default class Menu extends Component {
         })
     }
 
-    atualiza(){
-        fetch('http://192.168.1.104/ouvidoria/app/perfil?cpf='+this.state.cpf+'&token='+this.state.token, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({
-                nome: responseJson.nome,
-                email: responseJson.email, 
-                telefone: responseJson.telefone, 
-                endereco: responseJson.endereco
-            })
-            AsyncStorage.setItem('nome',responseJson.nome)
-        })
-        .catch((error) => {
-            Alert.alert(
-                'Sem conexão',
-                'Verifique sua conexão com a internet',
-            );
-        });        
-    }
-
-
     spinner(bol){
         this.setState({spinner: bol})    
     }

@@ -9,12 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/../node_modules/react-native-audio-streamer/android" />
-            <option value="$PROJECT_DIR$/../node_modules/react-native-camera/android" />
-            <option value="$PROJECT_DIR$/../node_modules/react-native-document-picker/android" />
-            <option value="$PROJECT_DIR$/../node_modules/react-native-file-selector/android" />
-            <option value="$PROJECT_DIR$/../node_modules/react-native-maps/lib/android" />
+            <option value="$PROJECT_DIR$/../node_modules/react-native-image-picker/android" />
             <option value="$PROJECT_DIR$/../node_modules/react-native-vector-icons/android" />
+            <option value="$PROJECT_DIR$/../node_modules/rn-fetch-blob/android" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

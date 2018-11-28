@@ -5,15 +5,12 @@ import { TextField } from 'react-native-material-textfield'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import {cpfValido} from './Helper.js'
 import ModalFilterPicker from 'react-native-modal-filter-picker'
-import MapView from 'react-native-maps'
-import { Marker } from 'react-native-maps'
 import RNFileSelector from 'react-native-file-selector'
 import Spinner from 'react-native-loading-spinner-overlay'
 import {RadioGroup, RadioButton} from 'react-native-flexi-radio-button'
 import { NavigationActions } from 'react-navigation'
 import { DocumentPicker, DocumentPickerUtil } from 'react-native-document-picker'
 import ImagePicker from 'react-native-image-picker';
-import FastImage from 'react-native-fast-image'
 
 export default class CadastroAnuncio extends Component {
     constructor(props){
@@ -322,7 +319,7 @@ export default class CadastroAnuncio extends Component {
         const arquivos = this.state.arquivo.map((arquivo,index) => {
             return (
                 <View style={styles.arquivosAdicionados} >
-                    <FastImage source={{uri: (typeof arquivo == "string" ? arquivo : arquivo.uri)}} style={{width: "100%",height: 150}}/>
+                    <Image source={{uri: (typeof arquivo == "string" ? arquivo : arquivo.uri)}} style={{width: "100%",height: 150}}/>
                     <TouchableOpacity style={{height: 40, width:40,position: 'absolute',right: 5, top:5}} onPress={() => this.excluirArquivo(index)}>
                         <Icon name="window-close" color="white" size={40}/>
                     </TouchableOpacity>

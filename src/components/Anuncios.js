@@ -5,7 +5,6 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { NavigationActions } from 'react-navigation';
 import ModalFilterPicker from 'react-native-modal-filter-picker'
 import SearchBar from 'react-native-searchbar';
-import FastImage from 'react-native-fast-image'
 
 export default class Anuncios extends Component {
 
@@ -190,11 +189,10 @@ export default class Anuncios extends Component {
                 <View style={[styles.manifestContainer]}>
                     <TouchableHighlight underlayColor="#ffffff" key={i++} onPress={() => {this.verAnuncio(num+key)}} style={{width: "100%", height: "100%"}}>
                         <View style={{flex:1, flexDirection: 'row'}}>
-                            <FastImage style={styles.imagem} 
+                            <Image style={styles.imagem} 
                                 source={{
                                     uri: anuncio.imagens[0],
                                     headers:{ Authorization: 'someAuthToken' },
-                                    priority: FastImage.priority.normal,
                                 }}
                             />
                             <View style={[styles.containerInformacoes]}>

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Alert, AppRegistry, StyleSheet, View, Text, TextInput, StatusBar, ScrollView, Button, ReactNative, AsyncStorage, TouchableOpacity, Dimensions, ImageBackground, TouchableHighlight } from 'react-native';
+import { Alert,Image, AppRegistry, StyleSheet, View, Text, TextInput, StatusBar, ScrollView, Button, ReactNative, AsyncStorage, TouchableOpacity, Dimensions, ImageBackground, TouchableHighlight } from 'react-native';
 import logo from './../brasao.png'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { NavigationActions } from 'react-navigation';
 import Modal from 'react-native-modal'
 import Spinner from 'react-native-loading-spinner-overlay';
-import FastImage from 'react-native-fast-image'
 
 export default class Menu extends Component {
     constructor(props){
@@ -59,14 +58,14 @@ export default class Menu extends Component {
                     <View style={styles.iconesSection}>
                         <View style={styles.containerIcones}>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(1,"Animal")} style={[styles.icones]}>
-                                <FastImage style={styles.fundo} source={require('./../backgrounds/animal.jpg')}/>
+                                <Image style={styles.fundo} source={require('./../backgrounds/animal.jpg')}/>
                                 <View style={styles.dark}>
                                     <Icon size={width*0.2} color={"#E0E0E0"} name="paw"/>
                                     <Text style={styles.texto}>Animal</Text>
                                 </View>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(2,"Doméstico") } style={[styles.icones]}>
-                                <FastImage style={styles.fundo} source={require('./../backgrounds/domestico.jpg')}/>
+                                <Image style={styles.fundo} source={require('./../backgrounds/domestico.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="home"/>
                                         <Text style={styles.texto}>Doméstico</Text>
@@ -75,14 +74,14 @@ export default class Menu extends Component {
                         </View>
                         <View style={styles.containerIcones}>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(3,"Educação") } style={[styles.icones]}>
-                                <FastImage style={styles.fundo} source={require('./../backgrounds/educacao.jpg')}/>
+                                <Image style={styles.fundo} source={require('./../backgrounds/educacao.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="graduation-cap"/>
                                         <Text style={styles.texto}>Educação</Text>
                                     </View>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(4,"Eletrônico") } style={[styles.icones]}>
-                                <FastImage style={styles.fundo} source={require('./../backgrounds/eletronico.jpg')}/>
+                                <Image style={styles.fundo} source={require('./../backgrounds/eletronico.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="mobile-alt"/>
                                         <Text style={styles.texto}>Eletrônico</Text>
@@ -92,14 +91,14 @@ export default class Menu extends Component {
                         </View>
                         <View style={styles.containerIcones}>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(5,"Esporte e Lazer") } style={[styles.icones]}>
-                                <FastImage style={styles.fundo} source={require('./../backgrounds/esporte.jpg')}/>
+                                <Image style={styles.fundo} source={require('./../backgrounds/esporte.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="bicycle"/>
                                         <Text style={styles.texto}>Esporte e Lazer</Text>
                                     </View>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(6,"Infantil") } style={[styles.icones]}>
-                                <FastImage style={styles.fundo} source={require('./../backgrounds/infantil.jpg')}/>
+                                <Image style={styles.fundo} source={require('./../backgrounds/infantil.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="child"/>
                                         <Text style={styles.texto}>Infantil</Text>
@@ -108,14 +107,14 @@ export default class Menu extends Component {
                         </View>
                         <View style={styles.containerIcones}>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(7,"Música") } style={[styles.icones]}>
-                                <FastImage style={styles.fundo} source={require('./../backgrounds/musica.jpg')}/>
+                                <Image style={styles.fundo} source={require('./../backgrounds/musica.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="music"/>
                                         <Text style={styles.texto}>Música</Text>
                                     </View>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.3} onPress={() => this.anuncios(8,"Vestuário") } style={[styles.icones]}>
-                                <FastImage style={styles.fundo} source={require('./../backgrounds/vestuario.jpg')}/>
+                                <Image style={styles.fundo} source={require('./../backgrounds/vestuario.jpg')}/>
                                     <View style={styles.dark}>
                                         <Icon size={width*0.2} color={"#E0E0E0"} name="tshirt"/>
                                         <Text style={styles.texto}>Vestuário</Text>

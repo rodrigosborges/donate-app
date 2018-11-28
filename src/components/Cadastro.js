@@ -44,7 +44,7 @@ export default class Cadastro extends PureComponent {
             }),
         }).then((response) => response.json())
         .then((responseJson) => {
-            const { navigation } = this.props.navigation
+            var navigation = this.props.navigation
             if(responseJson == true){
                 Alert.alert(
                     'Sucesso',
@@ -82,8 +82,8 @@ export default class Cadastro extends PureComponent {
                     mensagemErro += "Digite um e-mail válido"
                 break
             case 6:
-                if(!val.match(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/))
-                    mensagemErro += "Deve conter números, letras e caractere especial"
+                if(!val.match(/^.{6,}$/))
+                    mensagemErro += "Deve conter 6 dígitos"
                 break
             case 7:
                 if(val != this.state.password)
