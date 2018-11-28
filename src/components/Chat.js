@@ -114,7 +114,7 @@ export default class Anuncios extends Component {
             }).then((response) => response.json())
             .then((responseJson) => {
                 if(responseJson == true){
-                    if(this.state.mensagens[0] == <View style={{paddingTop:"5%", width:"100%", alignItems:'center'}}><Text style={styles.texto}>Não há mensagens disponíveis</Text></View>){
+                    if(this.state.mensagens[0] == (<View style={{paddingTop:"5%", width:"100%", alignItems:'center'}}><Text style={styles.texto}>Não há mensagens disponíveis</Text></View>)){
                         this.setState({mensagens: []})
                     }
                     this.setState({mensagens: [... this.state.mensagens, 
@@ -134,6 +134,7 @@ export default class Anuncios extends Component {
                 this.setState({texto: ""})
             })
             .catch((error) => {
+                alert(error.message)
                 Alert.alert(
                     'Sem conexão',
                     'Verifique sua conexão com a internet',

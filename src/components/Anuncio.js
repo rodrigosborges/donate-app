@@ -131,7 +131,7 @@ export default class Anuncio extends Component {
             <View style={styles.linhaText} />
             <Text style={styles.anuncio}><Text style={styles.texto}>Categoria:</Text> {anuncio.categoriaNome}</Text>
             <View style={styles.linhaText} />
-            <Text style={styles.anuncio}><Text style={styles.texto}>Doador:</Text> {anuncio.usuarioNome}</Text>
+            <Text style={styles.anuncio}><Text style={styles.texto}>Doador:</Text> {anuncio.usuarioNome} ({anuncio.avaliacao})</Text>
             <View style={styles.linhaText} />
             <Text style={styles.anuncio}>{anuncio.descricao}</Text>
             {(this.state.id != this.props.navigation.state.params.anuncio.doador_id && this.state.id != null) &&
