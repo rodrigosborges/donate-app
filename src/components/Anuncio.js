@@ -100,6 +100,17 @@ export default class Anuncio extends Component {
         Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
     });
   }
+
+  alterarStatus(){
+    fetch('http://donate-ifsp.ga/avaliacoes/avaliar?avaliador_id='
+    +this.state.id+'&avaliado_id='
+    +this.props.navigation.state.params.anuncio.doador_id+'&nivel='
+    +nivel, {
+    method: 'GET',
+    }).catch((error) => {
+        Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
+    });
+  }
   
   render() {
     const {state} = this.props.navigation
@@ -156,6 +167,11 @@ export default class Anuncio extends Component {
                     </TouchableOpacity>
                   </View>
                 }
+              </View>
+            }
+            {(this.state.id == this.props.navigation.state.params.anuncio.doador_id && this.state.id != null) &&
+              <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20}}>
+                <Button title={anuncio.doado == 1 ? "Marcar como disponível" :"Marcar como doado"} color="#800000" onPress={() => {(anuncio.doado),this.alterarStatus()}}/>
               </View>
             }
           </View>

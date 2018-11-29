@@ -78,19 +78,11 @@ export default class Anuncios extends Component {
                     setTimeout(() => this.scrollView.scrollToEnd({animated: true}),1)
             })
         }else{
-            if(pagina == 2){
-                mensagens.push(
-                    <View style={{paddingTop:"5%", width:"100%", alignItems:'center'}}>
-                        <Text style={styles.texto}>Não há mensagens disponíveis</Text>
-                    </View>
-                )
-            }else{
-                mensagens.push(
-                    <View style={{paddingTop:"5%",paddingBottom:"5%", width:"100%", alignItems:'center'}}>
-                        <Text style={styles.texto}>Início da conversa</Text>
-                    </View>
-                )   
-            }
+            mensagens.push(
+                <View style={{paddingTop:"5%",paddingBottom:"5%", width:"100%", alignItems:'center'}}>
+                    <Text style={styles.texto}>Início da conversa</Text>
+                </View>
+            )   
             this.setState({fim: true})
         }
         this.setState({mensagens: [mensagens, ...this.state.mensagens], dadosMensagens: dadosMensagens, height: height})
@@ -114,9 +106,6 @@ export default class Anuncios extends Component {
             }).then((response) => response.json())
             .then((responseJson) => {
                 if(responseJson == true){
-                    if(this.state.mensagens[0] == (<View style={{paddingTop:"5%", width:"100%", alignItems:'center'}}><Text style={styles.texto}>Não há mensagens disponíveis</Text></View>)){
-                        this.setState({mensagens: []})
-                    }
                     this.setState({mensagens: [... this.state.mensagens, 
                         <View style={[styles.mensagemContainer, {alignSelf: "flex-end", backgroundColor: "#f2e5e5", marginLeft: "20%"}]}>
                             <View style={styles.mensagem}>
