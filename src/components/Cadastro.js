@@ -45,19 +45,12 @@ export default class Cadastro extends PureComponent {
         }).then((response) => response.json())
         .then((responseJson) => {
             var navigation = this.props.navigation
-            if(responseJson == true){
-                Alert.alert(
-                    'Sucesso',
-                    'Cadastro realizado!',
-                    [{text: 'Ok', onPress: () => navigation.goBack()}],
-                    {cancelable: false}
-                );
-            }else{
-                Alert.alert(
-                    'Sem conexão',
-                    'Verifique sua conexão com a internet',
-                );
-            }
+            Alert.alert(
+                (responseJson[0] == true ? "SUCESSO" : "ERRO"),
+                (responseJson[1]),
+                [{text: 'Ok', onPress: () => (responseJson[0] == true ? navigation.goBack() : {})}],
+                {cancelable: (responseJson[0] == true ? false : true)}
+            );
             this.spinner(false)
         })
         .catch((error) => {

@@ -54,21 +54,18 @@ export default class Cadastro extends PureComponent {
             }),
         }).then((response) => response.json())
         .then((responseJson) => {
-            if(responseJson == true){
-                Alert.alert(
-                    'Sucesso',
-                    'Perfil atualizado!',
-                    [{text: 'Ok', onPress: () => navigation.goBack()}],
-                    {cancelable: false}
-                );
+            var navigation = this.props.navigation
+            Alert.alert(
+                (responseJson[0] == true ? "SUCESSO" : "ERRO"),
+                (responseJson[1]),
+                [{text: 'Ok', onPress: () => (responseJson[0] == true ? navigation.goBack() : {})}],
+                {cancelable: (responseJson[0] == true ? false : true)}
+            );
+            this.spinner(false)
+            if(responseJson[0] == true){
                 AsyncStorage.setItem('email', this.state.email)
                 if(this.state.password != "")
                     AsyncStorage.setItem('password',this.state.password)
-            }else{
-                Alert.alert(
-                    'Sem conexão',
-                    'Verifique sua conexão com a internet',
-                );
             }
             this.spinner(false)
         })

@@ -21,37 +21,43 @@ export default class Login extends Component {
     }
 
     enviar(){
-        fetch('http://192.168.1.104/ouvidoria/app/solicitarSenha', {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email: this.state.email,
-        }),
-        }).then((response) => response.json())
-        .then((responseJson) => {
-            if(responseJson){
-                Alert.alert(
-                    'SUCESSO',
-                    'Mensagem enviada para seu e-mail.',
-                );
-            }else{
-                Alert.alert(
-                    'Erro',
-                    'E-mail não cadastrado',
-                );
-            }
-            this.spinner(false)
-        })
-        .catch((error) => {
-            Alert.alert(
-                'Sem conexão',
-                'Verifique sua conexão com a internet',
-            );
-            this.spinner(false)
-        });
+        Alert.alert(
+            "ERRO",
+            "Recurso indisponível no momento",
+            [{text: 'Ok', onPress: () => this.props.navigation.goBack()}],
+            {cancelable: false}
+        );
+        // fetch('http://192.168.1.104/ouvidoria/app/solicitarSenha', {
+        // method: 'POST',
+        // headers: {
+        //     Accept: 'application/json',
+        //     'Content-Type': 'application/json',
+        // },
+        // body: JSON.stringify({
+        //     email: this.state.email,
+        // }),
+        // }).then((response) => response.json())
+        // .then((responseJson) => {
+        //     if(responseJson){
+        //         Alert.alert(
+        //             'SUCESSO',
+        //             'Mensagem enviada para seu e-mail.',
+        //         );
+        //     }else{
+        //         Alert.alert(
+        //             'Erro',
+        //             'E-mail não cadastrado',
+        //         );
+        //     }
+        //     this.spinner(false)
+        // })
+        // .catch((error) => {
+        //     Alert.alert(
+        //         'Sem conexão',
+        //         'Verifique sua conexão com a internet',
+        //     );
+        //     this.spinner(false)
+        // });
     }
 
     spinner(bol){
@@ -72,7 +78,7 @@ export default class Login extends Component {
                         <Text style={styles.textoLogin}>Informe seu e-mail para que seja enviada as instruções para recuperação da senha:</Text>
                         <TextField textColor="#E0E0E0" error={this.state.emailErro} tintColor="#E0E0E0" baseColor="#E0E0E0" keyboardType="email-address" style={styles.input} label="E-mail" value={this.state.email} autoCapitalize="none" onChangeText={(email) => this.setState({email})}/>
                         <View style={styles.cadastrar}>
-                            <Button disabled={this.state.spinner} onPress={() => {this.spinner(true),setTimeout(() =>{this.enviar()}, 1)}} title="Enviar" color="#660000" />
+                            <Button disabled={this.state.spinner} onPress={() => this.enviar()} title="Enviar" color="#660000" />
                         </View>
                     </View>
                 </View>

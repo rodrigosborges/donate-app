@@ -205,7 +205,7 @@ export default class Anuncios extends Component {
                             </View>
                         </View>
                     </TouchableHighlight>
-                    {this.state.id != null && 
+                    {(this.state.id != null && anuncio.deleted_at == null) && 
                         <TouchableHighlight underlayColor="#FFFFCC" onPress={() => {this.editar(num+key)}} style={styles.botaoEditar}>
                             <Icon size={22} name="edit"/>
                         </TouchableHighlight>

@@ -130,7 +130,7 @@ export default class CadastroAnuncio extends Component {
     }
 
     cadastrar(){
-        const { navigate } = this.props.navigation;
+        var  navigation  = this.props.navigation;
         
         var body = new FormData();
         this.state.arquivo.map(function(v,i){
@@ -162,8 +162,12 @@ export default class CadastroAnuncio extends Component {
         fetch(('http://donate-ifsp.ga/app/doacoes/'+(this.state.editar ? "update" : "insert")), config)
 
         .then((response) => response.json()).then((responseJson) => {
-            var titulo = responseJson[0] == true ? "SUCESSO" : "ERRO"
-            this.setState({cadastrado: responseJson[0],titulo: titulo, mensagem: responseJson[1], isVisible: true, concluido: (titulo == "SUCESSO"), codigo: responseJson[2]})
+            Alert.alert(
+                (responseJson[0] == true ? "SUCESSO" : "ERRO"),
+                (responseJson[1]),
+                [{text: 'Ok', onPress: () => (responseJson[0] == true ? navigation.goBack() : {})}],
+                {cancelable: (responseJson[0] == true ? false : true)}
+            );
             setTimeout(() => {this.spinner(false)}, 1)
         })
         .catch((error) => {
