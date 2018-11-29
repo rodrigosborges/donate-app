@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 import RNFetchBlob from 'rn-fetch-blob'
 import ImageSlider from 'react-native-image-slider';
 import { Header } from 'react-navigation';
+import Spinner from 'react-native-loading-spinner-overlay'
 import Stars from 'react-native-stars';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NavigationActions } from 'react-navigation';
@@ -20,6 +21,7 @@ export default class Anuncio extends Component {
       imagemFull: false,
       id: null,
       nivel: 0,
+      spinner: false,
     };
   }
 
@@ -102,14 +104,48 @@ export default class Anuncio extends Component {
   }
 
   alterarStatus(){
-    fetch('http://donate-ifsp.ga/avaliacoes/avaliar?avaliador_id='
-    +this.state.id+'&avaliado_id='
-    +this.props.navigation.state.params.anuncio.doador_id+'&nivel='
-    +nivel, {
-    method: 'GET',
-    }).catch((error) => {
-        Alert.alert("Sem conexão", 'Verifique sua conexão com a internet')
-    });
+    this.spinner(true)
+    fetch('http://donate-ifsp.ga/app/alterarStatus', {
+      method: 'POST',
+      headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: this.state.id,
+        anuncio_id: this.props.navigation.state.params.anuncio.id,
+        token: this.state.token,
+      }),
+    }).then((response) => response.json())
+    .then((responseJson) => {
+        var navigation = this.props.navigation
+        if(responseJson == true){
+            Alert.alert(
+              'Sucesso',
+              'Status alterado!',
+            );
+            var anuncio = this.props.navigation.state.params.anuncio
+            anuncio.doado = anuncio.doado == 0 ? 1 : 0
+            this.props.navigation.setParams({anuncio: anuncio})
+        }else{
+          Alert.alert(
+            'Sem conexão',
+            'Verifique sua conexão com a internet',
+          );
+        }
+        this.spinner(false)
+    })
+    .catch((error) => {
+        Alert.alert(
+            'Sem conexão',
+            'Verifique sua conexão com a internet',
+        );
+        this.spinner(false)
+    })
+  }
+
+  spinner(bol){
+    this.setState({spinner: bol})
   }
   
   render() {
@@ -117,6 +153,7 @@ export default class Anuncio extends Component {
     const anuncio = state.params.anuncio
     return (
       <View style={{flex:1}}>
+        <Spinner visible={this.state.spinner} textContent={"Carregando..."} textStyle={{color: '#FFF'}} />
         {this.state.imagemFull && 
           <View style={{flex: 1}}>
             <ImageSlider resizeMode={"contain"} style={styles.imagemFull}

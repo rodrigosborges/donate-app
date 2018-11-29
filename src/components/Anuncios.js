@@ -143,7 +143,7 @@ export default class Anuncios extends Component {
         }));
     }
 
-    excluir(anuncio_id, tipo){     
+    excluir(anuncio_id, tipo){
         fetch('http://donate-ifsp.ga/app/deleteRestoreAnuncio', {
             method: 'POST',
             headers: {
@@ -291,7 +291,6 @@ export default class Anuncios extends Component {
                         ref={(ref) => this.searchBar = ref}
                         onSubmitEditing={() =>this.pesquisar()}
                         placeholder="Procure algo aqui"
-                        
                     />
                     <View style={styles.anuncios}>
                         {this.state.anuncios}
